@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:com.uncgcapstone.android.seniorcapstone="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+    <group
+        android:id="@+id/main_menu_group"
+        >
+        <item
+            android:id="@+id/searchbutton"
+            android:icon="@drawable/search_icon_white"
+            android:orderInCategory="1"
+            android:title="Search Button"
+            app:showAsAction="ifRoom"
+            android:menuCategory="container"
+            />
+
+    </group>
+    <!--
+    <item
+        android:id="@+id/refresh_button"
+        android:icon="@drawable/refresh"
+        android:orderInCategory="1"
+        android:title="@string/refresh_button"
+        app:showAsAction="ifRoom"
+        android:menuCategory="container"
+        />
+
+         <item android:id="@+id/spinner"
+          android:prompt="@string/prompt"
+          android:title=""
+          com.uncgcapstone.android.seniorcapstone:showAsAction="ifRoom"
+          com.uncgcapstone.android.seniorcapstone:actionViewClass="android.widget.Spinner" />
+        -->
+
+</menu>

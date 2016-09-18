@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@drawable/header"
+    tools:context="com.uncgcapstone.android.seniorcapstone.LogInActivity">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/calendar"
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/emailText"
+        android:hint="Email Address"
+        android:layout_below="@id/logo"
+        android:layout_centerHorizontal="true"
+        android:padding="5dip"
+        android:layout_margin="3dp"
+        android:background="@drawable/rounded_edittext"
+        android:fontFamily="sans-serif-thin"
+        />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordText"
+        android:hint="Password"
+        android:layout_below="@id/emailText"
+        android:layout_centerHorizontal="true"
+        android:padding="5dip"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/rounded_edittext"
+        android:fontFamily="sans-serif-thin"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log in"
+        android:id="@+id/logInButton"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/passwordText"
+        android:background="@drawable/rounded_edittext"
+        android:backgroundTint="#d75b63"
+        android:layout_margin="3dp"
+        android:padding="5dip"
+        android:ems="10"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-thin"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account"
+        android:id="@+id/createButton"
+        android:background="@drawable/rounded_edittext"
+        android:layout_below="@id/logInButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="9dp"
+        android:padding="5dip"
+        android:ems="10"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-thin"
+        />
+<!--
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guest log in"
+        android:id="@+id/anonButton"
+        android:layout_toRightOf="@id/logInButton"
+        android:layout_below="@id/emailText"
+        />
+!-->
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/googlebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/createButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        />
+
+</RelativeLayout>

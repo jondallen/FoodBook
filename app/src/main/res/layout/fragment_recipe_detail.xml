@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              tools:context=".RecipeDetailFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <ImageView
+                android:id="@+id/detailPicture"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+            <com.like.LikeButton
+                android:id="@+id/detailthumb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon_type="thumb"
+                app:circle_start_color="#dae72a"
+                app:like_drawable="@drawable/thumb_on"
+                app:unlike_drawable="@drawable/thumb_off"
+                app:dots_primary_color="#ff9900"
+                app:dots_secondary_color="#eda633"
+                app:circle_end_color="#edff00"
+                app:icon_size="20dp"
+                app:liked="false"
+                app:anim_scale_factor="2"
+                app:is_enabled="true"
+                />
+                <TextView
+                    android:id="@+id/thumbsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:textSize="20dp"
+                    android:textColor="#000000"
+                    android:hint="0"
+                    android:layout_marginLeft="4dp"
+                    />
+
+            </LinearLayout>
+            <TextView
+                android:id="@+id/detailRecipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:textSize="36dp"
+                android:textColor="#000000"
+                android:hint="Chicken Parmesan"
+                android:layout_marginLeft="4dp"
+                />
+            <TextView
+                android:id="@+id/detailName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:textSize="16dp"
+                android:textColor="#000000"
+                android:hint="jon2056"
+                android:layout_marginLeft="8dp"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+
+
+

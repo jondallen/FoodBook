@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">SeniorCapstone</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="auth_failed">"Authentication failed! Check your e-mail and password entries again."
+    </string>
+    <string name="auth_successful">"Account creation successful!
+    </string>
+    <string name="title_activity_main_screen">MainScreenActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="log_out">Log Out</string>
+    <string name="preference_key">com.uncgcapstone.android.seniorcapstone.preference_key</string>
+    <string name="client_id">68783830513-73fn8vbh2uac8khnuvna9g689d83pj9e.apps.googleusercontent.com</string>
+    <string name="refresh_button">Refresh</string>
+    <string name="facebook_app_id">1762072800716537</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="spinnerstrings">
+        <item>Recent</item>
+        <item>Top</item>
+    </string-array>
+    <string name = "prompt">null</string>
+</resources>

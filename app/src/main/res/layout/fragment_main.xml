@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+                android:gravity="top"
+              tools:context=".MainFragment">
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recyclerview"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:listitem="@layout/card_view_recycler_view"
+    >
+</android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+<android.support.design.widget.FloatingActionButton
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/myFAB"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:src="@drawable/send_arrow"
+app:backgroundTint="@color/md_blue_300"
+app:borderWidth="0dp"
+android:elevation="4dp"
+android:backgroundTint="@color/md_orange_300"
+android:layout_alignParentBottom="true"
+android:layout_alignParentRight="true"
+android:layout_marginRight="16dp"
+android:layout_marginBottom="16dp"
+    app:fabSize="normal"
+    />
+
+    </RelativeLayout>
