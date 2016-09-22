@@ -165,6 +165,7 @@ public class MainFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
                 ((MainActivity) getActivity()).setToolbar("Add a Recipe");
+                ((MainActivity)getActivity()).showOverflowMenu(false);
             }
         });
 
@@ -184,7 +185,7 @@ public class MainFragment extends Fragment {
         private ImageView cardImage;
         public CardViewHolder(View itemView){
             super(itemView);
-            mCardView = (CardView) itemView.findViewById(R.id.cardview);
+
             cardTitle = (TextView) itemView.findViewById(R.id.cardTitle);
             cardUsername = (TextView) itemView.findViewById(R.id.cardUsername);
             cardImage = (ImageView) itemView.findViewById(R.id.cardImage);

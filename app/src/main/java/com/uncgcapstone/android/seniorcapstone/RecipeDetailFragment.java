@@ -20,7 +20,14 @@ import com.google.firebase.storage.*;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
@@ -51,6 +58,7 @@ public class RecipeDetailFragment extends Fragment {
 
 
 
+
     public RecipeDetailFragment() {
         // Required empty public constructor
     }
@@ -63,7 +71,6 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -138,6 +145,8 @@ public class RecipeDetailFragment extends Fragment {
         super.onStop();
         myRef.removeEventListener(mValueEventListener);
     }
+
+
 
 
 }

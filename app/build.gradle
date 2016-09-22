@@ -21,6 +21,7 @@ android {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -49,8 +50,17 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.jmedeisis:draglinearlayout:1.1.0'
+    compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.9.3@aar') {
+        transitive = true
+    }
+    compile 'com.github.mabbas007:TagsEditText:v1.0.1'
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.yqritc:recyclerview-flexibledivider:1.4.0'
+    compile 'com.roughike:bottom-bar:2.0.2'
+    compile 'com.github.johnpersano:supertoasts:2.0'
+    compile 'com.github.nisrulz:recyclerviewhelper:24.2.1'
 }
-
 
 
 apply plugin: 'com.google.gms.google-services'

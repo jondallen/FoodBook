@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@drawable/header"
+    android:background="@drawable/background_image"
     tools:context="com.uncgcapstone.android.seniorcapstone.LogInActivity">
 
     <ImageView
@@ -29,7 +29,7 @@
         android:padding="5dip"
         android:layout_margin="3dp"
         android:background="@drawable/rounded_edittext"
-        android:fontFamily="sans-serif-thin"
+        android:fontFamily="sans-serif"
         />
 
     <EditText
@@ -45,7 +45,7 @@
         android:layout_marginTop="3dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/rounded_edittext"
-        android:fontFamily="sans-serif-thin"
+        android:fontFamily="sans-serif"
         />
 
     <Button
@@ -56,12 +56,12 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/passwordText"
         android:background="@drawable/rounded_edittext"
-        android:backgroundTint="#d75b63"
+        android:backgroundTint="#80bfff"
         android:layout_margin="3dp"
         android:padding="5dip"
         android:ems="10"
         android:textAlignment="center"
-        android:fontFamily="sans-serif-thin"
+        android:fontFamily="sans-serif"
         />
 
     <Button
@@ -77,7 +77,7 @@
         android:padding="5dip"
         android:ems="10"
         android:textAlignment="center"
-        android:fontFamily="sans-serif-thin"
+        android:fontFamily="sans-serif"
         />
 <!--
     <Button
