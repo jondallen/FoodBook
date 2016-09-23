@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <tabs>
+        <tab
+            android:id="@+id/tab_publish"
+            android:icon="@drawable/send"
+            android:title="Publish" />
+    </tabs>
+</selector>

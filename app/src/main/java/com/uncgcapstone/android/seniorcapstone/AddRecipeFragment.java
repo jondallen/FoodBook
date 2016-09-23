@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -124,6 +125,8 @@ public class AddRecipeFragment extends Fragment {
     TextView ingredientsTitleText, placeholder_ingredients, placeholder_steps, tagsTitleText, placeholder_tags;
     TagsEditText mTagsEditText;
     CheckBox checkbox;
+
+
 
 
 
@@ -545,6 +548,7 @@ public class AddRecipeFragment extends Fragment {
             System.out.println("Item is selected");
         }
 
+
         @Override
         public void onItemClear() {
             System.out.println("Item is unselected");
@@ -553,6 +557,7 @@ public class AddRecipeFragment extends Fragment {
 
         public void bindCard(String s){
             recyclerText1.setText(s);
+
         }
     }
 

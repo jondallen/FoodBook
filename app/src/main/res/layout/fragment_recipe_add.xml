@@ -4,8 +4,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
               android:orientation="vertical"
-             tools:context=".AddRecipeFragment"
-    >
+             tools:context=".AddRecipeFragment">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -35,8 +34,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Recipe name..."
-            android:inputType="textCapSentences"
+            android:inputType="textCapWords"
             android:maxLength="30"
+            android:imeOptions="actionNext"
             />
             <View style="@style/Divider"/>
             <RelativeLayout
@@ -63,6 +63,7 @@
                     android:inputType="number"
                     android:maxLength="2"
                     android:maxLines="1"
+                    android:imeOptions="actionNext"
                     />
                 <ImageView
                     android:id="@+id/clockImage"
@@ -80,8 +81,10 @@
                     android:hint="Prep Time"
                     android:layout_toRightOf="@id/clockImage"
                     android:layout_centerVertical="true"
-                    android:maxLength="10"
+                    android:maxLength="3"
                     android:maxLines="1"
+                    android:inputType="number"
+                    android:imeOptions="actionNext"
                     />
                 <ImageView
                     android:id="@+id/timerImage"
@@ -99,8 +102,10 @@
                     android:hint="Cook Time"
                     android:layout_toRightOf="@id/timerImage"
                     android:layout_centerVertical="true"
-                    android:maxLength="8"
+                    android:maxLength="3"
                     android:maxLines="1"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
                     />
 
 
@@ -163,7 +168,7 @@
                 android:background="@drawable/rounded_edittext_white"
                 android:layout_alignTop="@+id/ingredientsButton"
                 android:maxLines="1"
-                android:inputType="text"
+                android:inputType="textCapSentences"
                 android:maxLength="100"
                 android:imeOptions="actionDone"
                 />
@@ -225,7 +230,7 @@
                     android:layout_marginRight="8dp"
                     android:background="@drawable/rounded_edittext_white"
                     android:maxLines="1"
-                    android:inputType="text"
+                    android:inputType="textCapSentences"
                     android:maxLength="100"
                     android:imeOptions="actionDone"
                     />
@@ -307,6 +312,6 @@
                 />
 
         </LinearLayout>
-
     </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>
