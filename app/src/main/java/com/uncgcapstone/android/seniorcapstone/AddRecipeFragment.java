@@ -132,9 +132,6 @@ public class AddRecipeFragment extends Fragment {
     //CheckBox checkbox;
 
 
-
-
-
     // url to create new product
     private static String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
 
@@ -179,7 +176,7 @@ public class AddRecipeFragment extends Fragment {
 
         //((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
 
-
+        //changes
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
         String[] string = {"Examples:", "Dinner", "Italian", "Chicken", "Spicy"};
@@ -312,7 +309,7 @@ public class AddRecipeFragment extends Fragment {
         final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which){
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         publish();
                         break;
@@ -375,12 +372,10 @@ public class AddRecipeFragment extends Fragment {
         });
 
 
-
-
         return v;
     }
 
-    public void publish(){
+    public void publish() {
         String recipeName = recipeNameText.getText().toString();
         String servestext = String.valueOf(servesText.getText().toString());
         String preptext = String.valueOf(prepText.getText().toString());
@@ -422,19 +417,19 @@ public class AddRecipeFragment extends Fragment {
     public class MyAdapter extends RecyclerView.Adapter<ItemViewHolder> implements RVHAdapter {
         private List<String> localIngredients;
 
-        public MyAdapter(List<String> s){
+        public MyAdapter(List<String> s) {
             localIngredients = s;
         }
 
         @Override
-        public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View view = inflater.inflate(R.layout.ingredients_recyclerview, parent, false);
             return new ItemViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ItemViewHolder RVHViewHolder, int position){
+        public void onBindViewHolder(ItemViewHolder RVHViewHolder, int position) {
             String s = mIngredients.get(position);
             RVHViewHolder.bindCard(s);
         }
@@ -462,7 +457,7 @@ public class AddRecipeFragment extends Fragment {
                 placeholder_ingredients.setVisibility(VISIBLE);
                 mRecyclerView.setBackgroundResource(0);
             }
-            for(String model: mIngredients){
+            for (String model : mIngredients) {
                 Log.d(TAG, model);
             }
         }
@@ -495,7 +490,7 @@ public class AddRecipeFragment extends Fragment {
 
         }
 
-        public void bindCard(String s){
+        public void bindCard(String s) {
             recyclerText.setText(s);
         }
     }
@@ -503,19 +498,19 @@ public class AddRecipeFragment extends Fragment {
     public class MyAdapter1 extends RecyclerView.Adapter<ItemViewHolder1> implements RVHAdapter {
         private List<String> localSteps;
 
-        public MyAdapter1(List<String> s){
+        public MyAdapter1(List<String> s) {
             localSteps = s;
         }
 
         @Override
-        public ItemViewHolder1 onCreateViewHolder(ViewGroup parent, int viewType){
+        public ItemViewHolder1 onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View view = inflater.inflate(R.layout.steps_recyclerview, parent, false);
             return new ItemViewHolder1(view);
         }
 
         @Override
-        public void onBindViewHolder(ItemViewHolder1 RVHViewHolder, int position){
+        public void onBindViewHolder(ItemViewHolder1 RVHViewHolder, int position) {
             String s = mSteps.get(position);
             RVHViewHolder.bindCard(s);
         }
@@ -543,7 +538,7 @@ public class AddRecipeFragment extends Fragment {
                 mRecyclerView1.setBackgroundResource(0);
                 placeholder_steps.setVisibility(VISIBLE);
             }
-            for(String model: mSteps){
+            for (String model : mSteps) {
                 Log.d(TAG, model);
             }
         }
@@ -576,13 +571,13 @@ public class AddRecipeFragment extends Fragment {
 
         }
 
-        public void bindCard(String s){
+        public void bindCard(String s) {
             recyclerText1.setText(s);
 
         }
     }
 
-    }
+}
 
 
 
