@@ -49,6 +49,7 @@ public class JSONParser {
 
             // check for request method
             if(method == "POST"){
+                Log.d(TAG, "Post hit");
                 // request method is POST
                 // defaultHttpClient
                 DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -57,6 +58,7 @@ public class JSONParser {
                 HttpResponse httpResponse = httpClient.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 is = httpEntity.getContent();
+                Log.d(TAG, "End of post reached");
 
 
             }else if(method == "GET"){

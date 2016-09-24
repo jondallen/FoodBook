@@ -277,7 +277,7 @@ public class MainActivity extends CoreActivity {
         return user;
     }
 
-    public void post(final Uri photoUri, final String uid, final String username, final String recipeName){
+    public void post(final String servestext, final String preptext, final String cooktext, final String datetime, final Uri photoUri, final String uid, final String username, final String recipeName){
         final Uri picUri = photoUri;
         new Thread(new Runnable() {
             public void run() {
@@ -316,7 +316,8 @@ public class MainActivity extends CoreActivity {
                                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                                     downloadUrl = taskSnapshot.getDownloadUrl().toString();
                                     Log.d(TAG, "Photo URL: " + downloadUrl);
-                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl);
+                                    Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptext.toString() + " " + cooktext.toString() + " " + servestext.toString());
+                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext);
                                     hideProgressDialog();
 
                                     toolbar.setTitle("Add a Recipe");
@@ -358,6 +359,12 @@ public class MainActivity extends CoreActivity {
             String username = args[1];
             String recipeName = args[2];
             String url = args[3];
+            String datetime = args[4];
+            String preptime = args[5];
+            String cooktime = args[6];
+            String serves = args[7];
+            Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptime.toString() + " " + cooktime.toString() + " " + serves.toString());
+
 
             // Building Parameters
             List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -365,6 +372,13 @@ public class MainActivity extends CoreActivity {
             params.add(new BasicNameValuePair("username", username));
             params.add(new BasicNameValuePair("recipename", recipeName));
             params.add(new BasicNameValuePair("url", url));
+
+            params.add(new BasicNameValuePair("datetime", datetime));
+            params.add(new BasicNameValuePair("preptime", preptime));
+            params.add(new BasicNameValuePair("cooktime", cooktime));
+            params.add(new BasicNameValuePair("serves", serves));
+
+
 
             // getting JSON Object
             // Note that create product url accepts POST method

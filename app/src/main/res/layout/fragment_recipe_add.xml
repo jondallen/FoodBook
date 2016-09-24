@@ -139,7 +139,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-thin"
         android:textColor="#000000"
-        android:textSize="14dp"
+        android:textSize="15dp"
         android:layout_marginLeft="4dp"
         android:text="Long press and drag to reorder elements, swipe to delete them"
         />
@@ -203,7 +203,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-thin"
                     android:textColor="#000000"
-                    android:textSize="14dp"
+                    android:textSize="15dp"
                     android:layout_marginLeft="4dp"
                     android:text="Long press and drag to reorder elements, swipe to delete them"
                     />
@@ -261,15 +261,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
                 style="?android:listSeparatorTextViewStyle"
-                android:text="Tags(optional)"
+                android:text="Tags"
                 />
-
-                <CheckBox
-                    android:id="@+id/checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/tagsTitleText"
-                    android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
 
@@ -281,9 +274,9 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-thin"
                 android:textColor="#000000"
-                android:textSize="14dp"
+                android:textSize="15dp"
                 android:layout_marginLeft="4dp"
-                android:text="Tags are a great way to help others find your masterpiece. They should describe your recipe in one to two words."
+                android:text="Tags are a great way to help others find your masterpiece. Include at least one. They should describe your recipe in one to two words."
                 />
             <mabbas007.tagsedittext.TagsEditText
                 android:id="@+id/tagsEditText"
@@ -322,3 +315,12 @@
         />
     </RelativeLayout>
 </LinearLayout>
+
+
+
+<!--<CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/tagsTitleText"
+                    android:layout_alignParentEnd="true"/> -->

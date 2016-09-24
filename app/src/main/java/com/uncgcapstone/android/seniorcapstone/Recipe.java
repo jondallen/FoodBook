@@ -4,22 +4,30 @@ package com.uncgcapstone.android.seniorcapstone;
  * Created by jon on 9/17/2016.
  */
 public class Recipe {
+    int postid;
     String uid;
     String username;
     String recipename;
     String url;
-    int postid;
+    String datetime;
+    String preptime;
+    String cooktime;
+    String serves;
 
     public Recipe(){
 
     }
 
-    public Recipe(int postid, String uid, String username, String recipename, String url){
+    public Recipe(int postid, String uid, String username, String recipename, String url, String datetime, String preptime, String cooktime, String serves){
         this.postid = postid;
         this.uid = uid;
         this.username = username;
         this.recipename = recipename;
         this.url = url;
+        this.datetime = datetime;
+        this.preptime = preptime;
+        this.cooktime = cooktime;
+        this.serves = serves;
     }
 
     public String getUid() {
@@ -61,4 +69,45 @@ public class Recipe {
     public void setPostId(int postid) {
         this.postid = postid;
     }
+
+    public int getPostid() {
+        return postid;
+    }
+
+    public void setPostid(int postid) {
+        this.postid = postid;
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
+
+    public String getPreptime() {
+        return preptime;
+    }
+
+    public void setPreptime(String preptime) {
+        this.preptime = preptime;
+    }
+
+    public String getCooktime() {
+        return cooktime;
+    }
+
+    public void setCooktime(String cooktime) {
+        this.cooktime = cooktime;
+    }
+
+    public String getServes() {
+        return serves;
+    }
+
+    public void setServes(String serves) {
+        this.serves = serves;
+    }
 }
+

@@ -14,8 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,6 +86,8 @@ public class MainFragment extends Fragment {
     RecyclerView mRecyclerView;
     RecyclerView.Adapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
+    GridLayoutManager mGridLayoutManager;
+    StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     SwipeRefreshLayout mSwipeRefreshLayout;
     LikeButton mLikeButtonThumb, mLikeButtonStar;
     RelativeLayout searchBarLayout;
@@ -149,12 +153,15 @@ public class MainFragment extends Fragment {
         });
 
         storage = FirebaseStorage.getInstance();
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        ////mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        //mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mLinearLayoutManager.setReverseLayout(true);
-        mLinearLayoutManager.setStackFromEnd(true);
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        //mLinearLayoutManager.setReverseLayout(true);
+        //mLinearLayoutManager.setStackFromEnd(true);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -194,7 +201,7 @@ public class MainFragment extends Fragment {
 
     private class CardViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
-        private TextView cardTitle, cardUsername;
+        private TextView cardTitle, cardUsername, cardTime, feedsText;
         private ImageView cardImage;
         public CardViewHolder(View itemView){
             super(itemView);
@@ -204,6 +211,8 @@ public class MainFragment extends Fragment {
             cardImage = (ImageView) itemView.findViewById(R.id.cardImage);
             mLikeButtonThumb = (LikeButton) itemView.findViewById(R.id.thumb);
             mLikeButtonStar = (LikeButton) itemView.findViewById(R.id.star);
+            cardTime = (TextView) itemView.findViewById(R.id.cardTime);
+            feedsText = (TextView) itemView.findViewById(R.id.feedsText);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -266,9 +275,11 @@ public class MainFragment extends Fragment {
             }
         }*/
 
-        public void bindCard(String username, String recipename, String url) {
-            cardUsername.setText(username);
+        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext) {
+            cardUsername.setText("Added by " + username);
             cardTitle.setText(recipename);
+            cardTime.setText(cardtime);
+            feedsText.setText(feedstext);
             Glide.with(getActivity()).load(url).centerCrop().into(cardImage);
         }
     }
@@ -293,7 +304,9 @@ public class MainFragment extends Fragment {
             String username = recipez[position].getUsername();
             String recipename = recipez[position].getRecipename();
             String url = recipez[position].getUrl();
-            holder.bindCard(username, recipename, url);
+            String cardtime = String.valueOf( Integer.parseInt(recipez[position].getCooktime()) + Integer.parseInt(recipez[position].getPreptime()));
+            String feedstext = String.valueOf(recipez[position].getServes());
+            holder.bindCard(username, recipename, url, cardtime, feedstext);
         }
 
         @Override
@@ -399,7 +412,8 @@ public class MainFragment extends Fragment {
                         JSONObject c = recipes.getJSONObject(i);
                         Log.d(TAG, c.toString());
                         Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
-                        mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString());
+                        mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
+                        , recipe.getPreptime().toString() , recipe.getCooktime().toString() , recipe.getServes().toString() );
 
                            // Log.d(TAG, recipe.getUid().toString() + " " +  recipe.getRecipename().toString() + " " + recipe.getUsername().toString() + " " + recipe.getUrl().toString());
 
@@ -437,6 +451,10 @@ public class MainFragment extends Fragment {
             // updating UI from Background Thread
             ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
                 public void run() {
+
+                    mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                    mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+                    mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
 
                     mAdapter = new CardAdapter(mRecipes);
                     mRecyclerView.setAdapter(mAdapter);

@@ -64,7 +64,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -125,8 +127,9 @@ public class AddRecipeFragment extends Fragment {
     List<String> mSteps = new ArrayList<>();
     RecyclerView.LayoutManager mLinearLayoutManager, mLinearLayoutManager1;
     TextView ingredientsTitleText, placeholder_ingredients, placeholder_steps, tagsTitleText, placeholder_tags;
+    EditText servesText, prepText, cookText;
     TagsEditText mTagsEditText;
-    CheckBox checkbox;
+    //CheckBox checkbox;
 
 
 
@@ -176,20 +179,7 @@ public class AddRecipeFragment extends Fragment {
 
         //((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
 
-        checkbox = (CheckBox) v.findViewById(R.id.checkbox);
-        checkbox.setChecked(true);
-        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(!(isChecked)){
-                    mTagsEditText.setTags(null);
-                    mTagsEditText.setFocusable(false);
-                }
-                else{
-                    mTagsEditText.setFocusableInTouchMode(true);
-                }
-            }
-        });
+
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
         String[] string = {"Examples:", "Dinner", "Italian", "Chicken", "Spicy"};
@@ -225,6 +215,10 @@ public class AddRecipeFragment extends Fragment {
         mRecyclerView = (RecyclerView) v.findViewById(R.id.ingredientsRecyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mIngredients = new ArrayList<>();
+
+        servesText = (EditText) v.findViewById(R.id.servesText);
+        prepText = (EditText) v.findViewById(R.id.prepText);
+        cookText = (EditText) v.findViewById(R.id.cookText);
 
 
         // Setup your adapter
@@ -388,12 +382,16 @@ public class AddRecipeFragment extends Fragment {
 
     public void publish(){
         String recipeName = recipeNameText.getText().toString();
-        //recipeNameText.setText("");
+        String servestext = String.valueOf(servesText.getText().toString());
+        String preptext = String.valueOf(prepText.getText().toString());
+        String cooktext = String.valueOf(cookText.getText().toString());
+        Calendar calendar = Calendar.getInstance();
+        String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
         String uid = (String) ((MainActivity) getActivity()).getUid();
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
 
         String username = mSharedPreferences.getString("email", "");
-        ((MainActivity) getActivity()).post(photoUri, uid, username, recipeName); //SEPARATE THREAD???
+        ((MainActivity) getActivity()).post(servestext, preptext, cooktext, datetime, photoUri, uid, username, recipeName); //SEPARATE THREAD???
     }
 
     @Override
