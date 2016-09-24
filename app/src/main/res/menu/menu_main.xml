@@ -4,19 +4,6 @@
       xmlns:com.uncgcapstone.android.seniorcapstone="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
-    <group
-        android:id="@+id/main_menu_group"
-        >
-        <item
-            android:id="@+id/searchbutton"
-            android:icon="@drawable/search_icon_white"
-            android:orderInCategory="1"
-            android:title="Search Button"
-            app:showAsAction="ifRoom"
-            android:menuCategory="container"
-            />
-
-    </group>
     <!--
     <item
         android:id="@+id/refresh_button"

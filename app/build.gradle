@@ -60,6 +60,7 @@ dependencies {
     compile 'com.roughike:bottom-bar:2.0.2'
     compile 'com.github.johnpersano:supertoasts:2.0'
     compile 'com.github.nisrulz:recyclerviewhelper:24.2.1'
+    compile 'com.mikepenz:crossfader:1.5.0'
 }
 
 

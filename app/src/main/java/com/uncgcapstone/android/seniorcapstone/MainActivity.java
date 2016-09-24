@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import mabbas007.tagsedittext.TagsEditText;
+
 public class MainActivity extends CoreActivity {
 
     private final static String TAG = "MainActivity";
@@ -144,7 +146,7 @@ public class MainActivity extends CoreActivity {
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.drawable.header1)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
                         new ProfileDrawerItem().withEmail(emailString).withIcon(getResources().getDrawable(R.drawable.usericon))
@@ -248,8 +250,7 @@ public class MainActivity extends CoreActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);     // ADD REFRESH BUTTON
-        MenuItem item = menu.findItem(R.id.searchbutton);
-        //Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+        // Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         // Create an ArrayAdapter using the string array and a default spinner layout
        // ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                // R.array.spinnerstrings, android.R.layout.simple_spinner_item);
@@ -268,34 +269,6 @@ public class MainActivity extends CoreActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.searchbutton) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Search for...");
-
-// Set up the input
-            final EditText input = new EditText(this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_TEXT);
-            builder.setView(input);
-
-// Set up the buttons
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    search = input.getText().toString();
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            builder.show();
-
-        }
             return super.onOptionsItemSelected(item);
 
     }
@@ -482,13 +455,13 @@ public class MainActivity extends CoreActivity {
     public void setToolbar(String name){
         toolbar.setTitle(name);
     }
-
+/*
     public void showOverflowMenu(boolean showMenu){
         if(menu == null)
             return;
         menu.setGroupVisible(R.id.main_menu_group, showMenu);
 
-    }
+    }*/
 
 
 }

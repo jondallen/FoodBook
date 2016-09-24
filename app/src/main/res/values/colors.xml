@@ -5,5 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="black">#FFFFFF</color>
     <color name="niceBlue">#0040ff</color>
+    <color name="customPrimary">#009900</color>
+    <color name="customPrimaryDark">#006600</color>
+    <color name="customAccent">#000000</color>
 
 </resources>

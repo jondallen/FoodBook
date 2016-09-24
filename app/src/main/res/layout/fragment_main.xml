@@ -2,18 +2,51 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
                 android:gravity="top"
                 tools:context=".MainFragment"
     >
+    <RelativeLayout
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext_thicker"
+        >
+        <mabbas007.tagsedittext.TagsEditText
+            android:id="@+id/searchbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="What are you looking for?"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:background="@drawable/rounded_edittext_white_no_border"
+            android:layout_centerVertical="true"
+            app:tagsCloseImageRight="@drawable/tag_close"
+            app:allowSpaceInTag="false"
+            app:tagsTextSize="@dimen/defaultTagsTextSize"
+            app:tagsCloseImagePadding="@dimen/defaultTagsCloseImagePadding"
+            />
+        <ImageView
+            android:id="@+id/search_icon"
+            android:src="@drawable/search_icon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
 
+            />
+
+    </RelativeLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_below="@id/toolbar2"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 <android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recyclerview"
@@ -35,7 +68,7 @@ android:src="@drawable/pencil"
 app:backgroundTint="@color/md_blue_300"
 app:borderWidth="0dp"
 android:elevation="4dp"
-android:backgroundTint="@color/md_orange_300"
+android:backgroundTint="#ff8000"
 android:layout_alignParentBottom="true"
 android:layout_alignParentRight="true"
 android:layout_marginRight="16dp"

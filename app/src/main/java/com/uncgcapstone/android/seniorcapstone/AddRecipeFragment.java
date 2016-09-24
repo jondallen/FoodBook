@@ -4,6 +4,7 @@ package com.uncgcapstone.android.seniorcapstone;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -172,7 +174,7 @@ public class AddRecipeFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_recipe_add, container, false);
 
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
+        //((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
 
         checkbox = (CheckBox) v.findViewById(R.id.checkbox);
         checkbox.setChecked(true);
@@ -190,7 +192,7 @@ public class AddRecipeFragment extends Fragment {
         });
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
-        String[] string = {"Dinner", "Italian", "Chicken", "Spicy"};
+        String[] string = {"Examples:", "Dinner", "Italian", "Chicken", "Spicy"};
         mTagsEditText.setTags(string);
         mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_color);
         mTagsEditText.setTextColor(BLACK);
@@ -312,16 +314,28 @@ public class AddRecipeFragment extends Fragment {
                                       int before, int count) {
             }
         });
+
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        publish();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+
         publishButton = (Button) v.findViewById(R.id.testButton);
         publishButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String recipeName = recipeNameText.getText().toString();
-                //recipeNameText.setText("");
-                String uid = (String) ((MainActivity) getActivity()).getUid();
-                mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
-
-                String username = mSharedPreferences.getString("email", "");
-                ((MainActivity) getActivity()).post(photoUri, uid, username, recipeName); //SEPARATE THREAD???
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure you want to publish this recipe? It will be publicly available for anyone to see.").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
             }
         });
 
@@ -372,12 +386,21 @@ public class AddRecipeFragment extends Fragment {
         return v;
     }
 
+    public void publish(){
+        String recipeName = recipeNameText.getText().toString();
+        //recipeNameText.setText("");
+        String uid = (String) ((MainActivity) getActivity()).getUid();
+        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+
+        String username = mSharedPreferences.getString("email", "");
+        ((MainActivity) getActivity()).post(photoUri, uid, username, recipeName); //SEPARATE THREAD???
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_color);
         mTagsEditText.setTextColor(BLACK);
-        ((MainActivity) getActivity()).showOverflowMenu(false);
     }
 
     @Override

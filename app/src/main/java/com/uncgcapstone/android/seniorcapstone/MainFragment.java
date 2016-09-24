@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mabbas007.tagsedittext.TagsEditText;
+
+import static android.graphics.Color.BLACK;
+
 public class MainFragment extends Fragment {
 
     private FirebaseAuth mAuth;
@@ -81,6 +86,9 @@ public class MainFragment extends Fragment {
     LinearLayoutManager mLinearLayoutManager;
     SwipeRefreshLayout mSwipeRefreshLayout;
     LikeButton mLikeButtonThumb, mLikeButtonStar;
+    RelativeLayout searchBarLayout;
+    TagsEditText searchBarText;
+    ImageView searchIcon;
     
 
     public MainFragment() {
@@ -108,6 +116,13 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_main, container, false);
+
+        searchBarLayout = (RelativeLayout) v.findViewById(R.id.toolbar2);
+        searchBarText = (TagsEditText) v.findViewById(R.id.searchbar);
+        searchBarText.setTagsBackground(R.drawable.rounded_edittext_color);
+        searchBarText.setTextColor(BLACK);
+        searchIcon = (ImageView) v.findViewById(R.id.search_icon);
+
 
         mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -146,14 +161,13 @@ public class MainFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 18) {
                     fab.hide();
+
                 } else if (dy < 0 || mAdapter.getItemCount() == 0)
                     fab.show();
             }
         });
 
-        //getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Hot Recipes");
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Latest Recipes");
 
         fab = (FloatingActionButton) v.findViewById(R.id.myFAB);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +179,6 @@ public class MainFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
                 ((MainActivity) getActivity()).setToolbar("Add a Recipe");
-                ((MainActivity)getActivity()).showOverflowMenu(false);
             }
         });
 
@@ -296,7 +309,6 @@ public class MainFragment extends Fragment {
         super.onStart();
         //getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         mAuth.addAuthStateListener(mAuthListener);
-        ((MainActivity)getActivity()).showOverflowMenu(true);
         new LoadAllProducts().execute();
         ((MainActivity)getActivity()).showProgressDialog();
     }
@@ -306,7 +318,6 @@ public class MainFragment extends Fragment {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-        ((MainActivity)getActivity()).showOverflowMenu(false);
     }
 
     @Override
@@ -317,97 +328,14 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        //getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        ((MainActivity)getActivity()).showOverflowMenu(true);
+        searchBarText.setTagsBackground(R.drawable.rounded_edittext_color);
+        searchBarText.setTextColor(BLACK);
     }
 
 
 
 
-/*
-    private class CardViewHolder extends RecyclerView.ViewHolder {
-        private CardView mCardView;
-        private TextView mTextView, mTextView2, mTextView3, mTextView4;
-        private ImageView mImageView, star;
-        public CardViewHolder(View itemView){
-            super(itemView);
-            view = itemView;
-            //Might need to be moved to onbindviewholder ?
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    //What happens when you click the cardview
-                }
-            });
-            mCardView = (CardView) itemView.findViewById(R.id.cardview);
-            mTextView = (TextView) itemView.findViewById(R.id.cardTitle);
-            mTextView2 = (TextView) itemView.findViewById(R.id.cardUsername);
-            mTextView3 = (TextView) itemView.findViewById(R.id.cardTime);
-            mTextView4 = (TextView) itemView.findViewById(R.id.cardQuantity);
-            mImageView = (ImageView) itemView.findViewById(R.id.cardImage);
-            star = (ImageView) itemView.findViewById(R.id.cardStar);
-        }
-        public void bindCard(String recipeName, String url, String username, String time, String feeds) {
-            //prevents text overflow
-            if(recipeName.length() > 31){
-                recipeName = recipeName.substring(0,27) + "...";
-            }
-            mTextView.setText(recipeName.toString());
-            Glide.with(getActivity()).load(url).centerCrop().into(mImageView);
-            mTextView2.setText(username);
-            mTextView3.setText(time);
-            mTextView4.setText(feeds);
 
-
-        }
-    }*/
-
-
-
-
-/*
-    private class CardAdapter extends RecyclerView.Adapter<CardViewHolder> {
-        private List<String> mList, mList1, mList2, mList3, mList4, mList5;
-
-        public CardAdapter(List<String> list, List<String> list1, List<String> list2, List<String> list3, List<String> list4, List<String> list5){
-            mList = list;
-            mList1 = list1;
-            mList2 = list2;
-            mList3 = list3;
-            mList4 = list4;
-            mList5 = list5;
-
-        }
-
-        @Override
-        public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            View view = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
-            return new CardViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(CardViewHolder holder, int position){
-            String recipeName = mList.get(position);
-            String url = mList1.get(position);
-            String username = mList2.get(position);
-            String cookTime = mList3.get(position);
-            String feeds = mList4.get(position);
-            holder.star.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View view) {
-                                                ImageView star = (ImageView) view.findViewById(R.id.cardStar);
-                                                   star.setImageResource(R.drawable.star_lit);
-                                               }
-                                           });
-            holder.bindCard(recipeName, url, username, cookTime, feeds);
-        }
-
-        @Override
-        public int getItemCount(){
-            return mList.size();
-        }
-    }
-*/
     //Swipe to refresh - Code for managing the refresh itself
     void refreshItems(){
         // Load items
