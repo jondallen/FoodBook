@@ -323,6 +323,12 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroyView(){
         super.onDestroyView();
+
+        mSwipeRefreshLayout.setOnRefreshListener(null);
+        mRecyclerView.addOnScrollListener(null);
+        fab.setOnClickListener(null);
+        mLikeButtonStar.setOnLikeListener(null);
+        mLikeButtonThumb.setOnLikeListener(null);
         mRecyclerView = null;
         mAdapter = null;
         mRecipes = null;
@@ -343,6 +349,20 @@ public class MainFragment extends Fragment {
         searchBarLayout = null;
         v = null;
         cardViewHolderView = null;
+
+        /**
+         * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
+         * It may or may not be actually necessary
+         */
+        new Thread(new Runnable() {
+            public void run() {
+                Glide.get(getContext()).clearDiskCache();
+            }
+        }).start();
+        Glide.get(getContext()).clearMemory();
+        /**
+         *
+         */
     }
     @Override
     public void onStop() {
