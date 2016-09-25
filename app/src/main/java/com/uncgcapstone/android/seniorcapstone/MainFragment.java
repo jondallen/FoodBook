@@ -93,6 +93,7 @@ public class MainFragment extends Fragment {
     TagsEditText searchBarText;
     ImageView searchIcon;
     ProgressDialog mProgressDialog;
+    private View v, cardViewHolderView;
     
 
     public MainFragment() {
@@ -116,7 +117,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
+        v = inflater.inflate(R.layout.fragment_main, container, false);
 
         searchBarLayout = (RelativeLayout) v.findViewById(R.id.toolbar2);
         searchBarText = (TagsEditText) v.findViewById(R.id.searchbar);
@@ -199,7 +200,7 @@ public class MainFragment extends Fragment {
 
     private class CardViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
-        private TextView cardTitle, cardUsername, cardTime, feedsText;
+        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3;
         private ImageView cardImage;
         public CardViewHolder(View itemView){
             super(itemView);
@@ -211,6 +212,9 @@ public class MainFragment extends Fragment {
             mLikeButtonStar = (LikeButton) itemView.findViewById(R.id.star);
             cardTime = (TextView) itemView.findViewById(R.id.cardTime);
             feedsText = (TextView) itemView.findViewById(R.id.feedsText);
+            tag1 = (TextView) itemView.findViewById(R.id.tag1);
+            tag2 = (TextView) itemView.findViewById(R.id.tag2);
+            tag3 = (TextView) itemView.findViewById(R.id.tag3);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -248,23 +252,29 @@ public class MainFragment extends Fragment {
             //mLikeButton.setOnClickListener(this);
 
         }
-        /*
-        @Override
-        public void onClick(View v) {
-
-            if (v.getId() == mLikeButton.getId()){
-                Toast.makeText(v.getContext(), "ITEM PRESSED = " + String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(v.getContext(), "ROW PRESSED = " + String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
-                Toast.makeText(v.getContext(), mRecipes[getAdapterPosition()].getRecipename().toString(), Toast.LENGTH_SHORT).show();
-            }
-        }*/
-
-        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext) {
+        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3) {
             cardUsername.setText("Added by " + username);
             cardTitle.setText(recipename);
             cardTime.setText(cardtime);
             feedsText.setText(feedstext);
+            int length1 = tagText1.length();
+            int length2 = tagText2.length();
+            int length3 = tagText3.length();
+            int total = 0;
+            if(length1 < 25){
+                tag1.setText(tagText1);
+                tag1.setBackgroundResource(R.drawable.rounded_edittext_color);
+                total += length1;
+                if(total + length2 < 25){
+                    tag2.setText(tagText2);
+                    tag2.setBackgroundResource(R.drawable.rounded_edittext_color);
+                    total += length2;
+                    if(total + length3 < 25){
+                        tag3.setText(tagText3);
+                        tag3.setBackgroundResource(R.drawable.rounded_edittext_color);
+                    }
+                }
+            }
             Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
         }
     }
@@ -280,8 +290,8 @@ public class MainFragment extends Fragment {
         @Override
         public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            View view = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
-            return new CardViewHolder(view);
+            cardViewHolderView = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
+            return new CardViewHolder(cardViewHolderView);
         }
 
         @Override
@@ -291,7 +301,10 @@ public class MainFragment extends Fragment {
             String url = recipez[position].getUrl();
             String cardtime = String.valueOf( Integer.parseInt(recipez[position].getCooktime()) + Integer.parseInt(recipez[position].getPreptime()));
             String feedstext = String.valueOf(recipez[position].getServes());
-            holder.bindCard(username, recipename, url, cardtime, feedstext);
+            String tag1 = recipez[position].getTag1();
+            String tag2 = recipez[position].getTag2();
+            String tag3 = recipez[position].getTag3();
+            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3);
         }
 
         @Override
@@ -305,7 +318,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        //mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -329,13 +341,12 @@ public class MainFragment extends Fragment {
         mSwipeRefreshLayout = null;
         mProgressDialog = null;
         searchBarLayout = null;
+        v = null;
+        cardViewHolderView = null;
     }
     @Override
     public void onStop() {
         super.onStop();
-        //if (mAuthListener != null) {
-           // mAuth.removeAuthStateListener(mAuthListener);
-       // }
     }
 
 
@@ -352,20 +363,11 @@ public class MainFragment extends Fragment {
 
     //Swipe to refresh - Code for managing the refresh itself
     void refreshItems(){
-        // Load items
-        // ...
-
-        // Load complete
         onItemsLoadComplete();
     }
 
     //Swipe to refresh - what to do after the refreshing is complete
     void onItemsLoadComplete() {
-        // Update the adapter and notify data set changed
-        // ...
-
-        // Stop refresh animation
-
     }
 
 
@@ -395,7 +397,7 @@ public class MainFragment extends Fragment {
             JSONObject json = jParser.makeHttpRequest(url_all_recipes, "GET", params);
             Type collectionType = new TypeToken<Collection<Recipe>>(){}.getType();
             // Check your log cat for JSON reponse
-            Log.d("All Products: ", json.toString());
+            //Log.d("All Products: ", json.toString());
 
             try {
 
@@ -411,10 +413,10 @@ public class MainFragment extends Fragment {
                     // looping through All Products
                     for (int i = 0; i < recipes.length(); i++) {
                         JSONObject c = recipes.getJSONObject(i);
-                        Log.d(TAG, c.toString());
+                        //Log.d(TAG, c.toString());
                         Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
                         mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
-                        , recipe.getPreptime().toString() , recipe.getCooktime().toString() , recipe.getServes().toString() );
+                        , recipe.getPreptime().toString() , recipe.getCooktime().toString() , recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString());
 
                     }
                 } else {
@@ -424,7 +426,9 @@ public class MainFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+            listType = null;
+            params = null;
+            collectionType = null;
             return null;
         }
 
@@ -435,8 +439,8 @@ public class MainFragment extends Fragment {
             // dismiss the dialog after getting all products
            // pDialog.dismiss();
             // updating UI from Background Thread
-            (getActivity()).runOnUiThread(new Runnable() {
-               public void run() {
+            //(getActivity()).runOnUiThread(new Runnable() {
+               //public void run() {
 
                     mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                     mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
@@ -447,9 +451,9 @@ public class MainFragment extends Fragment {
                     mSwipeRefreshLayout.setRefreshing(false);
                     hideProgressDialog();
                }
-            });
+            //});
 
-        }
+       // }
 
     }
 

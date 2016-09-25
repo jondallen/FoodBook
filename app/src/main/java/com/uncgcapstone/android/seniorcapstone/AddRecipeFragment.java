@@ -125,6 +125,7 @@ public class AddRecipeFragment extends Fragment {
     EditText servesText, prepText, cookText;
     TagsEditText mTagsEditText;
     //CheckBox checkbox;
+    View v;
 
 
     // url to create new product
@@ -170,15 +171,13 @@ public class AddRecipeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_recipe_add, container, false);
+        v = inflater.inflate(R.layout.fragment_recipe_add, container, false);
 
         //((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
 
         //changes
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
-        String[] string = {"Examples:", "Dinner", "Italian", "Chicken", "Spicy"};
-        mTagsEditText.setTags(string);
         mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_color);
         mTagsEditText.setTextColor(BLACK);
         mTagsEditText.addTextChangedListener(new TextWatcher() {
@@ -378,9 +377,11 @@ public class AddRecipeFragment extends Fragment {
         String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
         String uid = (String) ((MainActivity) getActivity()).getUid();
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+        String tagsTemp = mTagsEditText.getText().toString();
+        String[] tags = tagsTemp.split(" ");
 
         String username = mSharedPreferences.getString("email", "");
-        ((MainActivity) getActivity()).post(servestext, preptext, cooktext, datetime, photoUri, uid, username, recipeName); //SEPARATE THREAD???
+        ((MainActivity) getActivity()).post(servestext, preptext, cooktext, datetime, photoUri, uid, username, recipeName, tags); //SEPARATE THREAD???
     }
 
     @Override
@@ -406,6 +407,7 @@ public class AddRecipeFragment extends Fragment {
         mSteps = null;
         mTagsEditText = null;
         photoUri = null;
+        v = null;
     }
 
     @Override

@@ -44,6 +44,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.JsonArray;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -58,10 +59,12 @@ import com.squareup.leakcanary.LeakCanary;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -288,7 +291,7 @@ super.onDestroy();
         return user;
     }
 
-    public void post(final String servestext, final String preptext, final String cooktext, final String datetime, final Uri photoUri, final String uid, final String username, final String recipeName){
+    public void post(final String servestext, final String preptext, final String cooktext, final String datetime, final Uri photoUri, final String uid, final String username, final String recipeName, final String[] tags){
         final Uri picUri = photoUri;
         new Thread(new Runnable() {
             public void run() {
@@ -333,7 +336,7 @@ super.onDestroy();
                                     downloadUrl = taskSnapshot.getDownloadUrl().toString();
                                     Log.d(TAG, "Photo URL: " + downloadUrl);
                                     Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptext.toString() + " " + cooktext.toString() + " " + servestext.toString());
-                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext);
+                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext, Arrays.toString(tags));
                                     hideProgressDialog();
 
                                     toolbar.setTitle("Add a Recipe");
@@ -347,7 +350,12 @@ super.onDestroy();
                                            // .addToBackStack(null).commit();
                                 }
                             });
-                                uploadTask.removeOnProgressListener((OnProgressListener) prog).removeOnFailureListener((OnFailureListener) fail).removeOnPausedListener((OnPausedListener) paus).removeOnSuccessListener((OnSuccessListener) succ);
+                            uploadTask.removeOnProgressListener((OnProgressListener) prog).removeOnFailureListener((OnFailureListener) fail).removeOnPausedListener((OnPausedListener) paus).removeOnSuccessListener((OnSuccessListener) succ);
+                            rand = 0;
+                            storageRef = null;
+                            imagesRef = null;
+                            uploadTask = null;
+                            downloadUrl = null;
                         } catch (Exception e) {
 
                         }
@@ -380,7 +388,8 @@ super.onDestroy();
             String preptime = args[5];
             String cooktime = args[6];
             String serves = args[7];
-            Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptime.toString() + " " + cooktime.toString() + " " + serves.toString());
+            String[] tags = args[8].split(" ");
+            Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptime.toString() + " " + cooktime.toString() + " " + serves.toString() + tags.toString());
 
 
             // Building Parameters
@@ -394,6 +403,9 @@ super.onDestroy();
             params.add(new BasicNameValuePair("preptime", preptime));
             params.add(new BasicNameValuePair("cooktime", cooktime));
             params.add(new BasicNameValuePair("serves", serves));
+            for(int i = 0; i < tags.length; i++){
+                params.add(new BasicNameValuePair("tags[]", tags[i]));
+            }
 
 
 
@@ -403,6 +415,8 @@ super.onDestroy();
             JSONObject json = jsonParser.makeHttpRequest(url_create_product,
                     "POST", params);
 
+                args = null;
+                params = null;
 
             // check log cat fro response
             //Log.d("Create Response", json.toString());
@@ -493,18 +507,5 @@ super.onDestroy();
         menu.setGroupVisible(R.id.main_menu_group, showMenu);
 
     }*/
-    @Override
-    public void onBackPressed() {
-
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) {
-            super.onBackPressed();
-            //additional code
-        } else {
-            getSupportFragmentManager().popBackStack();
-        }
-
-    }
 
 }
