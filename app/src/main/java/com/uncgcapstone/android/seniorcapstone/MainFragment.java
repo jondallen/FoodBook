@@ -320,9 +320,9 @@ public class MainFragment extends Fragment {
         mLikeButtonThumb = null;
         searchBarText = null;
         searchIcon = null;
-        jParser = null;
+        //jParser = null;
         recipes = null;
-        gson = null;
+        //gson = null;
         mStaggeredGridLayoutManager = null;
         mLinearLayoutManager = null;
         mGridLayoutManager = null;
