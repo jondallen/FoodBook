@@ -408,6 +408,19 @@ public class AddRecipeFragment extends Fragment {
         mTagsEditText = null;
         photoUri = null;
         v = null;
+        /**
+         * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
+         * It may or may not be actually necessary
+         */
+        new Thread(new Runnable() {
+            public void run() {
+                Glide.get(getContext()).clearDiskCache();
+            }
+        }).start();
+        Glide.get(getContext()).clearMemory();
+        /**
+         *
+         */
     }
 
     @Override
