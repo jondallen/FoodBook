@@ -29,10 +29,10 @@ import android.util.Log;
 
 public class JSONParser {
 
-    static InputStream is = null;
-    static JSONObject jObj = null;
-    static String json = "";
-    public final static String TAG = "JSONPARSER";
+     InputStream is = null;
+     JSONObject jObj = null;
+     String json = "";
+    public final String TAG = "JSONPARSER";
 
     // constructor
     public JSONParser() {

@@ -42,6 +42,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -53,6 +54,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.squareup.leakcanary.LeakCanary;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -69,7 +71,7 @@ import mabbas007.tagsedittext.TagsEditText;
 
 public class MainActivity extends CoreActivity {
 
-    private final static String TAG = "MainActivity";
+    private final String TAG = "MainActivity";
 
     public FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -85,18 +87,21 @@ public class MainActivity extends CoreActivity {
     DatabaseReference myRef, countRef;
     FragmentManager fm;
     FirebaseStorage storage;
-    UploadTask uploadTask;
     String downloadUrl = null;
     Menu menu;
     JSONParser jsonParser = new JSONParser();
     public String search = "";
+    OnProgressListener mOnProgressListener;
+    OnFailureListener mOnFailureListener;
+    OnPausedListener mOnPausedListener;
+    OnSuccessListener mOnSuccessListener;
 
 
     // url to create new product
-    private static String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
+    private String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
 
     // JSON Node names
-    private static final String TAG_SUCCESS = "success";
+    private final String TAG_SUCCESS = "success";
 
 
 
@@ -146,11 +151,12 @@ public class MainActivity extends CoreActivity {
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header1)
+                .withHeaderBackground(R.drawable.background_gradient_vertical)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
-                        new ProfileDrawerItem().withEmail(emailString).withIcon(getResources().getDrawable(R.drawable.usericon))
-                )
+                        new ProfileDrawerItem().withEmail(emailString)
+                        .withIcon(getResources().getDrawable(R.drawable.usericon_small))
+                                )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
@@ -205,6 +211,7 @@ public class MainActivity extends CoreActivity {
                             FirebaseAuth.getInstance().signOut();
                             Intent i = new Intent(MainActivity.this, LogInActivity.class);
                             startActivity(i);
+                            finish();
                         }
                         return true;
                     }
@@ -216,12 +223,11 @@ public class MainActivity extends CoreActivity {
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
 
         fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
         if(fragment == null){
             fragment = MainFragment.newInstance();
-            //fragment = AddRecipeFragment.newInstance();
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, "MainFragment").commit();
 
         }
     }
@@ -244,12 +250,17 @@ public class MainActivity extends CoreActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+    @Override
+    public void onDestroy(){
+super.onDestroy();
+    }
  //Inflate spinner on toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.menu_main, menu);     // ADD REFRESH BUTTON
+        //this.menu = menu;
+       //getMenuInflater().inflate(R.menu.menu_main, menu);     // ADD REFRESH BUTTON
         // Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         // Create an ArrayAdapter using the string array and a default spinner layout
        // ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -262,16 +273,16 @@ public class MainActivity extends CoreActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    //@Override
+    //public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //int id = item.getItemId();
 
-            return super.onOptionsItemSelected(item);
+            //return super.onOptionsItemSelected(item);
 
-    }
+    //}
 
     public FirebaseUser getUser(){
         return user;
@@ -288,8 +299,8 @@ public class MainActivity extends CoreActivity {
                             int rand = random.nextInt(200000);
                             StorageReference storageRef = storage.getReferenceFromUrl("gs://seniorcapstone-831a0.appspot.com");
                             StorageReference imagesRef = storageRef.child("images/" +  String.valueOf(rand));
-                            uploadTask = imagesRef.putFile(picUri);
-                            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            UploadTask uploadTask = imagesRef.putFile(picUri);
+                           StorageTask<UploadTask.TaskSnapshot> prog = uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                     showProgressDialog();
@@ -298,19 +309,24 @@ public class MainActivity extends CoreActivity {
                                     //int currentprogress = (int) progress;
                                     //progressBar.setProgress(currentprogress);
                                 }
-                            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                            });
+                            StorageTask<UploadTask.TaskSnapshot> paus = uploadTask.addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                                     hideProgressDialog();
                                     //System.out.println("Upload is paused");
                                 }
-                            }).addOnFailureListener(new OnFailureListener() {
+                            });
+
+                            StorageTask<UploadTask.TaskSnapshot> fail = uploadTask.addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
                                     hideProgressDialog();
                                     // Handle unsuccessful uploads
                                 }
-                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            });
+
+                            StorageTask<UploadTask.TaskSnapshot> succ = uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
@@ -331,6 +347,7 @@ public class MainActivity extends CoreActivity {
                                            // .addToBackStack(null).commit();
                                 }
                             });
+                                uploadTask.removeOnProgressListener((OnProgressListener) prog).removeOnFailureListener((OnFailureListener) fail).removeOnPausedListener((OnPausedListener) paus).removeOnSuccessListener((OnSuccessListener) succ);
                         } catch (Exception e) {
 
                         }
@@ -476,6 +493,18 @@ public class MainActivity extends CoreActivity {
         menu.setGroupVisible(R.id.main_menu_group, showMenu);
 
     }*/
+    @Override
+    public void onBackPressed() {
 
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
+    }
 
 }

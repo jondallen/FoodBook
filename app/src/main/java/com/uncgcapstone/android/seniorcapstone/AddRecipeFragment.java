@@ -50,7 +50,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.gson.JsonParser;
+
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.roughike.bottombar.BottomBar;
@@ -59,8 +59,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -92,7 +91,8 @@ import static android.graphics.Color.TRANSPARENT;
 import static android.graphics.Color.WHITE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.uncgcapstone.android.seniorcapstone.JSONParser.json;
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
+
 
 
 /**
@@ -103,17 +103,12 @@ public class AddRecipeFragment extends Fragment {
     private ImageView addPicture;
     private TextView recipeNameText;
     private Button publishButton;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
-    static final int PICK_PIC = 0;
+
+    final int PICK_PIC = 0;
     Uri photoUri = null;
     SharedPreferences mSharedPreferences;
-    JSONParser jsonParser = new JSONParser();
+
     private final static String TAG = "AddRecipeFragment";
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    FirebaseUser user;
-    FirebaseStorage storage;
 
     RecyclerView mRecyclerView;
     MyAdapter mAdapter;
@@ -133,10 +128,10 @@ public class AddRecipeFragment extends Fragment {
 
 
     // url to create new product
-    private static String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
+    private String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
 
     // JSON Node names
-    private static final String TAG_SUCCESS = "success";
+    private final String TAG_SUCCESS = "success";
 
 
     public AddRecipeFragment() {
@@ -151,7 +146,8 @@ public class AddRecipeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
+
+        /*mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -164,7 +160,9 @@ public class AddRecipeFragment extends Fragment {
                 }
 
             }
-        };
+        };*/
+
+        ((MainActivity) getActivity()).setToolbar("Add a Recipe");
 
     }
 
@@ -239,9 +237,8 @@ public class AddRecipeFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 String value = "Clicked Item " + mIngredients.get(position) + " at " + position;
-
                 Log.d("TAG", value);
-                Toast.makeText(getActivity(), value, Toast.LENGTH_SHORT).show();
+
             }
         }));
 
@@ -267,9 +264,6 @@ public class AddRecipeFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 String value = "Clicked Item " + mSteps.get(position) + " at " + position;
-
-                Log.d("TAG", value);
-                Toast.makeText(getActivity(), value, Toast.LENGTH_SHORT).show();
             }
         }));
 
@@ -396,6 +390,24 @@ public class AddRecipeFragment extends Fragment {
         mTagsEditText.setTextColor(BLACK);
     }
 
+
+
+
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        addPicture = null;
+        publishButton = null;
+        mRecyclerView1 = null;
+        mRecyclerView = null;
+        mAdapter1 = null;
+        mAdapter = null;
+        mIngredients = null;
+        mSteps = null;
+        mTagsEditText = null;
+        photoUri = null;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_PIC) {
@@ -408,7 +420,7 @@ public class AddRecipeFragment extends Fragment {
                 //photoUri.copyPixelsToBuffer(buffer); //Move the byte data to the buffer
 
                 //byte[] array = buffer.array(); //Get the underlying array containing the data.
-                Glide.with(this).load(photoUri).centerCrop().into(addPicture);
+                Glide.with(AddRecipeFragment.this).load(photoUri).centerCrop().diskCacheStrategy(RESULT).into(addPicture);
             } else {
             }
         }

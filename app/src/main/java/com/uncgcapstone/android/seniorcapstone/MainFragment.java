@@ -48,6 +48,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.squareup.leakcanary.RefWatcher;
 
 import org.apache.http.NameValuePair;
 import org.json.JSONArray;
@@ -64,22 +65,20 @@ import java.util.Map;
 
 import mabbas007.tagsedittext.TagsEditText;
 
-import static android.graphics.Color.BLACK;
+
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.NONE;
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
+import static com.uncgcapstone.android.seniorcapstone.R.color.black;
+
 
 public class MainFragment extends Fragment {
 
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    FirebaseUser user;
-    FirebaseStorage storage;
 
     FloatingActionButton fab;
-    private final static String TAG = "MainFragment";
-    String uid = "";
+    private final String TAG = "MainFragment";
     JSONParser jParser = new JSONParser();
-    ArrayList<HashMap<String, String>> productsList;
-    private static String url_all_recipes = "http://3661590e.ngrok.io/android_connect/get_all_recipes.php";
-    private static final String TAG_SUCCESS = "success";
+    private String url_all_recipes = "http://3661590e.ngrok.io/android_connect/get_all_recipes.php";
+    private final String TAG_SUCCESS = "success";
     JSONArray recipes = null;
     Recipe[] mRecipes;
     Gson gson = new Gson();
@@ -93,6 +92,7 @@ public class MainFragment extends Fragment {
     RelativeLayout searchBarLayout;
     TagsEditText searchBarText;
     ImageView searchIcon;
+    ProgressDialog mProgressDialog;
     
 
     public MainFragment() {
@@ -109,9 +109,6 @@ public class MainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        // Hashmap for ListView
-        productsList = new ArrayList<HashMap<String, String>>();
-
     }
 
 
@@ -124,10 +121,11 @@ public class MainFragment extends Fragment {
         searchBarLayout = (RelativeLayout) v.findViewById(R.id.toolbar2);
         searchBarText = (TagsEditText) v.findViewById(R.id.searchbar);
         searchBarText.setTagsBackground(R.drawable.rounded_edittext_color);
-        searchBarText.setTextColor(BLACK);
+        searchBarText.setTextColor(getResources().getColor(black));
         searchIcon = (ImageView) v.findViewById(R.id.search_icon);
 
-
+//##FIREBASE USER INITIALIZATION
+/*
         mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -140,7 +138,7 @@ public class MainFragment extends Fragment {
                     //Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
             }
-        };
+        }; */
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefresh);
 
@@ -152,7 +150,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-        storage = FirebaseStorage.getInstance();
         ////mLinearLayoutManager = new LinearLayoutManager(getActivity());
         //mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -185,10 +182,11 @@ public class MainFragment extends Fragment {
                         .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
-                ((MainActivity) getActivity()).setToolbar("Add a Recipe");
+
             }
         });
-
+        new LoadAllProducts().execute();
+        showProgressDialog();
         return v;
     }
 
@@ -218,44 +216,31 @@ public class MainFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     // You now for sure this is an ItemView.
-                    Toast.makeText(view.getContext(), "ROW PRESSED = " +
-                            String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT)
-                            .show();
-                    Toast.makeText(view.getContext(),
-                            mRecipes[getAdapterPosition()].getRecipename().toString(),
-                            Toast.LENGTH_SHORT).show();
+
                 }
             });
 
             mLikeButtonThumb.setOnLikeListener(new OnLikeListener() {
                 @Override
                 public void liked(LikeButton likeButton) {
-                    Toast.makeText(likeButton.getContext(), "ITEM PRESSED = " +
-                            String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT)
-                            .show();
+
                 }
 
                 @Override
                 public void unLiked(LikeButton likeButton) {
-                    Toast.makeText(likeButton.getContext(), "ITEM PRESSED = " +
-                            String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT)
-                            .show();
+
                 }
             });
 
             mLikeButtonStar.setOnLikeListener(new OnLikeListener() {
                 @Override
                 public void liked(LikeButton likeButton) {
-                    Toast.makeText(likeButton.getContext(), "ITEM PRESSED = " +
-                            String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT)
-                            .show();
+
                 }
 
                 @Override
                 public void unLiked(LikeButton likeButton) {
-                    Toast.makeText(likeButton.getContext(), "ITEM PRESSED = " +
-                            String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT)
-                            .show();
+
                 }
             });
 
@@ -280,7 +265,7 @@ public class MainFragment extends Fragment {
             cardTitle.setText(recipename);
             cardTime.setText(cardtime);
             feedsText.setText(feedstext);
-            Glide.with(getActivity()).load(url).centerCrop().into(cardImage);
+            Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
         }
     }
 
@@ -320,29 +305,45 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        //getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        mAuth.addAuthStateListener(mAuthListener);
-        new LoadAllProducts().execute();
-        ((MainActivity)getActivity()).showProgressDialog();
+        //mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        mRecyclerView = null;
+        mAdapter = null;
+        mRecipes = null;
+        fab = null;
+        recipes = null;
+        mLikeButtonStar = null;
+        mLikeButtonThumb = null;
+        searchBarText = null;
+        searchIcon = null;
+        jParser = null;
+        recipes = null;
+        gson = null;
+        mStaggeredGridLayoutManager = null;
+        mLinearLayoutManager = null;
+        mGridLayoutManager = null;
+        mSwipeRefreshLayout = null;
+        mProgressDialog = null;
+        searchBarLayout = null;
     }
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        //if (mAuthListener != null) {
+           // mAuth.removeAuthStateListener(mAuthListener);
+       // }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public void onResume(){
         super.onResume();
         searchBarText.setTagsBackground(R.drawable.rounded_edittext_color);
-        searchBarText.setTextColor(BLACK);
+        searchBarText.setTextColor(getResources().getColor(black));
     }
 
 
@@ -415,21 +416,6 @@ public class MainFragment extends Fragment {
                         mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
                         , recipe.getPreptime().toString() , recipe.getCooktime().toString() , recipe.getServes().toString() );
 
-                           // Log.d(TAG, recipe.getUid().toString() + " " +  recipe.getRecipename().toString() + " " + recipe.getUsername().toString() + " " + recipe.getUrl().toString());
-
-                        // Storing each json item in variable
-                        //String id = c.getString(TAG_PID);
-                        //String name = c.getString(TAG_NAME);
-
-                        // creating new HashMap
-                        //HashMap<String, String> map = new HashMap<String, String>();
-
-                        // adding each child node to HashMap key => value
-                       // map.put(TAG_PID, id);
-                       // map.put(TAG_NAME, name);
-
-                        // adding HashList to ArrayList
-                        //productsList.add(map);
                     }
                 } else {
                     // no products found
@@ -449,8 +435,8 @@ public class MainFragment extends Fragment {
             // dismiss the dialog after getting all products
            // pDialog.dismiss();
             // updating UI from Background Thread
-            ((MainActivity)getActivity()).runOnUiThread(new Runnable() {
-                public void run() {
+            (getActivity()).runOnUiThread(new Runnable() {
+               public void run() {
 
                     mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                     mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
@@ -459,12 +445,30 @@ public class MainFragment extends Fragment {
                     mAdapter = new CardAdapter(mRecipes);
                     mRecyclerView.setAdapter(mAdapter);
                     mSwipeRefreshLayout.setRefreshing(false);
-                    ((MainActivity)getActivity()).hideProgressDialog();
-                }
+                    hideProgressDialog();
+               }
             });
 
         }
 
+    }
+
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage("Loading...");
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 
     }
