@@ -1,75 +1,37 @@
 package com.uncgcapstone.android.seniorcapstone;
 
 
-import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.github.johnpersano.supertoasts.library.Style;
-import com.github.johnpersano.supertoasts.library.SuperActivityToast;
-import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 
-import com.like.LikeButton;
-import com.like.OnLikeListener;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHItemClickListener;
@@ -77,18 +39,8 @@ import github.nisrulz.recyclerviewhelper.RVHItemDividerDecoration;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import mabbas007.tagsedittext.TagsEditText;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
-import static android.R.attr.data;
-import static android.R.color.transparent;
 import static android.graphics.Color.BLACK;
-import static android.graphics.Color.GREEN;
-import static android.graphics.Color.TRANSPARENT;
-import static android.graphics.Color.WHITE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
@@ -163,7 +115,6 @@ public class AddRecipeFragment extends Fragment {
             }
         };*/
 
-        ((MainActivity) getActivity()).setToolbar("Add a Recipe");
 
     }
 
@@ -173,12 +124,12 @@ public class AddRecipeFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_recipe_add, container, false);
 
-        //((MainActivity) getActivity()).getSupportActionBar().setTitle("Add a Recipe");
+        ((MainActivity) getActivity()).setToolbar("Add a Recipe");
 
         //changes
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
-        mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_color);
+        mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_orange);
         mTagsEditText.setTextColor(BLACK);
         mTagsEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -387,7 +338,7 @@ public class AddRecipeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_color);
+        mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_orange);
         mTagsEditText.setTextColor(BLACK);
     }
 

@@ -14,7 +14,7 @@
         android:layout_height="50dp"
         android:background="@drawable/rounded_edittext_thicker"
         >
-        <mabbas007.tagsedittext.TagsEditText
+        <EditText
             android:id="@+id/searchbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,10 +23,11 @@
             android:maxLines="1"
             android:background="@drawable/rounded_edittext_white_no_border"
             android:layout_centerVertical="true"
-            app:tagsCloseImageRight="@drawable/tag_close"
-            app:allowSpaceInTag="false"
-            app:tagsTextSize="@dimen/defaultTagsTextSize"
-            app:tagsCloseImagePadding="@dimen/defaultTagsCloseImagePadding"
+            android:drawableRight="@drawable/tag_close"
+            android:textSize="@dimen/defaultTagsTextSize"
+            android:textColor="#000000"
+            android:inputType="textCapSentences"
+            android:imeOptions="actionDone"
             />
         <ImageView
             android:id="@+id/search_icon"
@@ -77,3 +78,19 @@ android:layout_marginBottom="16dp"
     />
 
     </RelativeLayout>
+
+<!--<mabbas007.tagsedittext.TagsEditText
+            android:id="@+id/searchbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="What are you looking for?"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:background="@drawable/rounded_edittext_white_no_border"
+            android:layout_centerVertical="true"
+            app:tagsCloseImageRight="@drawable/tag_close"
+            app:allowSpaceInTag="false"
+            app:tagsTextSize="@dimen/defaultTagsTextSize"
+            app:tagsCloseImagePadding="@dimen/defaultTagsCloseImagePadding"
+            android:imeOptions="actionDone"
+            /> -->

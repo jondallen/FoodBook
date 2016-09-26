@@ -55,7 +55,7 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.squareup.leakcanary.LeakCanary;
+
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

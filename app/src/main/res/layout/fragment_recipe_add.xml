@@ -282,7 +282,7 @@
                 android:id="@+id/tagsEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:allowSpaceInTag="true"
+                app:allowSpaceInTag="false"
                 app:tagsCloseImageRight="@drawable/tag_close"
                 app:tagsTextColor="#000000"
                 app:tagsTextSize="@dimen/defaultTagsTextSize"
