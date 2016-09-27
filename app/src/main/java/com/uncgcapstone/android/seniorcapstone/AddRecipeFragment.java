@@ -20,12 +20,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,7 +72,11 @@ public class AddRecipeFragment extends Fragment {
     MyAdapter mAdapter;
     MyAdapter1 mAdapter1;
     List<String> mIngredients = new ArrayList<>();
-    private EditText ingredientsText;
+    List<String> mIngredients2 = new ArrayList<>();
+    List<String> mIngredients3 = new ArrayList<>();
+
+    private EditText ingredientsText, ingredientsText3;
+    private AutoCompleteTextView ingredientsText2;
 
     RecyclerView mRecyclerView1;
     private TextView stepsTitleText;
@@ -78,6 +88,10 @@ public class AddRecipeFragment extends Fragment {
     TagsEditText mTagsEditText;
     //CheckBox checkbox;
     View v;
+    final String[] measurements = new String[] {
+            "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts",
+    };
+
 
 
     // url to create new product
@@ -99,23 +113,6 @@ public class AddRecipeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = mAuth.getCurrentUser();
-                if (user != null) {
-                    //Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    //Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-
-            }
-        };*/
-
-
     }
 
     @Override
@@ -160,6 +157,8 @@ public class AddRecipeFragment extends Fragment {
         mRecyclerView = (RecyclerView) v.findViewById(R.id.ingredientsRecyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mIngredients = new ArrayList<>();
+        mIngredients2 = new ArrayList<>();
+        mIngredients3 = new ArrayList<>();
 
         servesText = (EditText) v.findViewById(R.id.servesText);
         prepText = (EditText) v.findViewById(R.id.prepText);
@@ -167,7 +166,7 @@ public class AddRecipeFragment extends Fragment {
 
 
         // Setup your adapter
-        mAdapter = new MyAdapter(mIngredients);
+        mAdapter = new MyAdapter(mIngredients, mIngredients2, mIngredients3);
         // Setup
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
@@ -275,20 +274,76 @@ public class AddRecipeFragment extends Fragment {
         });
 
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, measurements);
+        ingredientsText2 = (AutoCompleteTextView)
+                v.findViewById(R.id.ingredientsText2);
+        ingredientsText2.setAdapter(adapter);
+        ingredientsText2.setThreshold(1);
+
+
         ingredientsText = (EditText) v.findViewById(R.id.ingredientsText);
-        ingredientsText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+        ingredientsText3 = (EditText) v.findViewById(R.id.ingredientsText3);
+        ingredientsText3.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         event.getAction() == KeyEvent.ACTION_DOWN &&
                                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    if (ingredientsText.getText().toString().length() > 0) {
-                        placeholder_ingredients.setVisibility(GONE);
-                        mIngredients.add(ingredientsText.getText().toString());
-                        ingredientsText.setText("");
-                        mAdapter.notifyDataSetChanged();
-                        mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                    if (ingredientsText3.getText().toString().length() > 0) {
+                        if(!(ingredientsText.getText().toString().equals("")) && !(ingredientsText2.getText().toString().equals(""))) {
+                            placeholder_ingredients.setVisibility(GONE);
+                            mIngredients.add(ingredientsText.getText().toString());
+                            mIngredients2.add(ingredientsText2.getText().toString());
+                            mIngredients3.add(ingredientsText3.getText().toString());
+                            ingredientsText.setText("");
+                            ingredientsText2.setText("");
+                            ingredientsText3.setText("");
+                            mAdapter.notifyDataSetChanged();
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                        }
+                        else if(!(ingredientsText.getText().toString().equals("")) && (ingredientsText2.getText().toString().equals("")) ){
+                            placeholder_ingredients.setVisibility(GONE);
+                            mIngredients.add(ingredientsText.getText().toString());
+                            mIngredients2.add(" ");
+                            mIngredients3.add(ingredientsText3.getText().toString());
+                            ingredientsText.setText("");
+                            ingredientsText2.setText("");
+                            ingredientsText3.setText("");
+                            mAdapter.notifyDataSetChanged();
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                        }
+                        else if((ingredientsText.getText().toString().equals("")) && !(ingredientsText2.getText().toString().equals(""))){
+                            placeholder_ingredients.setVisibility(GONE);
+                            mIngredients.add(" ");
+                            mIngredients2.add(ingredientsText2.getText().toString());
+                            mIngredients3.add(ingredientsText3.getText().toString());
+                            ingredientsText.setText("");
+                            ingredientsText2.setText("");
+                            ingredientsText3.setText("");
+                            mAdapter.notifyDataSetChanged();
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                        }
+                        else{
+                            placeholder_ingredients.setVisibility(GONE);
+                            mIngredients.add(" ");
+                            mIngredients2.add(" ");
+                            mIngredients3.add(ingredientsText3.getText().toString());
+                            ingredientsText.setText("");
+                            ingredientsText2.setText("");
+                            ingredientsText3.setText("");
+                            mAdapter.notifyDataSetChanged();
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                        }
+                    }
+                    else{
+                        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_BUTTON)
+                                .setText("Please add an ingredient!")
+                                .setDuration(Style.DURATION_SHORT)
+                                .setFrame(Style.FRAME_LOLLIPOP)
+                                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_PURPLE))
+                                .setAnimations(Style.ANIMATIONS_POP).show();
                     }
                 }
                 return false;
@@ -330,9 +385,46 @@ public class AddRecipeFragment extends Fragment {
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
         String tagsTemp = mTagsEditText.getText().toString();
         String[] tags = tagsTemp.split(" ");
+        String[] ingredTags = new String[mIngredients3.size()];
+        for(int i = 0; i < mIngredients3.size(); i++){
+            ingredTags[i] = mIngredients3.get(i);
+        }
+
+        //String ingredTagsString = TextUtils.join(" ", mIngredients3);
+        //String[] ingredTags = ingredTagsString.split(" ");
+
+        String[] ingredients = new String[mIngredients.size()];
+        String[] ingredients2 = new String[mIngredients.size()];
+        String[] ingredients3 = new String[mIngredients.size()];
+
+        for(int i = 0; i < mIngredients.size(); i++){
+            ingredients[i] = mIngredients.get(i);
+        }
+        for(int i = 0; i < mIngredients2.size(); i++){
+            ingredients2[i] = mIngredients2.get(i);
+        }
+        for(int i = 0; i < mIngredients3.size(); i++){
+            ingredients3[i] = mIngredients3.get(i);
+        }
+
+        String[] steps = new String[mSteps.size()];
+        for(int i = 0; i < steps.length; i++){
+            steps[i] = mSteps.get(i);
+        }
+
+        String[] servesText = {servestext};
+        String[] prepText = {preptext};
+        String[] cookText = {cooktext};
+        String[] dateTime = {datetime};
+        String[] photouri = {photoUri.toString()};
+        String[] UID = {uid};
+        String user = mSharedPreferences.getString("email", "");
+        String[] userName = {user};
+        String[] recipename = {recipeName};
+
 
         String username = mSharedPreferences.getString("email", "");
-        ((MainActivity) getActivity()).post(servestext, preptext, cooktext, datetime, photoUri, uid, username, recipeName, tags); //SEPARATE THREAD???
+        ((MainActivity) getActivity()).post(servesText, prepText, cookText, dateTime, photouri, UID, userName, recipename, tags, ingredients, ingredients2, ingredients3, steps, ingredTags); //SEPARATE THREAD???
     }
 
     @Override
@@ -379,13 +471,6 @@ public class AddRecipeFragment extends Fragment {
         if (requestCode == PICK_PIC) {
             if (resultCode == getActivity().RESULT_OK) {
                 photoUri = data.getData();
-                //b is the Bitmap
-
-                //int bytes = photoUri.getByteCount();
-                //ByteBuffer buffer = ByteBuffer.allocate(bytes); //Create a new buffer
-                //photoUri.copyPixelsToBuffer(buffer); //Move the byte data to the buffer
-
-                //byte[] array = buffer.array(); //Get the underlying array containing the data.
                 Glide.with(AddRecipeFragment.this).load(photoUri).centerCrop().diskCacheStrategy(RESULT).into(addPicture);
             } else {
             }
@@ -394,9 +479,14 @@ public class AddRecipeFragment extends Fragment {
 
     public class MyAdapter extends RecyclerView.Adapter<ItemViewHolder> implements RVHAdapter {
         private List<String> localIngredients;
+        private List<String> localIngredients2;
+        private List<String> localIngredients3;
 
-        public MyAdapter(List<String> s) {
+
+        public MyAdapter(List<String> s, List<String> t, List<String> u) {
             localIngredients = s;
+            localIngredients2 = t;
+            localIngredients3 = u;
         }
 
         @Override
@@ -408,8 +498,26 @@ public class AddRecipeFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ItemViewHolder RVHViewHolder, int position) {
-            String s = mIngredients.get(position);
-            RVHViewHolder.bindCard(s);
+            String s,t,u = "";
+            if(!(mIngredients.get(position).equals(""))) {
+                s = mIngredients.get(position);
+            }
+            else{
+                s = "";
+            }
+            if(!(mIngredients2.get(position).equals(""))) {
+                t = mIngredients2.get(position);
+            }
+            else{
+                t = "";
+            }
+            if(!(mIngredients3.get(position).equals(""))) {
+                u = mIngredients3.get(position);
+            }
+            else{
+                u = "";
+            }
+            RVHViewHolder.bindCard(s, t, u);
         }
 
         @Override
@@ -425,24 +533,38 @@ public class AddRecipeFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mIngredients.size();
+            return mIngredients3.size();
         }
 
         private void remove(int position) {
             mIngredients.remove(position);
+            mIngredients2.remove(position);
+            mIngredients3.remove(position);
             notifyItemRemoved(position);
             if (mAdapter.getItemCount() == 0) {
                 placeholder_ingredients.setVisibility(VISIBLE);
                 mRecyclerView.setBackgroundResource(0);
             }
-            for (String model : mIngredients) {
-                Log.d(TAG, model);
+            for(int i = 0; i < mIngredients3.size(); i++){
+                Log.d("remove", mIngredients.get(i) + mIngredients2.get(i) + mIngredients3.get(i));
             }
+
+
         }
 
         private void swap(int firstPosition, int secondPosition) {
             Collections.swap(mIngredients, firstPosition, secondPosition);
             notifyItemMoved(firstPosition, secondPosition);
+
+            Collections.swap(mIngredients2, firstPosition, secondPosition);
+            notifyItemMoved(firstPosition, secondPosition);
+
+            Collections.swap(mIngredients3, firstPosition, secondPosition);
+            notifyItemMoved(firstPosition, secondPosition);
+
+            for(int i = 0; i < mIngredients3.size(); i++){
+                Log.d("Swap", mIngredients.get(i) + mIngredients2.get(i) + mIngredients3.get(i));
+            }
         }
     }
 
@@ -468,11 +590,11 @@ public class AddRecipeFragment extends Fragment {
 
         }
 
-        public void bindCard(String s) {
-            recyclerText.setText(s);
+        public void bindCard(String s, String t, String u) {
+            recyclerText.setText(s + " " + t + " " + u);
         }
     }
-
+//Begin Steps ViewHolder #####################
     public class MyAdapter1 extends RecyclerView.Adapter<ItemViewHolder1> implements RVHAdapter {
         private List<String> localSteps;
 

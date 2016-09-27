@@ -35,5 +35,5 @@
         <item>Recent</item>
         <item>Top</item>
     </string-array>
-    <string name = "prompt">null</string>
+    <string name="prompt">null</string>
 </resources>

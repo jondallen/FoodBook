@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/activity_test"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.uncgcapstone.android.seniorcapstone.TestActivity">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:layout_width="fill_parent"
+                 android:layout_height="240dp"
+                  >
+
+        <ImageView
+            android:id="@+id/detailImage"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:src="@drawable/drag"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_gravity="bottom"
+            />
+        </FrameLayout>
+
+            <TextView
+                android:maxLines="1"
+                android:fontFamily="sans-serif-bold"
+                android:textColor="#00b300"
+                android:textSize="32dp"
+                android:id="@+id/detailRecipeNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recipe name..."
+                android:inputType="textCapWords"
+                android:maxLength="30"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="6dp"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="6dp"
+                android:background="@drawable/rounded_edittext_thick"
+                >
+                <ImageView
+                android:id="@+id/personImageDetail"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_people_black_24dp"
+                android:layout_alignParentBottom="true"
+                />
+                <TextView
+                    android:id="@+id/servesTextDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext_white"
+                    android:hint="Serves 3"
+                    android:layout_toRightOf="@id/personImageDetail"
+                    android:layout_centerVertical="true"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif"
+                    android:textSize="15dp"
+                    android:textColor="#000000"
+                    />
+                <ImageView
+                    android:id="@+id/clockImageDetail"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/clock"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@id/servesTextDetail"
+                    />
+                <TextView
+                    android:id="@+id/prepTextDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext_white"
+                    android:hint="Prep: 40m"
+                    android:layout_toRightOf="@id/clockImageDetail"
+                    android:layout_centerVertical="true"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif"
+                    android:textSize="15dp"
+                    android:textColor="#000000"
+                    />
+                <ImageView
+                    android:id="@+id/timerImageDetail"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_timer"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@id/prepTextDetail"
+                    />
+                <TextView
+                    android:id="@+id/cookTextDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext_white"
+                    android:hint="Cook: 30m"
+                    android:layout_toRightOf="@id/timerImageDetail"
+                    android:layout_centerVertical="true"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif"
+                    android:textSize="15dp"
+                    android:textColor="#000000"
+                    />
+            </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_edittext_thick"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            >
+            <TextView
+                android:id="@+id/ingredientsTitleTextDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="san-serif-bold"
+                android:textSize="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                style="?android:listSeparatorTextViewStyle"
+                android:text="Ingredients"
+                />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/ingredientsRecyclerViewDetail"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:backgroundTint="#66ccff"
+                >
+            </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_edittext_thick"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="8dp"
+            >
+            <TextView
+                android:id="@+id/stepsTitleTextDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="san-serif-bold"
+                android:textSize="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                style="?android:listSeparatorTextViewStyle"
+                android:text="Steps"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/stepsRecyclerViewDetail"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:backgroundTint="#29a329"
+                >
+            </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+
+
+</LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+    <RelativeLayout
+        android:background="@drawable/rounded_edittext_thicker"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+        <com.like.LikeButton
+            android:id="@+id/star1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon_type="star"
+            app:circle_start_color="@color/colorPrimary"
+            app:like_drawable="@drawable/star_on"
+            app:unlike_drawable="@drawable/star_off"
+            app:dots_primary_color="@color/colorAccent"
+            app:dots_secondary_color="@color/colorPrimary"
+            app:circle_end_color="@color/colorAccent"
+            app:icon_size="20dp"
+            app:liked="false"
+            app:anim_scale_factor="2"
+            app:is_enabled="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="2dp"
+            />
+        <com.like.LikeButton
+            android:id="@+id/thumb1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon_type="thumb"
+            app:circle_start_color="#dae72a"
+            app:like_drawable="@drawable/thumb_on"
+            app:unlike_drawable="@drawable/thumb_off"
+            app:dots_primary_color="#ff9900"
+            app:dots_secondary_color="#eda633"
+            app:circle_end_color="#edff00"
+            app:icon_size="20dp"
+            app:liked="false"
+            app:anim_scale_factor="2"
+            app:is_enabled="true"
+            android:layout_toLeftOf="@id/star1"
+            android:layout_marginTop="2dp"
+            />
+
+
+
+        <EditText
+            android:id="@+id/commentdetail"
+            android:background="@drawable/rounded_edittext_white"
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:hint="Leave a comment"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/commentdetail"
+            android:text="Send"
+            android:background="@drawable/rounded_edittext_blue"
+            android:layout_margin="4dp"
+            />
+    </RelativeLayout>
+</LinearLayout>
+

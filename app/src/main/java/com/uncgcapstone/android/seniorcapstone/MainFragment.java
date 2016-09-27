@@ -2,6 +2,7 @@ package com.uncgcapstone.android.seniorcapstone;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -228,7 +229,14 @@ public class MainFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // You now for sure this is an ItemView.
+                    String postid = String.valueOf(mRecipes[getAdapterPosition()].getPostId());
+                    String url = mRecipes[getAdapterPosition()].getUrl();
+                    String recipename = mRecipes[getAdapterPosition()].getRecipename();
+                    String servings = mRecipes[getAdapterPosition()].getServes();
+                    String preptime = mRecipes[getAdapterPosition()].getPreptime();
+                    String cooktime = mRecipes[getAdapterPosition()].getCooktime();
+                    ((MainActivity)getActivity()).launchTest(postid, url, recipename, servings, preptime, cooktime);
+
 
                 }
             });
@@ -376,6 +384,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        Log.d("OnStop Called", "In Main Fragment");
     }
 
 
@@ -434,6 +443,10 @@ public class MainFragment extends Fragment {
                 for (int i = 0; i < searchArray.length; i++) {
                     Log.d("For loop to make array", searchArray[i]);
                     params.add(new BasicNameValuePair("search[]", searchArray[i]));
+                }
+                String[] searchUnbroken = {search};
+                for(int i = 0; i < searchUnbroken.length; i++) {
+                    params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
                 }
                 JSONObject json1 = jParser.makeHttpRequest(url_search_recipes, "POST", params);
 

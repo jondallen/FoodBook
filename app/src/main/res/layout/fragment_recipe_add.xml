@@ -51,7 +51,7 @@
                 android:id="@+id/personImage"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/person"
+                android:src="@drawable/ic_people_black_24dp"
                 android:layout_alignParentBottom="true"
                 />
                 <EditText
@@ -92,7 +92,7 @@
                     android:id="@+id/timerImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/timer"
+                    android:src="@drawable/ic_timer"
                     android:layout_alignParentBottom="true"
                     android:layout_toRightOf="@id/prepText"
                     />
@@ -157,23 +157,56 @@
                 android:backgroundTint="#66ccff"
                 >
             </android.support.v7.widget.RecyclerView>
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
             <EditText
                 android:id="@+id/ingredientsText"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Add ingredients..."
-                android:textSize="24dp"
+                android:hint="Quantity"
+                android:textSize="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:background="@drawable/rounded_edittext_white"
                 android:layout_alignTop="@+id/ingredientsButton"
                 android:maxLines="1"
-                android:inputType="textCapSentences"
+                android:layout_weight="1"
+                android:inputType="number"
                 android:maxLength="100"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 />
+    <AutoCompleteTextView
+        android:id="@+id/ingredientsText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Unit"
+        android:textSize="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/rounded_edittext_white"
+        android:layout_alignTop="@+id/ingredientsButton"
+        android:maxLines="1"
+        android:inputType="textCapSentences"
+        android:maxLength="100"
+        android:imeOptions="actionNext"
+        />
+    <EditText
+        android:id="@+id/ingredientsText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Ingredient"
+        android:textSize="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/rounded_edittext_white"
+        android:layout_alignTop="@+id/ingredientsButton"
+        android:maxLines="1"
+        android:inputType="textCapSentences"
+        android:maxLength="100"
+        android:imeOptions="actionDone"
+        />
+</LinearLayout>
 </LinearLayout>
 
             <LinearLayout
@@ -296,6 +329,7 @@
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
     <RelativeLayout
         android:background="@drawable/rounded_edittext_thick"
         android:layout_width="match_parent"

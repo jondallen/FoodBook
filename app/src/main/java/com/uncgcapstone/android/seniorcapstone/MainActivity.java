@@ -90,7 +90,7 @@ public class MainActivity extends CoreActivity {
     DatabaseReference myRef, countRef;
     FragmentManager fm;
     FirebaseStorage storage;
-    String downloadUrl = null;
+    String downloadUrl1 = null;
     Menu menu;
     JSONParser jsonParser = new JSONParser();
     public String search = "";
@@ -98,6 +98,7 @@ public class MainActivity extends CoreActivity {
     OnFailureListener mOnFailureListener;
     OnPausedListener mOnPausedListener;
     OnSuccessListener mOnSuccessListener;
+
 
 
     // url to create new product
@@ -252,6 +253,12 @@ public class MainActivity extends CoreActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        Log.d("OnStop Called", "In Main Activity");
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.d("OnPauseCalled", "In Main Activity");
     }
 
     @Override
@@ -291,8 +298,8 @@ super.onDestroy();
         return user;
     }
 
-    public void post(final String servestext, final String preptext, final String cooktext, final String datetime, final Uri photoUri, final String uid, final String username, final String recipeName, final String[] tags){
-        final Uri picUri = photoUri;
+    public void post(final String[] servestext, final String[] preptext, final String[] cooktext, final String[] datetime, final String[] photoUri, final String[] uid, final String[] username, final String[] recipeName, final String[] tagsfinal, final String[] ingredients, final String[] ingredients2, final String[] ingredients3, final String[] steps, final String[] ingredtags){
+        final Uri picUri = Uri.parse(photoUri[0]);
         new Thread(new Runnable() {
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -333,10 +340,11 @@ super.onDestroy();
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                                    downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                                    downloadUrl1 = taskSnapshot.getDownloadUrl().toString();
+                                    String[] downloadUrl = {downloadUrl1};
                                     Log.d(TAG, "Photo URL: " + downloadUrl);
                                     Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptext.toString() + " " + cooktext.toString() + " " + servestext.toString());
-                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext, Arrays.toString(tags));
+                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext, tagsfinal, ingredients, ingredients2, ingredients3, steps, ingredtags);
                                     hideProgressDialog();
 
                                     toolbar.setTitle("Add a Recipe");
@@ -355,7 +363,7 @@ super.onDestroy();
                             storageRef = null;
                             imagesRef = null;
                             uploadTask = null;
-                            downloadUrl = null;
+                            downloadUrl1 = null;
                         } catch (Exception e) {
 
                         }
@@ -365,7 +373,7 @@ super.onDestroy();
         }).start();
     }
 
-    class CreateNewRecipe extends AsyncTask<String, String, String> {
+    class CreateNewRecipe extends AsyncTask<String[], String[], String> {
 
         /**
          * Before starting background thread Show Progress Dialog
@@ -379,32 +387,59 @@ super.onDestroy();
         /**
          * Creating product
          * */
-        protected String doInBackground(String... args) {
-            String uid = args[0];
-            String username = args[1];
-            String recipeName = args[2];
-            String url = args[3];
-            String datetime = args[4];
-            String preptime = args[5];
-            String cooktime = args[6];
-            String serves = args[7];
-            String[] tags = args[8].split(" ");
-            Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptime.toString() + " " + cooktime.toString() + " " + serves.toString() + tags.toString());
+        protected String doInBackground(String[]... args) {
+            String[] uid1 = args[0];
+            String uid = uid1[0];
+            String[] username1 = args[1];
+            String username = username1[0];
+            String[] recipeName1 = args[2];
+            String recipename = recipeName1[0];
+            String[] url1 = args[3];
+            String url = url1[0];
+            String[] datetime1 = args[4];
+            String datetime = datetime1[0];
+            String[] preptime1 = args[5];
+            String preptime = preptime1[0];
+            String[] cooktime1 = args[6];
+            String cooktime = cooktime1[0];
+            String[] serves1 = args[7];
+            String serves = serves1[0];
+            String[] tags = args[8];
+            String[] ingredients = args[9];
+            String[] ingredients2 = args[10];
+            String[] ingredients3 = args[11];
+            String[] steps = args[12];
+            String[] ingredtags = args[13];
+
 
 
             // Building Parameters
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("uid", uid));
             params.add(new BasicNameValuePair("username", username));
-            params.add(new BasicNameValuePair("recipename", recipeName));
+            params.add(new BasicNameValuePair("recipename", recipename));
             params.add(new BasicNameValuePair("url", url));
-
             params.add(new BasicNameValuePair("datetime", datetime));
             params.add(new BasicNameValuePair("preptime", preptime));
             params.add(new BasicNameValuePair("cooktime", cooktime));
             params.add(new BasicNameValuePair("serves", serves));
             for(int i = 0; i < tags.length; i++){
                 params.add(new BasicNameValuePair("tags[]", tags[i]));
+            }
+            for(int i = 0; i < ingredients.length; i++){
+                params.add(new BasicNameValuePair("ingredients[]", ingredients[i]));
+            }
+            for(int i = 0; i < ingredients2.length; i++){
+                params.add(new BasicNameValuePair("ingredients2[]", ingredients2[i]));
+            }
+            for(int i = 0; i < ingredients3.length; i++){
+                params.add(new BasicNameValuePair("ingredients3[]", ingredients3[i]));
+            }
+            for(int i = 0; i < steps.length; i++){
+                params.add(new BasicNameValuePair("steps[]", steps[i]));
+            }
+            for(int i = 0; i < ingredtags.length; i++){
+                params.add(new BasicNameValuePair("ingredtags[]", ingredtags[i]));
             }
 
 
@@ -507,5 +542,15 @@ super.onDestroy();
         menu.setGroupVisible(R.id.main_menu_group, showMenu);
 
     }*/
+    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime){
+        Intent i = new Intent(MainActivity.this, TestActivity.class);
+        i.putExtra("postid", postid);
+        i.putExtra("url", url);
+        i.putExtra("recipename", recipename);
+        i.putExtra("servings", servings);
+        i.putExtra("preptime", preptime);
+        i.putExtra("cooktime", cooktime);
+        startActivity(i);
+    }
 
 }

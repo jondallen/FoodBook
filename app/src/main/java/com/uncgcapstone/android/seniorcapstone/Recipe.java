@@ -76,14 +76,6 @@ public class Recipe {
         this.postid = postid;
     }
 
-    public int getPostid() {
-        return postid;
-    }
-
-    public void setPostid(int postid) {
-        this.postid = postid;
-    }
-
     public String getDatetime() {
         return datetime;
     }
