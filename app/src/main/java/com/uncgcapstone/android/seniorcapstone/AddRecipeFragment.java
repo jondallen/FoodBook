@@ -89,7 +89,7 @@ public class AddRecipeFragment extends Fragment {
     //CheckBox checkbox;
     View v;
     final String[] measurements = new String[] {
-            "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts",
+            "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts", "Cups", "Pinch", "Lb.", "Whole"
     };
 
 
@@ -267,9 +267,32 @@ public class AddRecipeFragment extends Fragment {
         publishButton = (Button) v.findViewById(R.id.testButton);
         publishButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Are you sure you want to publish this recipe? It will be publicly available for anyone to see.").setPositiveButton("Yes", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
+                if(recipeNameText.getText().toString().equals("")){
+                    toast("Please add a recipe name");
+                }
+                else if(servesText.getText().toString().equals("")){
+                    toast("Please enter the number of servings");
+                }
+                else if(prepText.getText().toString().equals("")){
+                    toast("Please enter the prep time");
+                }
+                else if(cookText.getText().toString().equals("")){
+                    toast("Please enter the cook time");
+                }
+                else if(mIngredients.size() == 0 || mIngredients2.size() == 0 || mIngredients3.size() == 0){
+                    toast("Please enter at least one ingredient");
+                }
+                else if(mSteps.size() == 0){
+                    toast("Please enter at least one preparation step");
+                }
+                else if(mTagsEditText.getText().toString().equals("")){
+                    toast("Please enter at least one tag");
+                }
+                else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Are you sure you want to publish this recipe? It will be publicly available for anyone to see.").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
+                }
             }
         });
 
@@ -301,7 +324,7 @@ public class AddRecipeFragment extends Fragment {
                             ingredientsText2.setText("");
                             ingredientsText3.setText("");
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white_new);
                         }
                         else if(!(ingredientsText.getText().toString().equals("")) && (ingredientsText2.getText().toString().equals("")) ){
                             placeholder_ingredients.setVisibility(GONE);
@@ -312,7 +335,7 @@ public class AddRecipeFragment extends Fragment {
                             ingredientsText2.setText("");
                             ingredientsText3.setText("");
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white_new);
                         }
                         else if((ingredientsText.getText().toString().equals("")) && !(ingredientsText2.getText().toString().equals(""))){
                             placeholder_ingredients.setVisibility(GONE);
@@ -323,7 +346,7 @@ public class AddRecipeFragment extends Fragment {
                             ingredientsText2.setText("");
                             ingredientsText3.setText("");
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white_new);
                         }
                         else{
                             placeholder_ingredients.setVisibility(GONE);
@@ -334,11 +357,11 @@ public class AddRecipeFragment extends Fragment {
                             ingredientsText2.setText("");
                             ingredientsText3.setText("");
                             mAdapter.notifyDataSetChanged();
-                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white);
+                            mRecyclerView.setBackgroundResource(R.drawable.rounded_edittext_white_new);
                         }
                     }
                     else{
-                        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_BUTTON)
+                        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_STANDARD)
                                 .setText("Please add an ingredient!")
                                 .setDuration(Style.DURATION_SHORT)
                                 .setFrame(Style.FRAME_LOLLIPOP)
@@ -363,7 +386,7 @@ public class AddRecipeFragment extends Fragment {
                         mSteps.add(stepsText.getText().toString());
                         stepsText.setText("");
                         mAdapter1.notifyDataSetChanged();
-                        mRecyclerView1.setBackgroundResource(R.drawable.rounded_edittext_white);
+                        mRecyclerView1.setBackgroundResource(R.drawable.rounded_edittext_white_new);
                     }
                 }
                 return false;
@@ -375,56 +398,57 @@ public class AddRecipeFragment extends Fragment {
     }
 
     public void publish() {
-        String recipeName = recipeNameText.getText().toString();
-        String servestext = String.valueOf(servesText.getText().toString());
-        String preptext = String.valueOf(prepText.getText().toString());
-        String cooktext = String.valueOf(cookText.getText().toString());
-        Calendar calendar = Calendar.getInstance();
-        String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
-        String uid = (String) ((MainActivity) getActivity()).getUid();
-        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
-        String tagsTemp = mTagsEditText.getText().toString();
-        String[] tags = tagsTemp.split(" ");
-        String[] ingredTags = new String[mIngredients3.size()];
-        for(int i = 0; i < mIngredients3.size(); i++){
-            ingredTags[i] = mIngredients3.get(i);
-        }
 
-        //String ingredTagsString = TextUtils.join(" ", mIngredients3);
-        //String[] ingredTags = ingredTagsString.split(" ");
+            String recipeName = recipeNameText.getText().toString();
+            String servestext = String.valueOf(servesText.getText().toString());
+            String preptext = String.valueOf(prepText.getText().toString());
+            String cooktext = String.valueOf(cookText.getText().toString());
+            Calendar calendar = Calendar.getInstance();
+            String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+            String uid = (String) ((MainActivity) getActivity()).getUid();
+            mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+            String tagsTemp = mTagsEditText.getText().toString();
+            String[] tags = tagsTemp.split(" ");
+            String[] ingredTags = new String[mIngredients3.size()];
+            for (int i = 0; i < mIngredients3.size(); i++) {
+                ingredTags[i] = mIngredients3.get(i);
+            }
 
-        String[] ingredients = new String[mIngredients.size()];
-        String[] ingredients2 = new String[mIngredients.size()];
-        String[] ingredients3 = new String[mIngredients.size()];
+            //String ingredTagsString = TextUtils.join(" ", mIngredients3);
+            //String[] ingredTags = ingredTagsString.split(" ");
 
-        for(int i = 0; i < mIngredients.size(); i++){
-            ingredients[i] = mIngredients.get(i);
-        }
-        for(int i = 0; i < mIngredients2.size(); i++){
-            ingredients2[i] = mIngredients2.get(i);
-        }
-        for(int i = 0; i < mIngredients3.size(); i++){
-            ingredients3[i] = mIngredients3.get(i);
-        }
+            String[] ingredients = new String[mIngredients.size()];
+            String[] ingredients2 = new String[mIngredients.size()];
+            String[] ingredients3 = new String[mIngredients.size()];
 
-        String[] steps = new String[mSteps.size()];
-        for(int i = 0; i < steps.length; i++){
-            steps[i] = mSteps.get(i);
-        }
+            for (int i = 0; i < mIngredients.size(); i++) {
+                ingredients[i] = mIngredients.get(i);
+            }
+            for (int i = 0; i < mIngredients2.size(); i++) {
+                ingredients2[i] = mIngredients2.get(i);
+            }
+            for (int i = 0; i < mIngredients3.size(); i++) {
+                ingredients3[i] = mIngredients3.get(i);
+            }
 
-        String[] servesText = {servestext};
-        String[] prepText = {preptext};
-        String[] cookText = {cooktext};
-        String[] dateTime = {datetime};
-        String[] photouri = {photoUri.toString()};
-        String[] UID = {uid};
-        String user = mSharedPreferences.getString("email", "");
-        String[] userName = {user};
-        String[] recipename = {recipeName};
+            String[] steps = new String[mSteps.size()];
+            for (int i = 0; i < steps.length; i++) {
+                steps[i] = mSteps.get(i);
+            }
+
+            String[] servesText = {servestext};
+            String[] prepText = {preptext};
+            String[] cookText = {cooktext};
+            String[] dateTime = {datetime};
+            String[] photouri = {photoUri.toString()};
+            String[] UID = {uid};
+            String user = mSharedPreferences.getString("email", "");
+            String[] userName = {user};
+            String[] recipename = {recipeName};
 
 
-        String username = mSharedPreferences.getString("email", "");
-        ((MainActivity) getActivity()).post(servesText, prepText, cookText, dateTime, photouri, UID, userName, recipename, tags, ingredients, ingredients2, ingredients3, steps, ingredTags); //SEPARATE THREAD???
+            String username = mSharedPreferences.getString("email", "");
+            ((MainActivity) getActivity()).post(servesText, prepText, cookText, dateTime, photouri, UID, userName, recipename, tags, ingredients, ingredients2, ingredients3, steps, ingredTags); //SEPARATE THREAD???
     }
 
     @Override
@@ -677,11 +701,13 @@ public class AddRecipeFragment extends Fragment {
         }
     }
 
+    public void toast(String toast){
+        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_STANDARD)
+                .setText(toast)
+                .setDuration(Style.DURATION_MEDIUM)
+                .setFrame(Style.FRAME_STANDARD)
+                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                .setAnimations(Style.ANIMATIONS_FLY).show();
+    }
+
 }
-
-
-
-
-
-
-

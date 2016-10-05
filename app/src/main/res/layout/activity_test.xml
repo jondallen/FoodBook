@@ -49,7 +49,6 @@
                 android:id="@+id/detailRecipeNameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recipe name..."
                 android:inputType="textCapWords"
                 android:maxLength="30"
                 android:layout_marginTop="4dp"
@@ -75,7 +74,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_edittext_white"
-                    android:hint="Serves 3"
                     android:layout_toRightOf="@id/personImageDetail"
                     android:layout_centerVertical="true"
                     android:maxLines="1"
@@ -97,7 +95,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_edittext_white"
-                    android:hint="Prep: 40m"
                     android:layout_toRightOf="@id/clockImageDetail"
                     android:layout_centerVertical="true"
                     android:maxLines="1"
@@ -119,7 +116,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_edittext_white"
-                    android:hint="Cook: 30m"
                     android:layout_toRightOf="@id/timerImageDetail"
                     android:layout_centerVertical="true"
                     android:maxLines="1"
@@ -148,7 +144,7 @@
                 android:text="Ingredients"
                 />
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/ingredientsRecyclerViewDetail"
+                android:id="@+id/ingredsRecyclerViewDetail"
                 android:layout_marginTop="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
@@ -156,7 +152,8 @@
                 android:layout_height="match_parent"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:backgroundTint="#66ccff"
+                android:backgroundTint="#29a329"
+                tools:listitem="@layout/ingredients_recyclerview"
                 >
             </android.support.v7.widget.RecyclerView>
             </LinearLayout>
@@ -192,6 +189,7 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:backgroundTint="#29a329"
+                tools:listitem="@layout/steps_recyclerview"
                 >
             </android.support.v7.widget.RecyclerView>
             </LinearLayout>

@@ -21,15 +21,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.varunest.sparkbutton.SparkButton;
+import com.varunest.sparkbutton.SparkEventListener;
 
 
 import org.apache.http.NameValuePair;
@@ -54,6 +59,8 @@ public class MainFragment extends Fragment {
     JSONParser jParser = new JSONParser();
     private String url_all_recipes = "http://3661590e.ngrok.io/android_connect/get_all_recipes.php";
     private String url_search_recipes = "http://3661590e.ngrok.io/android_connect/search_recipes.php";
+    private String url_likes = "http://3661590e.ngrok.io/android_connect/likes.php";
+    private String url_unlikes = "http://3661590e.ngrok.io/android_connect/unlikes.php";
     private final String TAG_SUCCESS = "success";
     JSONArray recipes = null;
     Recipe[] mRecipes;
@@ -71,6 +78,7 @@ public class MainFragment extends Fragment {
     ProgressDialog mProgressDialog;
     private View v, cardViewHolderView;
     SharedPreferences mSharedPreferences;
+    //LikeButton mLikeButtonThumb, mLikeButtonStar;
     
 
     public MainFragment() {
@@ -161,23 +169,24 @@ public class MainFragment extends Fragment {
             }
         });
 
-        ////mLinearLayoutManager = new LinearLayoutManager(getActivity());
+
         //mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        //////mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //////mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        //////mRecyclerView.setHasFixedSize(true);
+        //////mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        ////mLinearLayoutManager = new LinearLayoutManager(getActivity());
         //mLinearLayoutManager.setReverseLayout(true);
         //mLinearLayoutManager.setStackFromEnd(true);
+
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 18) {
+                if (dy > 18)
                     fab.hide();
-
-                } else if (dy < 0 || mAdapter.getItemCount() == 0)
+                 else if (dy < 0 || mAdapter.getItemCount() == 0)
                     fab.show();
             }
         });
@@ -210,21 +219,24 @@ public class MainFragment extends Fragment {
 
     private class CardViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
-        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3;
+        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText;
         private ImageView cardImage;
+        LikeButton mLikeButtonStar;
+        ImageButton mLikeButtonThumb;
         public CardViewHolder(View itemView){
             super(itemView);
 
             cardTitle = (TextView) itemView.findViewById(R.id.cardTitle);
             cardUsername = (TextView) itemView.findViewById(R.id.cardUsername);
             cardImage = (ImageView) itemView.findViewById(R.id.cardImage);
-            LikeButton mLikeButtonThumb = (LikeButton) itemView.findViewById(R.id.thumb);        //IF THESE BREAK, MAKE THE VARIABLES GLOBAL
-            LikeButton mLikeButtonStar = (LikeButton) itemView.findViewById(R.id.star);          //IF THESE BREAK, MAKE THE VARIABLES GLOBAL
+            mLikeButtonThumb = (ImageButton) itemView.findViewById(R.id.thumb);
+            mLikeButtonStar = (LikeButton) itemView.findViewById(R.id.star);
             cardTime = (TextView) itemView.findViewById(R.id.cardTime);
             feedsText = (TextView) itemView.findViewById(R.id.feedsText);
             tag1 = (TextView) itemView.findViewById(R.id.tag1);
             tag2 = (TextView) itemView.findViewById(R.id.tag2);
             tag3 = (TextView) itemView.findViewById(R.id.tag3);
+            likesText = (TextView) itemView.findViewById(R.id.likesText);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -238,20 +250,61 @@ public class MainFragment extends Fragment {
                     ((MainActivity)getActivity()).launchTest(postid, url, recipename, servings, preptime, cooktime);
 
 
-                }
-            });
-
-            mLikeButtonThumb.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-
-                }
-
-                @Override
-                public void unLiked(LikeButton likeButton) {
 
                 }
             });
+
+            mLikeButtonThumb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String str = mRecipes[getAdapterPosition()].getLikes().toString();
+                    int inte = Integer.parseInt(str);
+                    if(inte == 0){
+                            Log.d("Testing", "ACTIVATED!!!!");
+                         ImageButton img = (ImageButton) v;
+                        ((ImageButton) v).setImageResource(R.drawable.thumb_up);
+                            final int pos = getAdapterPosition();
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                                    params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
+                                    params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes[pos].getPostId())));
+                                    JSONObject json = jParser.makeHttpRequest(url_likes, "POST", params1);
+                                }
+                            }.start();
+                            int total = Integer.parseInt(mRecipes[getAdapterPosition()].getLikestotal().toString());
+                            total++;
+                            mRecipes[getAdapterPosition()].setLikestotal(String.valueOf(total));
+                            mRecipes[getAdapterPosition()].setLikes("1");
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    else {
+                        Log.d("Testing", "DEACTIVATED!!!!");
+                        ImageButton img = (ImageButton) v;
+                        ((ImageButton) v).setImageResource(R.drawable.thumb);
+                        final int pos = getAdapterPosition();
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                                params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
+                                params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes[pos].getPostId())));
+                                JSONObject json = jParser.makeHttpRequest(url_unlikes, "POST", params1);
+                            }
+                        }.start();
+                        int total = Integer.parseInt(mRecipes[getAdapterPosition()].getLikestotal().toString());
+                        total--;
+                        mRecipes[getAdapterPosition()].setLikestotal(String.valueOf(total));
+                        mRecipes[getAdapterPosition()].setLikes("0");
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    }
+            });
+
+
+
 
             mLikeButtonStar.setOnLikeListener(new OnLikeListener() {
                 @Override
@@ -269,7 +322,8 @@ public class MainFragment extends Fragment {
             //mLikeButton.setOnClickListener(this);
 
         }
-        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3) {
+
+        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext) {
             cardUsername.setText("Added by " + username);
             cardTitle.setText(recipename);
             cardTime.setText(cardtime);
@@ -294,6 +348,13 @@ public class MainFragment extends Fragment {
                     }
 
             Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
+
+            likesText.setText(likestext);
+
+        if(likes.equals("1")){
+            mLikeButtonThumb.setActivated(true);
+            mLikeButtonThumb.setImageResource(R.drawable.thumb_up);
+        }
         }
     }
 
@@ -322,7 +383,9 @@ public class MainFragment extends Fragment {
             String tag1 = recipez[position].getTag1();
             String tag2 = recipez[position].getTag2();
             String tag3 = recipez[position].getTag3();
-            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3);
+            String likes = recipez[position].getLikes();
+            String likestext = recipez[position].getLikestotal();
+            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext);
         }
 
         @Override
@@ -330,6 +393,10 @@ public class MainFragment extends Fragment {
             if(recipez != null)
             return recipez.length;
             return 0;
+        }
+        @Override
+        public int getItemViewType(int position) {
+            return position;
         }
     }
 
@@ -345,13 +412,12 @@ public class MainFragment extends Fragment {
         super.onDestroyView();
 
         mSwipeRefreshLayout.setOnRefreshListener(null);
-        mRecyclerView.addOnScrollListener(null);
+        //mRecyclerView.addOnScrollListener(null);
         fab.setOnClickListener(null);
         mRecyclerView = null;
         mAdapter = null;
         mRecipes = null;
         fab = null;
-        recipes = null;
         searchBar = null;
         searchIcon = null;
         //jParser = null;
@@ -443,6 +509,7 @@ public class MainFragment extends Fragment {
                 for (int i = 0; i < searchArray.length; i++) {
                     Log.d("For loop to make array", searchArray[i]);
                     params.add(new BasicNameValuePair("search[]", searchArray[i]));
+                    params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
                 }
                 String[] searchUnbroken = {search};
                 for(int i = 0; i < searchUnbroken.length; i++) {
@@ -464,7 +531,7 @@ public class MainFragment extends Fragment {
                             //Log.d(TAG, c.toString());
                             Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
                             mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
-                                    , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString());
+                                    , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString(), recipe.getLikes().toString(), recipe.getLikestotal().toString());
                         }
                     } else {
                     }
@@ -476,9 +543,14 @@ public class MainFragment extends Fragment {
             }
             else {
 
-                JSONObject json = jParser.makeHttpRequest(url_all_recipes, "GET", params);
+                List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+
+                JSONObject json = jParser.makeHttpRequest(url_all_recipes, "POST", params1);
 
                 try {
+
+
 
                     // Checking for SUCCESS TAG
                     int success = json.getInt(TAG_SUCCESS);
@@ -495,7 +567,7 @@ public class MainFragment extends Fragment {
                             //Log.d(TAG, c.toString());
                             Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
                             mRecipes[i] = new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
-                                    , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString());
+                                    , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString(), recipe.getLikes().toString(), recipe.getLikestotal().toString());
                         }
 
                     } else {
@@ -520,13 +592,13 @@ public class MainFragment extends Fragment {
             // updating UI from Background Thread
             //(getActivity()).runOnUiThread(new Runnable() {
                //public void run() {
-
                     mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                     mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
                     mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
-
+                    mRecyclerView.setHasFixedSize(true);
                     mAdapter = new CardAdapter(mRecipes);
                     mRecyclerView.setAdapter(mAdapter);
+                    mRecyclerView.setItemAnimator(null);
                     mSwipeRefreshLayout.setRefreshing(false);
                     hideProgressDialog();
                }

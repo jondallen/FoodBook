@@ -552,5 +552,8 @@ super.onDestroy();
         i.putExtra("cooktime", cooktime);
         startActivity(i);
     }
+    public String getUID(){
+        return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+    }
 
 }
