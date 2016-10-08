@@ -33,7 +33,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string-array name="spinnerstrings">
         <item>Recent</item>
-        <item>Top</item>
+        <item>Top Voted</item>
     </string-array>
     <string name="prompt">null</string>
 </resources>

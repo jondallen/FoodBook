@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -121,9 +122,9 @@ public class AddRecipeFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_recipe_add, container, false);
 
-        ((MainActivity) getActivity()).setToolbar("Add a Recipe");
+        ((MainActivity)getActivity()).showOverflowMenu(false);
 
-        //changes
+        ((MainActivity) getActivity()).setToolbar("Add a Recipe");
 
         mTagsEditText = (TagsEditText) v.findViewById(R.id.tagsEditText);
         mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_orange);
@@ -237,7 +238,7 @@ public class AddRecipeFragment extends Fragment {
         recipeNameText.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
-                recipeNameText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                recipeNameText.setTextColor(getResources().getColor(R.color.recipe_green));
             }
 
             public void beforeTextChanged(CharSequence s, int start,
@@ -454,6 +455,7 @@ public class AddRecipeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity)getActivity()).showOverflowMenu(false);
         mTagsEditText.setTagsBackground(R.drawable.rounded_edittext_orange);
         mTagsEditText.setTextColor(BLACK);
     }
@@ -704,7 +706,7 @@ public class AddRecipeFragment extends Fragment {
     public void toast(String toast){
         SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
-                .setDuration(Style.DURATION_MEDIUM)
+                .setDuration(Style.DURATION_SHORT)
                 .setFrame(Style.FRAME_STANDARD)
                 .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
                 .setAnimations(Style.ANIMATIONS_FLY).show();

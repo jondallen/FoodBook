@@ -6,14 +6,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Parcelable;
+import android.provider.ContactsContract;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.SuperToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
@@ -52,14 +61,19 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 import static android.view.View.GONE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
-public class TestActivity extends AppCompatActivity implements SwipeBackActivityBase {
+public class TestActivity extends AppCompatActivity{
 
     private SwipeBackActivityHelper mHelper;
-    String url, recipename, servings, preptime, cooktime = "";
+    String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos = "";
+    int likestotal;
     ImageView detailImage;
     TextView detailRecipeNameText, servesTextDetail, prepTextDetail, cookTextDetail;
     String postid;
     private String url_get_ingredients_and_steps = "http://3661590e.ngrok.io/android_connect/get_ingredients_and_steps.php";
+    private String url_likes = "http://3661590e.ngrok.io/android_connect/likes.php";
+    private String url_unlikes = "http://3661590e.ngrok.io/android_connect/unlikes.php";
+    private String url_favorites = "http://3661590e.ngrok.io/android_connect/favorites.php";
+    private String url_unfavorites = "http://3661590e.ngrok.io/android_connect/unfavorites.php";
     JSONParser jParser = new JSONParser();
     JSONArray ingredients = null;
     JSONArray steps = null;
@@ -70,6 +84,10 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
     RecyclerView ingredsRecyclerViewDetail, stepsRecyclerViewDetail;
     RecyclerView.Adapter mAdapter, mAdapter1;
     LinearLayoutManager mLinearLayoutManager, mLinearLayoutManager1;
+    Toolbar mToolbar;
+    NestedScrollView testScrollView;
+    ImageView backarrow; // detailStar, detailThumb;
+    LikeButton detailStar, detailThumb;
 
 
 
@@ -80,6 +98,7 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
+
         if(bundle != null){
             url = bundle.getString("url");
             recipename = bundle.getString("recipename");
@@ -87,6 +106,11 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
             preptime = bundle.getString("preptime");
             cooktime = bundle.getString("cooktime");
             postid = bundle.getString("postid");
+            likes = bundle.getString("likes");
+            favorites = bundle.getString("favorites");
+            userid = bundle.getString("userid");
+            adapterpos = bundle.getString("adapterpos");
+            likestotal = Integer.parseInt(bundle.getString("likestotal"));
         }
         ingredsRecyclerViewDetail = (RecyclerView) findViewById(R.id.ingredsRecyclerViewDetail);
         stepsRecyclerViewDetail = (RecyclerView) findViewById(R.id.stepsRecyclerViewDetail);
@@ -96,21 +120,125 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         servesTextDetail = (TextView) findViewById(R.id.servesTextDetail);
         prepTextDetail = (TextView) findViewById(R.id.prepTextDetail);
         cookTextDetail = (TextView) findViewById(R.id.cookTextDetail);
+        backarrow = (ImageView) findViewById(R.id.backarrow);
+        backarrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        detailStar = (LikeButton) findViewById(R.id.starDetail);
+        detailThumb = (LikeButton) findViewById(R.id.thumbDetail);
+
+        if(likes.equals("1")){
+            detailThumb.setLiked(true);
+        }
+        else{
+            detailThumb.setLiked(false);
+        }
+
+        if(favorites.equals("1")){
+            detailStar.setLiked(true);
+        }
+        else{
+            detailStar.setLiked(false);
+        }
+
+        detailStar.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                int inte = Integer.parseInt(favorites);
+                if (inte == 0) {
+                    toast("Favorited " + recipename);
+                    favorites = "1";
+                    //ImageView img = (ImageView) v;
+                    //img.setImageResource(R.drawable.star_big_on);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                            params1.add(new BasicNameValuePair("userid", userid));
+                            params1.add(new BasicNameValuePair("postid", postid));
+                            JSONObject json = jParser.makeHttpRequest(url_favorites, "POST", params1);
+                        }
+                    }.start();
+                }
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                    toast("Unfavorited " + recipename);
+                    favorites = "0";
+                    //ImageView img = (ImageView) v;
+                    //img.setImageResource(R.drawable.star_big);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                            params1.add(new BasicNameValuePair("userid", userid));
+                            params1.add(new BasicNameValuePair("postid", postid));
+                            JSONObject json = jParser.makeHttpRequest(url_unfavorites, "POST", params1);
+                        }
+                    }.start();
+            }
+        });
+
+        detailThumb.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                int inte = Integer.parseInt(likes);
+                if (inte == 0) {
+                    toast("Liked " + recipename);
+                    likes = "1";
+                    likestotal++;
+                    //ImageView img = (ImageView) v;
+                    //img.setImageResource(R.drawable.thumb_up_big);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                            params1.add(new BasicNameValuePair("userid", userid));
+                            params1.add(new BasicNameValuePair("postid", postid));
+                            JSONObject json = jParser.makeHttpRequest(url_likes, "POST", params1);
+                        }
+                    }.start();
+                }
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                int inte = Integer.parseInt(likes);
+                if (inte == 1) {
+                    toast("Unliked " + recipename);
+                    likes = "0";
+                    likestotal--;
+                    //ImageView img = (ImageView) v;
+                    //img.setImageResource(R.drawable.thumb_big);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                            params1.add(new BasicNameValuePair("userid", userid));
+                            params1.add(new BasicNameValuePair("postid", postid));
+                            JSONObject json = jParser.makeHttpRequest(url_unlikes, "POST", params1);
+                        }
+                    }.start();
+                }
+            }
+        });
 
 
         new LoadAllProducts().execute();
         showProgressDialog();
 
 
-        mHelper = new SwipeBackActivityHelper(this);
-        mHelper.onActivityCreate();
-
-
-
+        //mHelper = new SwipeBackActivityHelper(this);
+        //mHelper.onActivityCreate();
 
     }
 
-    @Override
+    /*@Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mHelper.onPostCreate();
@@ -138,12 +266,17 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
     public void scrollToFinishActivity(){
         Utils.convertActivityToTranslucent(this);
         getSwipeBackLayout().scrollToFinishActivity();
-    }
+    }*/
 
     @Override
     public void onStop(){
         super.onStop();
         Log.d("OnStopCalled", "TestActivity");
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        SuperActivityToast.cancelAllSuperToasts();
     }
 
 
@@ -224,17 +357,13 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         // updating UI from Background Thread
         //(getActivity()).runOnUiThread(new Runnable() {
         //public void run() {
-        String[] ingreds = new String[mIngredients.length];
-        for(int i = 0; i < mIngredients.length; i++){
-            ingreds[i] = mIngredients[i].getQuantity().toString() + " " + mIngredients[i].getUnit().toString() + " " + mIngredients[i].getIngredient().toString();
-        }
 
         mLinearLayoutManager = new LinearLayoutManager(TestActivity.this, LinearLayoutManager.VERTICAL, false);
         mLinearLayoutManager1 = new LinearLayoutManager(TestActivity.this, LinearLayoutManager.VERTICAL, false);
 
         ingredsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
         ingredsRecyclerViewDetail.setHasFixedSize(true);
-        mAdapter = new IngredAdapter(ingreds);
+        mAdapter = new IngredAdapter(mIngredients);
         ingredsRecyclerViewDetail.setAdapter(mAdapter);
         ingredsRecyclerViewDetail.setNestedScrollingEnabled(false);
         ingredsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(TestActivity.this).size(5).build());
@@ -254,14 +383,27 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         cookTextDetail.setText("Cook: " + cooktime + "m");
         hideProgressDialog();
 
+
+        SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        if(mSharedPreferences.getString("firsttime", "0").equals("0")) {
+            editor.putString("firsttime", "1");
+            editor.commit();
+            SuperActivityToast.create(TestActivity.this, new Style(), Style.TYPE_STANDARD)
+                    //.setButtonText("Got it")
+                    //.setButtonIconResource(R.drawable.check)
+                    .setIndeterminate(true)
+                    .setTouchToDismiss(true)
+                    .setText("Hint: Swipe from the left to go back! (click to dismiss)")
+                    //.setDuration(Style.DURATION_VERY_LONG)
+                    .setFrame(Style.FRAME_STANDARD)
+                    .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                    .setAnimations(Style.ANIMATIONS_FLY).
+                    show();
+        }
+
     }
-    //});
-
-    // }
-
 }
-
-
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
@@ -283,10 +425,14 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
 
     private class IngredHolder extends RecyclerView.ViewHolder {
         private TextView recyclertext;
+        private TextView recyclertext1;
+        private TextView recyclertext2;
         public IngredHolder(View itemView){
             super(itemView);
 
             recyclertext = (TextView) itemView.findViewById(R.id.recyclertext);
+            recyclertext1 = (TextView) itemView.findViewById(R.id.recyclertext1);
+            recyclertext2 = (TextView) itemView.findViewById(R.id.recyclertext2);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -296,18 +442,24 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
             });
         }
 
-        public void bindCard(String ingredient) {
+        public void bindCard(String quantity, String unit, String ingredient) {
             if(ingredient != null)
-            recyclertext.setText(ingredient);
+                if(quantity.equals("") || quantity.equals(" "))
+                    recyclertext.setPadding(0,6,0,6);
+            if(unit.equals("") || unit.equals(" "))
+                recyclertext1.setPadding(0,6,0,6);
+            recyclertext.setText(quantity.trim());
+            recyclertext1.setText(unit.trim());
+            recyclertext2.setText(ingredient.trim());
 
         }
     }
 
 
     private class IngredAdapter extends RecyclerView.Adapter<IngredHolder> {
-        private String[] ingredz;
+        private Ingredients[] ingredz;
 
-        public IngredAdapter(String[] s){
+        public IngredAdapter(Ingredients[] s){
             ingredz = s;
         }
 
@@ -320,8 +472,10 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
 
         @Override
         public void onBindViewHolder(IngredHolder holder, int position){
-            String ingredient = ingredz[position];
-            holder.bindCard(ingredient);
+            String quantity = ingredz[position].getQuantity().toString();
+            String unit = ingredz[position].getUnit().toString();
+            String ingredient = ingredz[position].getIngredient().toString();
+            holder.bindCard(quantity, unit, ingredient);
         }
 
         @Override
@@ -337,11 +491,15 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
     }
 
     private class StepHolder extends RecyclerView.ViewHolder {
-        private TextView recyclertext1;
+        private TextView recyclertext3;
+        private ImageView numbering;
+
         public StepHolder(View itemView){
             super(itemView);
 
-            recyclertext1 = (TextView) itemView.findViewById(R.id.recyclertext1);
+            recyclertext3 = (TextView) itemView.findViewById(R.id.recyclertext3);
+            numbering = (ImageView) itemView.findViewById(R.id.numbering);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -353,8 +511,30 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
 
         public void bindCard(String step) {
             if(step != null)
-                recyclertext1.setText(step);
+                recyclertext3.setText(step);
 
+            switch(getAdapterPosition()){
+                case 0: numbering.setImageResource(R.drawable.numeric_1_box_outline);
+                    break;
+                case 1: numbering.setImageResource(R.drawable.numeric_2_box_outline);
+                    break;
+                case 2: numbering.setImageResource(R.drawable.numeric_3_box_outline);
+                    break;
+                case 3: numbering.setImageResource(R.drawable.numeric_4_box_outline);
+                    break;
+                case 4: numbering.setImageResource(R.drawable.numeric_5_box_outline);
+                    break;
+                case 5: numbering.setImageResource(R.drawable.numeric_6_box_outline);
+                    break;
+                case 6: numbering.setImageResource(R.drawable.numeric_7_box_outline);
+                    break;
+                case 7: numbering.setImageResource(R.drawable.numeric_8_box_outline);
+                    break;
+                case 8: numbering.setImageResource(R.drawable.numeric_9_box_outline);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -369,7 +549,7 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         @Override
         public StepHolder onCreateViewHolder(ViewGroup parent, int viewType){
             LayoutInflater inflater = LayoutInflater.from(TestActivity.this);
-            View stepHolderView = inflater.inflate(R.layout.steps_recyclerview, parent, false);
+            View stepHolderView = inflater.inflate(R.layout.steps_recyclerview_numbers, parent, false);
             return new StepHolder(stepHolderView);
         }
 
@@ -389,6 +569,30 @@ public class TestActivity extends AppCompatActivity implements SwipeBackActivity
         public int getItemViewType(int position) {
             return position;
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent data = new Intent();
+        Bundle bundle = new Bundle();
+
+        bundle.putString("adapterpos", adapterpos);
+        bundle.putString("favorites", favorites);
+        bundle.putString("likes", likes);
+        bundle.putString("likestotal", String.valueOf(likestotal));
+        data.putExtras(bundle);
+        setResult(RESULT_OK, data);
+
+        super.onBackPressed();
+    }
+
+    public void toast(String toast){
+        SuperActivityToast.create(TestActivity.this, new Style(), Style.TYPE_STANDARD)
+                .setText(toast)
+                .setDuration(Style.DURATION_VERY_SHORT)
+                .setFrame(Style.FRAME_STANDARD)
+                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
 

@@ -92,7 +92,7 @@
                     android:id="@+id/timerImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_timer"
+                    android:src="@drawable/timer"
                     android:layout_alignParentBottom="true"
                     android:layout_toRightOf="@id/prepText"
                     />

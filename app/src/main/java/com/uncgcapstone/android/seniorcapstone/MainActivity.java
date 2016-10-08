@@ -127,12 +127,13 @@ public class MainActivity extends CoreActivity {
         emailString = mSharedPreferences.getString("email", "");
 
 
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
         homeItem = new PrimaryDrawerItem().withIdentifier(0).withName("Home").withSelectable(false).withIcon(R.drawable.home);
-        item1 = new SecondaryDrawerItem().withIdentifier(1).withName("My Recipes").withSelectable(false).withBadge("19").withIcon(R.drawable.book);
+        item1 = new SecondaryDrawerItem().withIdentifier(1).withName("My Favorites").withSelectable(false).withIcon(R.drawable.fave_star);
         item2 = new SecondaryDrawerItem().withIdentifier(2).withName("Pantry").withSelectable(false).withIcon(R.drawable.pantry);
         item3 = new SecondaryDrawerItem().withIdentifier(3).withName("Meal Schedule").withSelectable(false).withIcon(R.drawable.calendar1);
         logOutItem = new SecondaryDrawerItem().withIdentifier(4).withName("Log Out").withSelectable(false).withIcon(R.drawable.logout);
@@ -231,7 +232,7 @@ public class MainActivity extends CoreActivity {
 
         if(fragment == null){
             fragment = MainFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, "MainFragment").commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, "MainFragmentInitial").commit();
 
         }
     }
@@ -266,33 +267,6 @@ public class MainActivity extends CoreActivity {
 super.onDestroy();
     }
  //Inflate spinner on toolbar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //this.menu = menu;
-       //getMenuInflater().inflate(R.menu.menu_main, menu);     // ADD REFRESH BUTTON
-        // Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-       // ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-               // R.array.spinnerstrings, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        //spinner.setAdapter(adapter); // set the adapter to provide layout of rows and content
-        //spinner.setOnItemSelectedListener(this); // set the listener, to perform actions based on item selection
-        return true;
-    }
-
-    //@Override
-    //public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
-
-            //return super.onOptionsItemSelected(item);
-
-    //}
 
     public FirebaseUser getUser(){
         return user;
@@ -488,69 +462,89 @@ super.onDestroy();
      * Set options for Spinner on toolbar
      * implements AdapterView.OnItemSelectedListener
      */
-/*
-    public void onItemSelected(AdapterView<?> parent, View view,
-                              int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
-        ((TextView)view).setText(null);
-        if(pos == 0){
-            mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putInt("query", 0);
-            editor.commit();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.menu_main, menu);     // ADD REFRESH BUTTON
+        MenuItem item = menu.findItem(R.id.spinner);
+        final Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+        spinner.setSelection(0, false);
+        spinner.setTag(R.id.pos, 0);
+        //Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.spinnerstrings, R.layout.spinner_style);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter); // set the adapter to provide layout of rows and content
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (!(spinner.getTag(R.id.pos).toString().equals(String.valueOf(position)))) {
+                    if (position == 0) {
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "0");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 0);
 
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container)).commit();
-            Fragment fragment = MainFragment.newInstance();
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment, "MainFragment")
-                    .addToBackStack(null).commit();
 
-        }
-        else if(pos == 1){
-            mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putInt("query", 1);
-            editor.commit();
+                        Fragment fragment1 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment1, "MainFragment")
+                                .addToBackStack(null).commit();
 
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container)).commit();
-            Fragment fragment = MainFragment.newInstance();
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+                    } else if (position == 1) {
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "1");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 1);
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment, "MainFragment")
-                    .addToBackStack(null).commit();
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
 
-        }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        }); // set the listener, to perform actions based on item selection
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+    int id = item.getItemId();
+
+    return super.onOptionsItemSelected(item);
+
+    }
+
 
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
     }
-*/
+
     public void setToolbar(String name){
         toolbar.setTitle(name);
     }
-/*
+
     public void showOverflowMenu(boolean showMenu){
         if(menu == null)
             return;
-        menu.setGroupVisible(R.id.main_menu_group, showMenu);
+        menu.setGroupVisible(R.id.mainmenugroup, showMenu);
 
-    }*/
-    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime){
-        Intent i = new Intent(MainActivity.this, TestActivity.class);
-        i.putExtra("postid", postid);
-        i.putExtra("url", url);
-        i.putExtra("recipename", recipename);
-        i.putExtra("servings", servings);
-        i.putExtra("preptime", preptime);
-        i.putExtra("cooktime", cooktime);
-        startActivity(i);
     }
     public String getUID(){
         return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();

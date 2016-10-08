@@ -2,24 +2,54 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-
     >
+
 <TextView
     android:id="@+id/recyclertext"
-    android:layout_width="310dp"
     android:layout_height="wrap_content"
-    android:fontFamily="sans-serif"
+    android:layout_width="wrap_content"
+    android:fontFamily="sans-serif-thin"
     android:textColor="#000000"
     android:textSize="24dp"
     android:layout_centerVertical="true"
-    android:layout_marginLeft="10dp"
     android:paddingTop="3dp"
     android:paddingBottom="3dp"
-    android:hint="hello"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:textStyle="bold"
     />
+    <TextView
+        android:id="@+id/recyclertext1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:textColor="#000000"
+        android:textSize="24dp"
+        android:layout_centerVertical="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:layout_toRightOf="@id/recyclertext"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/recyclertext2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:textColor="#000000"
+        android:textSize="24dp"
+        android:layout_centerVertical="true"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_toRightOf="@id/recyclertext1"
+        />
 
 </RelativeLayout>
 

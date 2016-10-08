@@ -18,12 +18,13 @@ public class Recipe {
     String tag3;
     String likes;
     String likestotal;
+    String favorites;
 
     public Recipe(){
 
     }
 
-    public Recipe(int postid, String uid, String username, String recipename, String url, String datetime, String preptime, String cooktime, String serves, String tag1, String tag2, String tag3, String likes, String likestotal){
+    public Recipe(int postid, String uid, String username, String recipename, String url, String datetime, String preptime, String cooktime, String serves, String tag1, String tag2, String tag3, String likes, String likestotal, String favorites){
         this.postid = postid;
         this.uid = uid;
         this.username = username;
@@ -38,6 +39,7 @@ public class Recipe {
         this.tag3 = tag3;
         this.likes = likes;
         this.likestotal = likestotal;
+        this.favorites = favorites;
     }
 
     public String getUid() {
@@ -150,6 +152,14 @@ public class Recipe {
 
     public void setLikestotal(String likestotal) {
         this.likestotal = likestotal;
+    }
+
+    public String getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(String favorites) {
+        this.favorites = favorites;
     }
 }
 

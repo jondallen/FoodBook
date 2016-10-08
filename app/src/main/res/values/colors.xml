@@ -10,5 +10,6 @@
     <color name="customAccent">#000000</color>
     <color name="yellow">#ffff4d</color>
     <color name="orange">#ff9900</color>
+    <color name="recipe_green">#339933</color>
 
 </resources>

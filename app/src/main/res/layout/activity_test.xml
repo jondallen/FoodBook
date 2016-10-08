@@ -10,6 +10,7 @@
     tools:context="com.uncgcapstone.android.seniorcapstone.TestActivity">
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/testScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -30,21 +31,22 @@
             android:scaleType="fitXY"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
         <ImageView
-            android:src="@drawable/drag"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/backarrow"
+            android:src="@drawable/back_arrow"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
-            android:layout_gravity="bottom"
+            android:layout_gravity="top"
+            android:padding="6dp"
             />
         </FrameLayout>
 
             <TextView
                 android:maxLines="1"
                 android:fontFamily="sans-serif-bold"
-                android:textColor="#00b300"
+                android:textColor="#339933"
                 android:textSize="32dp"
                 android:id="@+id/detailRecipeNameText"
                 android:layout_width="match_parent"
@@ -189,7 +191,7 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:backgroundTint="#29a329"
-                tools:listitem="@layout/steps_recyclerview"
+                tools:listitem="@layout/steps_recyclerview_numbers"
                 >
             </android.support.v7.widget.RecyclerView>
             </LinearLayout>
@@ -202,49 +204,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         >
-        <com.like.LikeButton
-            android:id="@+id/star1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon_type="star"
-            app:circle_start_color="@color/colorPrimary"
-            app:like_drawable="@drawable/star_on"
-            app:unlike_drawable="@drawable/star_off"
-            app:dots_primary_color="@color/colorAccent"
-            app:dots_secondary_color="@color/colorPrimary"
-            app:circle_end_color="@color/colorAccent"
-            app:icon_size="20dp"
-            app:liked="false"
-            app:anim_scale_factor="2"
-            app:is_enabled="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="2dp"
-            />
-        <com.like.LikeButton
-            android:id="@+id/thumb1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon_type="thumb"
-            app:circle_start_color="#dae72a"
-            app:like_drawable="@drawable/thumb_on"
-            app:unlike_drawable="@drawable/thumb_off"
-            app:dots_primary_color="#ff9900"
-            app:dots_secondary_color="#eda633"
-            app:circle_end_color="#edff00"
-            app:icon_size="20dp"
-            app:liked="false"
-            app:anim_scale_factor="2"
-            app:is_enabled="true"
-            android:layout_toLeftOf="@id/star1"
-            android:layout_marginTop="2dp"
-            />
-
-
-
         <EditText
             android:id="@+id/commentdetail"
             android:background="@drawable/rounded_edittext_white"
-            android:layout_width="180dp"
+            android:layout_width="170dp"
             android:layout_height="match_parent"
             android:hint="Leave a comment"
             android:maxLines="1"
@@ -252,14 +215,68 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"/>
 
+        <com.like.LikeButton
+            android:id="@+id/starDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon_type="star"
+            app:circle_start_color="@color/colorPrimary"
+            app:like_drawable="@drawable/star_on"
+            app:unlike_drawable="@drawable/star_off"
+            app:dots_primary_color="@color/yellow"
+            app:dots_secondary_color="@color/colorAccent"
+            app:circle_end_color="@color/orange"
+            app:icon_size="24dp"
+            app:liked="false"
+            app:anim_scale_factor="2"
+            app:is_enabled="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            />
+
+        <com.like.LikeButton
+            android:id="@+id/thumbDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon_type="thumb"
+            app:circle_start_color="@color/colorPrimary"
+            app:like_drawable="@drawable/thumb_on"
+            app:unlike_drawable="@drawable/thumb_off"
+            app:dots_primary_color="@color/colorAccent"
+            app:dots_secondary_color="@color/colorPrimaryDark"
+            app:circle_end_color="@color/colorAccent"
+            app:icon_size="24dp"
+            app:liked="false"
+            app:anim_scale_factor="2"
+            app:is_enabled="true"
+            android:layout_toLeftOf="@id/starDetail"
+            android:layout_centerVertical="true"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            />
+
         <Button
+            android:id="@+id/commentbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/commentdetail"
             android:text="Send"
             android:background="@drawable/rounded_edittext_blue"
-            android:layout_margin="4dp"
+            android:layout_marginLeft="2dp"
+            android:layout_centerVertical="true"
             />
+
     </RelativeLayout>
 </LinearLayout>
 
+<!--
+
+
+
+            -->

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/numbering"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        />
+<TextView
+    android:layout_toRightOf="@id/numbering"
+    android:id="@+id/recyclertext3"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:fontFamily="sans-serif-thin"
+    android:textColor="#000000"
+    android:textSize="24dp"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="10dp"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:hint="hello"
+    />
+
+
+</RelativeLayout>
+
+<!-- <ImageView
+        android:id="@+id/stepImage"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        />-->

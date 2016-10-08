@@ -19,6 +19,25 @@
           android:title=""
           com.uncgcapstone.android.seniorcapstone:showAsAction="ifRoom"
           com.uncgcapstone.android.seniorcapstone:actionViewClass="android.widget.Spinner" />
-        -->
+
+
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/filter"
+        android:title=""
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom"
+        android:menuCategory="container"
+        />-->
+    <group
+        android:id="@+id/mainmenugroup"
+        >
+    <item android:id="@+id/spinner"
+          android:prompt="@string/prompt"
+          android:icon="@drawable/filter"
+          android:title=""
+          com.uncgcapstone.android.seniorcapstone:showAsAction="ifRoom"
+          com.uncgcapstone.android.seniorcapstone:actionViewClass="android.widget.Spinner" />
+    </group>
 
 </menu>

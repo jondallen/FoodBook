@@ -273,6 +273,12 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString("email", parseName(user.getEmail()));
         editor.putInt("query", 0);
+        if(!(mSharedPreferences.contains("firsttime")))
+        editor.putString("firsttime", "0");
+        if(!(mSharedPreferences.contains("query")))
+            editor.putString("query", "0");
+        else
+        editor.putString("query", "0");
         editor.commit();
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         startActivity(intent);

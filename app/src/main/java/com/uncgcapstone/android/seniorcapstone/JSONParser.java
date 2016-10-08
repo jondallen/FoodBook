@@ -49,7 +49,6 @@ public class JSONParser {
 
             // check for request method
             if(method == "POST"){
-                Log.d(TAG, "Post hit");
                 // request method is POST
                 // defaultHttpClient
                 DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -58,7 +57,6 @@ public class JSONParser {
                 HttpResponse httpResponse = httpClient.execute(httpPost);
                 HttpEntity httpEntity = httpResponse.getEntity();
                 is = httpEntity.getContent();
-                Log.d(TAG, "End of post reached");
 
 
             }else if(method == "GET"){
@@ -91,7 +89,6 @@ public class JSONParser {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
-                Log.d("BuffReader", line);
             }
             is.close();
             json = sb.toString();
@@ -101,7 +98,6 @@ public class JSONParser {
 
         // try parse the string to a JSON object
         try {
-            Log.d(TAG, String.valueOf(new JSONObject(json)));
             jObj = new JSONObject(json);
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
