@@ -20,7 +20,10 @@
         <activity
             android:name=".LogInActivity"
             android:noHistory="true"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -31,10 +34,15 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main_screen"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden|adjustPan">
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            >
         </activity>
         <activity android:name=".TestActivity"
             android:theme="@style/AppTheme.NoActionBar"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait"
             >
 
         </activity>

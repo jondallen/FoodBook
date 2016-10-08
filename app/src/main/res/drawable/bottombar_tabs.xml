@@ -2,8 +2,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <tabs>
         <tab
-            android:id="@+id/tab_publish"
-            android:icon="@drawable/send"
-            android:title="Publish" />
+            android:id="@+id/tab_recent"
+            android:icon="@drawable/recent"
+            android:title="Recent" />
+        <tab
+            android:id="@+id/tab_likes"
+            android:icon="@drawable/thumb_white"
+            android:title="Most Liked" />
+        <tab
+            android:id="@+id/tab_favorites"
+            android:icon="@drawable/heart"
+            android:title="Favorites" />
+
     </tabs>
 </selector>
