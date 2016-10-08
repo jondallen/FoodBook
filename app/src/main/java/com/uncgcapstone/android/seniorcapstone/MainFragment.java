@@ -570,8 +570,8 @@ public class MainFragment extends Fragment {
             mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
             String search = mSharedPreferences.getString("search", "");
             SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putString("search", "");
-            editor.commit();
+            //////editor.putString("search", "");
+            //////editor.commit();
             //search.toUpperCase();
             String[] searchArray = search.split(" ");
             JSONObject json1;
@@ -761,7 +761,6 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if(requestCode == 0) {
-            Log.d("TOP", "KEK");
             int adapterpos = Integer.parseInt(data.getStringExtra("adapterpos"));
             String likestotal = data.getStringExtra("likestotal");
             Log.d(TAG, String.valueOf(adapterpos));

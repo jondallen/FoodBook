@@ -188,10 +188,19 @@ public class MainActivity extends CoreActivity {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if(drawerItem.getIdentifier() == 0){
+                            final SharedPreferences.Editor editor = mSharedPreferences.edit();
+                            if(!(mSharedPreferences.contains("search"))) {
+                                editor.putString("search", "");
+                                editor.commit();
+                            }
+                            else{
+                                editor.putString("search", "");
+                                editor.commit();
+                            }
                             Fragment fragment = MainFragment.newInstance();
                             fm = getSupportFragmentManager();
                             fm.beginTransaction()
-                                    .replace(R.id.fragment_container, fragment, "AddRecipeFragment")
+                                    .replace(R.id.fragment_container, fragment, "MainFragment")
                                     .addToBackStack(null)
                                     .commit();
                             return false;
@@ -548,6 +557,20 @@ super.onDestroy();
     }
     public String getUID(){
         return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+    }
+
+    @Override
+    public void onBackPressed(){
+        final SharedPreferences.Editor editor = mSharedPreferences.edit();
+        if(!(mSharedPreferences.contains("search"))) {
+            editor.putString("search", "");
+            editor.commit();
+        }
+        else{
+            editor.putString("search", "");
+            editor.commit();
+        }
+        super.onBackPressed();
     }
 
 }
