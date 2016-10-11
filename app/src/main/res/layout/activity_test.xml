@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.uncgcapstone.android.seniorcapstone.TestActivity">
+    tools:context="com.uncgcapstone.android.seniorcapstone.DetailedRecipeActivity">
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/testScrollView"

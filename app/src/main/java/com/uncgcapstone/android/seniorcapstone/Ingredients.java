@@ -1,7 +1,8 @@
 package com.uncgcapstone.android.seniorcapstone;
 
 /**
- * Created by jon on 10/4/2016.
+ * Created by jon on 10/4/2016
+ * Used to temporarily store a list of ingredients to be displayed in DetailedRecipeActivity
  */
 
 public class Ingredients {

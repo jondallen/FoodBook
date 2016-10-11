@@ -5,42 +5,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
-import com.github.johnpersano.supertoasts.library.SuperToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import junit.framework.Test;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -52,16 +38,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.imid.swipebacklayout.lib.SwipeBackLayout;
-import me.imid.swipebacklayout.lib.Utils;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 
-import static android.view.View.GONE;
-import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
-
-public class TestActivity extends AppCompatActivity{
+public class DetailedRecipeActivity extends AppCompatActivity{
 
     private SwipeBackActivityHelper mHelper;
     String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos = "";
@@ -271,7 +250,22 @@ public class TestActivity extends AppCompatActivity{
     @Override
     public void onStop(){
         super.onStop();
-        Log.d("OnStopCalled", "TestActivity");
+
+
+
+        /**
+         * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
+         * It may or may not be actually necessary
+         */
+        new Thread(new Runnable() {
+            public void run() {
+                Glide.get(DetailedRecipeActivity.this).clearDiskCache();
+            }
+        }).start();
+        Glide.get(DetailedRecipeActivity.this).clearMemory();
+        /**
+         *
+         */
     }
     @Override
     public void onDestroy(){
@@ -358,22 +352,22 @@ public class TestActivity extends AppCompatActivity{
         //(getActivity()).runOnUiThread(new Runnable() {
         //public void run() {
 
-        mLinearLayoutManager = new LinearLayoutManager(TestActivity.this, LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager1 = new LinearLayoutManager(TestActivity.this, LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new LinearLayoutManager(DetailedRecipeActivity.this, LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager1 = new LinearLayoutManager(DetailedRecipeActivity.this, LinearLayoutManager.VERTICAL, false);
 
         ingredsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
         ingredsRecyclerViewDetail.setHasFixedSize(true);
         mAdapter = new IngredAdapter(mIngredients);
         ingredsRecyclerViewDetail.setAdapter(mAdapter);
         ingredsRecyclerViewDetail.setNestedScrollingEnabled(false);
-        ingredsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(TestActivity.this).size(5).build());
+        ingredsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(DetailedRecipeActivity.this).size(5).build());
 
         stepsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager1);
         stepsRecyclerViewDetail.setHasFixedSize(true);
         mAdapter1 = new StepAdapter(mSteps);
         stepsRecyclerViewDetail.setAdapter(mAdapter1);
         stepsRecyclerViewDetail.setNestedScrollingEnabled(false);
-        stepsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(TestActivity.this).size(5).build());
+        stepsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(DetailedRecipeActivity.this).size(5).build());
 
 
         Glide.with(getApplicationContext()).load(url).centerCrop().into(detailImage);
@@ -389,7 +383,7 @@ public class TestActivity extends AppCompatActivity{
         if(mSharedPreferences.getString("firsttime", "0").equals("0")) {
             editor.putString("firsttime", "1");
             editor.commit();
-            SuperActivityToast.create(TestActivity.this, new Style(), Style.TYPE_STANDARD)
+            SuperActivityToast.create(DetailedRecipeActivity.this, new Style(), Style.TYPE_STANDARD)
                     //.setButtonText("Got it")
                     //.setButtonIconResource(R.drawable.check)
                     .setIndeterminate(true)
@@ -407,7 +401,7 @@ public class TestActivity extends AppCompatActivity{
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(TestActivity.this);
+            mProgressDialog = new ProgressDialog(DetailedRecipeActivity.this);
             mProgressDialog.setCancelable(false);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setIndeterminate(true);
@@ -465,7 +459,7 @@ public class TestActivity extends AppCompatActivity{
 
         @Override
         public IngredHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            LayoutInflater inflater = LayoutInflater.from(TestActivity.this);
+            LayoutInflater inflater = LayoutInflater.from(DetailedRecipeActivity.this);
             View ingredHolderView = inflater.inflate(R.layout.ingredients_recyclerview, parent, false);
             return new IngredHolder(ingredHolderView);
         }
@@ -548,7 +542,7 @@ public class TestActivity extends AppCompatActivity{
 
         @Override
         public StepHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            LayoutInflater inflater = LayoutInflater.from(TestActivity.this);
+            LayoutInflater inflater = LayoutInflater.from(DetailedRecipeActivity.this);
             View stepHolderView = inflater.inflate(R.layout.steps_recyclerview_numbers, parent, false);
             return new StepHolder(stepHolderView);
         }
@@ -587,7 +581,7 @@ public class TestActivity extends AppCompatActivity{
     }
 
     public void toast(String toast){
-        SuperActivityToast.create(TestActivity.this, new Style(), Style.TYPE_STANDARD)
+        SuperActivityToast.create(DetailedRecipeActivity.this, new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
                 .setDuration(Style.DURATION_VERY_SHORT)
                 .setFrame(Style.FRAME_STANDARD)

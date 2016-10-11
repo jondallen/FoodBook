@@ -1,104 +1,78 @@
 package com.uncgcapstone.android.seniorcapstone;
 
-
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
+//Standard Android/Java imports
+import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.*;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.*;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.text.TextUtils;
-
-import com.bumptech.glide.Glide;
-import com.github.johnpersano.supertoasts.library.Style;
-import com.github.johnpersano.supertoasts.library.SuperActivityToast;
-import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-
+import android.widget.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import static android.graphics.Color.BLACK;
+import static android.view.View.*;
 
+
+//Custom Library Imports
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHItemClickListener;
 import github.nisrulz.recyclerviewhelper.RVHItemDividerDecoration;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import mabbas007.tagsedittext.TagsEditText;
-
-import static android.graphics.Color.BLACK;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
+import com.bumptech.glide.Glide;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
-
 /**
- * A simple {@link Fragment} subclass.
+ * This fragment is responsible for recipe submission
+ *
  */
 public class AddRecipeFragment extends Fragment {
 
+    /*
+    Variable Declarations
+     */
     private ImageView addPicture;
-    private TextView recipeNameText;
+    private TextView recipeNameText, stepsTitleText, ingredientsTitleText, placeholder_ingredients, placeholder_steps, tagsTitleText, placeholder_tags;
+    TagsEditText mTagsEditText;
+    private EditText ingredientsText, ingredientsText3, stepsText, servesText, prepText, cookText;
+    private AutoCompleteTextView ingredientsText2;
     private Button publishButton;
 
     final int PICK_PIC = 0;
     Uri photoUri = null;
     SharedPreferences mSharedPreferences;
 
-    private final static String TAG = "AddRecipeFragment";
+    private final static String TAG = "AddRecipeFragment"; //Identifies the fragment
 
-    RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView, mRecyclerView1;
     MyAdapter mAdapter;
     MyAdapter1 mAdapter1;
+    RecyclerView.LayoutManager mLinearLayoutManager, mLinearLayoutManager1;
+
     List<String> mIngredients = new ArrayList<>();
     List<String> mIngredients2 = new ArrayList<>();
     List<String> mIngredients3 = new ArrayList<>();
-
-    private EditText ingredientsText, ingredientsText3;
-    private AutoCompleteTextView ingredientsText2;
-
-    RecyclerView mRecyclerView1;
-    private TextView stepsTitleText;
-    private EditText stepsText;
     List<String> mSteps = new ArrayList<>();
-    RecyclerView.LayoutManager mLinearLayoutManager, mLinearLayoutManager1;
-    TextView ingredientsTitleText, placeholder_ingredients, placeholder_steps, tagsTitleText, placeholder_tags;
-    EditText servesText, prepText, cookText;
-    TagsEditText mTagsEditText;
-    //CheckBox checkbox;
+
     View v;
-    final String[] measurements = new String[] {
+    final String[] measurements = new String[] { //Used to populate the autocomplete for units
             "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts", "Cups", "Pinch", "Lb.", "Whole"
     };
-
-
-
     // url to create new product
     private String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
-
-    // JSON Node names
+    //JSON Success String
     private final String TAG_SUCCESS = "success";
 
 

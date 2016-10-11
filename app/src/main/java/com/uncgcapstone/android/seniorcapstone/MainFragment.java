@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,23 +21,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
-import com.varunest.sparkbutton.SparkButton;
-import com.varunest.sparkbutton.SparkEventListener;
 
 
 import org.apache.http.NameValuePair;
@@ -52,9 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
+
 
 
 public class MainFragment extends Fragment {
@@ -439,14 +432,6 @@ public class MainFragment extends Fragment {
             holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext, favorites);
         }
 
-        public void swapItems(List<Recipe> recipe) {
-            final RecipeDiffCallback diffCallback = new RecipeDiffCallback(recipez, recipe);
-            final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-            this.recipez.clear();
-            this.recipez.addAll(recipe);
-            diffResult.dispatchUpdatesTo(this);
-        }
-
         @Override
         public int getItemCount(){
             if(recipez != null)
@@ -742,7 +727,7 @@ public class MainFragment extends Fragment {
     }
 
     public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal){
-        Intent i = new Intent(getActivity(), TestActivity.class);
+        Intent i = new Intent(getActivity(), DetailedRecipeActivity.class);
         i.putExtra("postid", postid);
         i.putExtra("url", url);
         i.putExtra("recipename", recipename);

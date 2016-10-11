@@ -37,6 +37,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+/**
+ * This class is responsible for user log-in and is the launcher activity for the application
+ * Upon signing in, the user is taken to the MainActivity
+ */
 public class LogInActivity extends CoreActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "LogInActivity";
@@ -44,7 +48,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText emailText, passwordText; //Username and password fields
-    private Button createButton, anonButton, logInButton;
+    private Button createButton, logInButton;
     private SignInButton googleButton;
     FirebaseUser user;
     SharedPreferences mSharedPreferences;
@@ -57,6 +61,9 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        /*
+        Used for graphical improvements (notification bar)
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow(); // in Activity's onCreate() for instance
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -115,15 +122,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                 }
             }
                                   });
-/*
-        anonButton = (Button) findViewById(R.id.anonButton);
-        anonButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                showProgressDialog();
-                anonLogin();
-            }
-        });
-*/
+
         logInButton = (Button) findViewById(R.id.logInButton);
         logInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
@@ -161,6 +160,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+
     }
 
     public void createUser(String email, String password){
@@ -260,6 +260,9 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         // ...
     }
 
+    /*
+    Creates a username from email (strips out the @xxx.com part)
+     */
     private String parseName(String email) {
         if (email.contains("@")) {
             return email.split("@")[0];
@@ -271,14 +274,13 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
     public void mainPage(){
         mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString("email", parseName(user.getEmail()));
-        editor.putInt("query", 0);
+        editor.putString("email", parseName(user.getEmail())); //used to display username within the app
         if(!(mSharedPreferences.contains("firsttime")))
-        editor.putString("firsttime", "0");
+        editor.putString("firsttime", "0");                   //MAY be used if swipe-to-back is reimplemented
         if(!(mSharedPreferences.contains("query")))
-            editor.putString("query", "0");
+            editor.putString("query", "0");                 //Used to initialize the feed to display latest recipes
         else
-        editor.putString("query", "0");
+        editor.putString("query", "0");                     //Used to initialize the feed to display latest recipes
         editor.commit();
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         startActivity(intent);
