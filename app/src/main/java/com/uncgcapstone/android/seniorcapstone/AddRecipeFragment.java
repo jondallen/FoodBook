@@ -71,7 +71,7 @@ public class AddRecipeFragment extends Fragment {
             "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts", "Cups", "Pinch", "Lb.", "Whole"
     };
     // url to create new product
-    private String url_create_product = "http://3661590e.ngrok.io/android_connect/create_recipe.php";
+    private String url_create_product = "http://63d42096.ngrok.io/android_connect/create_recipe.php";
     //JSON Success String
     private final String TAG_SUCCESS = "success";
 

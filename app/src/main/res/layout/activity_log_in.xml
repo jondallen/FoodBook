@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@drawable/abc"
+    android:background="@drawable/topkek"
     tools:context="com.uncgcapstone.android.seniorcapstone.LogInActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/calendar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/calendar_icon"
         android:id="@+id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
@@ -56,7 +56,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/passwordText"
         android:background="@drawable/rounded_edittext"
-        android:backgroundTint="#80bfff"
+        android:backgroundTint="#ff6666"
         android:layout_margin="3dp"
         android:padding="5dip"
         android:ems="10"

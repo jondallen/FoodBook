@@ -5,11 +5,12 @@
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="niceBlue">#0040ff</color>
-    <color name="customPrimary">#009900</color>
-    <color name="customPrimaryDark">#006600</color>
+    <color name="customPrimary">#0099cc</color>
+    <color name="customPrimaryDark">#007399</color>
     <color name="customAccent">#000000</color>
     <color name="yellow">#ffff4d</color>
     <color name="orange">#ff9900</color>
     <color name="recipe_green">#339933</color>
+
 
 </resources>

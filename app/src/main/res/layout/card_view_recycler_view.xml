@@ -40,7 +40,7 @@
         android:paddingRight="5dp"
         android:paddingTop="5dp"
         android:hint="Chicken Parmesan"
-        android:textColor="#339933"
+        android:textColor="#4da6ff"
         />
 
         <TextView
@@ -200,10 +200,10 @@
         android:id="@+id/star"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:icon_type="star"
+        app:icon_type="heart"
         app:circle_start_color="@color/colorPrimary"
-        app:like_drawable="@drawable/star_on"
-        app:unlike_drawable="@drawable/star_off"
+        app:like_drawable="@drawable/heart_on"
+        app:unlike_drawable="@drawable/heart_off"
         app:dots_primary_color="@color/yellow"
         app:dots_secondary_color="@color/colorAccent"
         app:circle_end_color="@color/orange"

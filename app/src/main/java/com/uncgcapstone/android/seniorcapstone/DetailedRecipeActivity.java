@@ -48,11 +48,11 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     ImageView detailImage;
     TextView detailRecipeNameText, servesTextDetail, prepTextDetail, cookTextDetail;
     String postid;
-    private String url_get_ingredients_and_steps = "http://3661590e.ngrok.io/android_connect/get_ingredients_and_steps.php";
-    private String url_likes = "http://3661590e.ngrok.io/android_connect/likes.php";
-    private String url_unlikes = "http://3661590e.ngrok.io/android_connect/unlikes.php";
-    private String url_favorites = "http://3661590e.ngrok.io/android_connect/favorites.php";
-    private String url_unfavorites = "http://3661590e.ngrok.io/android_connect/unfavorites.php";
+    private String url_get_ingredients_and_steps = "http://63d42096.ngrok.io/android_connect/get_ingredients_and_steps.php";
+    private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
+    private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
+    private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
+    private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
     JSONParser jParser = new JSONParser();
     JSONArray ingredients = null;
     JSONArray steps = null;
@@ -67,13 +67,14 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     NestedScrollView testScrollView;
     ImageView backarrow; // detailStar, detailThumb;
     LikeButton detailStar, detailThumb;
+    Toolbar toolbar;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_detailed_recipe);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
@@ -91,6 +92,18 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             adapterpos = bundle.getString("adapterpos");
             likestotal = Integer.parseInt(bundle.getString("likestotal"));
         }
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar1);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(recipename);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         ingredsRecyclerViewDetail = (RecyclerView) findViewById(R.id.ingredsRecyclerViewDetail);
         stepsRecyclerViewDetail = (RecyclerView) findViewById(R.id.stepsRecyclerViewDetail);
 
@@ -99,13 +112,6 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         servesTextDetail = (TextView) findViewById(R.id.servesTextDetail);
         prepTextDetail = (TextView) findViewById(R.id.prepTextDetail);
         cookTextDetail = (TextView) findViewById(R.id.cookTextDetail);
-        backarrow = (ImageView) findViewById(R.id.backarrow);
-        backarrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
 
         detailStar = (LikeButton) findViewById(R.id.starDetail);
         detailThumb = (LikeButton) findViewById(R.id.thumbDetail);

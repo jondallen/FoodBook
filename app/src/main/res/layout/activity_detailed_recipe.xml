@@ -8,6 +8,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.uncgcapstone.android.seniorcapstone.DetailedRecipeActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar1"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/testScrollView"
@@ -31,22 +41,12 @@
             android:scaleType="fitXY"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        <ImageView
-            android:id="@+id/backarrow"
-            android:src="@drawable/back_arrow"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_gravity="top"
-            android:padding="6dp"
-            />
         </FrameLayout>
 
             <TextView
                 android:maxLines="1"
                 android:fontFamily="sans-serif-bold"
-                android:textColor="#339933"
+                android:textColor="#4da6ff"
                 android:textSize="32dp"
                 android:id="@+id/detailRecipeNameText"
                 android:layout_width="match_parent"
@@ -202,27 +202,16 @@
     <RelativeLayout
         android:background="@drawable/rounded_edittext_thicker"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         >
-        <EditText
-            android:id="@+id/commentdetail"
-            android:background="@drawable/rounded_edittext_white"
-            android:layout_width="170dp"
-            android:layout_height="match_parent"
-            android:hint="Leave a comment"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"/>
-
         <com.like.LikeButton
             android:id="@+id/starDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon_type="star"
+            app:icon_type="heart"
             app:circle_start_color="@color/colorPrimary"
-            app:like_drawable="@drawable/star_on"
-            app:unlike_drawable="@drawable/star_off"
+            app:like_drawable="@drawable/heart_on"
+            app:unlike_drawable="@drawable/heart_off"
             app:dots_primary_color="@color/yellow"
             app:dots_secondary_color="@color/colorAccent"
             app:circle_end_color="@color/orange"
@@ -265,10 +254,10 @@
             android:id="@+id/commentbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/commentdetail"
-            android:text="Send"
+            android:layout_alignParentStart="true"
+            android:text="Review This Recipe"
             android:background="@drawable/rounded_edittext_blue"
-            android:layout_marginLeft="2dp"
+            android:padding="4dp"
             android:layout_centerVertical="true"
             />
 
@@ -276,7 +265,16 @@
 </LinearLayout>
 
 <!--
-
+<EditText
+            android:id="@+id/commentdetail"
+            android:background="@drawable/rounded_edittext_white"
+            android:layout_width="170dp"
+            android:layout_height="match_parent"
+            android:hint="Leave a comment"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"/>
 
 
             -->
