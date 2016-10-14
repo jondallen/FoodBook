@@ -250,7 +250,8 @@ public class MainFragment extends Fragment {
                     String userid = ((MainActivity) getActivity()).getUID().toString();
                     String adapterpos = String.valueOf(getAdapterPosition());
                     String likestotal = mRecipes.get(getAdapterPosition()).getLikestotal();
-                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal);
+                    String username = mRecipes.get(getAdapterPosition()).getUsername();
+                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username);
 
 
 
@@ -726,7 +727,7 @@ public class MainFragment extends Fragment {
                 .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
-    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal){
+    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal, String username){
         Intent i = new Intent(getActivity(), DetailedRecipeActivity.class);
         i.putExtra("postid", postid);
         i.putExtra("url", url);
@@ -739,6 +740,7 @@ public class MainFragment extends Fragment {
         i.putExtra("userid", userid);
         i.putExtra("adapterpos", adapterpos);
         i.putExtra("likestotal", likestotal);
+        i.putExtra("username", username);
         startActivityForResult(i, 0);
     }
 

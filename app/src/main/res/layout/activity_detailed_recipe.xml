@@ -56,18 +56,31 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginLeft="6dp"
                 />
+            <TextView
+                android:id="@+id/detailUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:layout_marginLeft="6dp"
+                />
 
             <RelativeLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="6dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_edittext_thick"
                 >
                 <ImageView
                 android:id="@+id/personImageDetail"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_people_black_24dp"
                 android:layout_alignParentBottom="true"
                 />
@@ -85,8 +98,8 @@
                     />
                 <ImageView
                     android:id="@+id/clockImageDetail"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginLeft="5dp"
                     android:src="@drawable/clock"
                     android:layout_alignParentBottom="true"
@@ -106,8 +119,8 @@
                     />
                 <ImageView
                     android:id="@+id/timerImageDetail"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginLeft="5dp"
                     android:src="@drawable/timer"
                     android:layout_alignParentBottom="true"
@@ -139,11 +152,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="san-serif-bold"
-                android:textSize="24dp"
-                android:layout_marginTop="12dp"
+                android:textSize="20dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 style="?android:listSeparatorTextViewStyle"
                 android:text="Ingredients"
+                android:textColor="#4da6ff"
                 />
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/ingredsRecyclerViewDetail"
@@ -158,7 +172,9 @@
                 tools:listitem="@layout/ingredients_recyclerview"
                 >
             </android.support.v7.widget.RecyclerView>
-            </LinearLayout>
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -174,11 +190,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="san-serif-bold"
-                android:textSize="24dp"
-                android:layout_marginTop="12dp"
+                android:textSize="20dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 style="?android:listSeparatorTextViewStyle"
                 android:text="Steps"
+                android:textColor="#4da6ff"
                 />
 
             <android.support.v7.widget.RecyclerView
@@ -199,6 +216,7 @@
 
 </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
     <RelativeLayout
         android:background="@drawable/rounded_edittext_thicker"
         android:layout_width="match_parent"
@@ -256,7 +274,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:text="Review This Recipe"
-            android:background="@drawable/rounded_edittext_blue"
+            android:background="@drawable/rounded_edittext_orange"
             android:padding="4dp"
             android:layout_centerVertical="true"
             />

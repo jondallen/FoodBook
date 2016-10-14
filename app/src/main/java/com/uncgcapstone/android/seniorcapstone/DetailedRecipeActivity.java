@@ -33,6 +33,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,10 +44,10 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 public class DetailedRecipeActivity extends AppCompatActivity{
 
     private SwipeBackActivityHelper mHelper;
-    String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos = "";
+    String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, username = "";
     int likestotal;
     ImageView detailImage;
-    TextView detailRecipeNameText, servesTextDetail, prepTextDetail, cookTextDetail;
+    TextView detailRecipeNameText, servesTextDetail, prepTextDetail, cookTextDetail, detailUsername;
     String postid;
     private String url_get_ingredients_and_steps = "http://63d42096.ngrok.io/android_connect/get_ingredients_and_steps.php";
     private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
@@ -91,6 +92,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             userid = bundle.getString("userid");
             adapterpos = bundle.getString("adapterpos");
             likestotal = Integer.parseInt(bundle.getString("likestotal"));
+            username = bundle.getString("username");
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar1);
@@ -112,6 +114,9 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         servesTextDetail = (TextView) findViewById(R.id.servesTextDetail);
         prepTextDetail = (TextView) findViewById(R.id.prepTextDetail);
         cookTextDetail = (TextView) findViewById(R.id.cookTextDetail);
+
+        detailUsername = (TextView) findViewById(R.id.detailUsername);
+        detailUsername.setText("Added by " + username);
 
         detailStar = (LikeButton) findViewById(R.id.starDetail);
         detailThumb = (LikeButton) findViewById(R.id.thumbDetail);
