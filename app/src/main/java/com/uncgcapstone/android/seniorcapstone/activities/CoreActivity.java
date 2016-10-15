@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.activities;
 
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;

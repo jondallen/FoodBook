@@ -15,7 +15,6 @@
         <item name="colorPrimary">@color/customPrimary</item>
         <item name="colorPrimaryDark">@color/customPrimaryDark</item>
         <item name="colorAccent">@color/customAccent</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 

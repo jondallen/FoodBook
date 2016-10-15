@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,8 +31,14 @@ import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
+import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
+import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
+import com.uncgcapstone.android.seniorcapstone.R;
+import com.uncgcapstone.android.seniorcapstone.data.Recipe;
 
 
 import org.apache.http.NameValuePair;
@@ -214,10 +220,11 @@ public class MainFragment extends Fragment {
 
     private class CardViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
-        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText;
+        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText, countText;
         private ImageView cardImage;
         ImageView mLikeButtonThumb, mLikeButtonStar;
         LikeButton mLikeButton, mFavoriteButton;
+        SimpleRatingBar starRating;
         public CardViewHolder(View itemView){
             super(itemView);
 
@@ -234,6 +241,8 @@ public class MainFragment extends Fragment {
             tag2 = (TextView) itemView.findViewById(R.id.tag2);
             tag3 = (TextView) itemView.findViewById(R.id.tag3);
             likesText = (TextView) itemView.findViewById(R.id.likesText);
+            starRating = (SimpleRatingBar) itemView.findViewById(R.id.starRating);
+            countText = (TextView) itemView.findViewById(R.id.countText);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -357,7 +366,7 @@ public class MainFragment extends Fragment {
 
         }
 
-        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites) {
+        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites, String rating, String count) {
             cardUsername.setText("Added by " + username);
             cardTitle.setText(recipename);
             cardTime.setText(cardtime);
@@ -399,6 +408,12 @@ public class MainFragment extends Fragment {
                 mFavoriteButton.setLiked(false);
             }
 
+
+            starRating.setRating(Float.parseFloat(rating));
+
+            countText.setText("(" + count + ")");
+
+
         }
     }
 
@@ -430,7 +445,9 @@ public class MainFragment extends Fragment {
             String likes = recipez.get(position).getLikes();
             String likestext = recipez.get(position).getLikestotal();
             String favorites = recipez.get(position).getFavorites();
-            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext, favorites);
+            String rating = String.valueOf(recipez.get(position).getRating());
+            String count = recipez.get(position).getCount().toString();
+            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext, favorites, rating, count);
         }
 
         @Override
@@ -616,7 +633,7 @@ public class MainFragment extends Fragment {
                                     recipe.getTag3().toString(),
                                     recipe.getLikes().toString(),
                                     recipe.getLikestotal().toString()
-                            , recipe.getFavorites().toString()));
+                            , recipe.getFavorites().toString(), recipe.getRating().toString(), recipe.getCount().toString()));
                         }
                     } else {
                     }
@@ -660,7 +677,7 @@ public class MainFragment extends Fragment {
                             Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
                             mRecipes.add(new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
                                     , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString(), recipe.getLikes().toString(), recipe.getLikestotal().toString()
-                            , recipe.getFavorites().toString()));
+                            , recipe.getFavorites().toString(), recipe.getRating().toString(), recipe.getCount()));
                         }
 
                     } else {

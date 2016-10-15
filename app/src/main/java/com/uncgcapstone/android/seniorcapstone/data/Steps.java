@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.data;
 
 /**
  * Created by jon on 10/4/2016.

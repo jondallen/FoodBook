@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.data;
 
 /**
  * Created by jon on 9/17/2016.
@@ -19,12 +19,14 @@ public class Recipe {
     String likes;
     String likestotal;
     String favorites;
+    String rating;
+    String count;
 
     public Recipe(){
 
     }
 
-    public Recipe(int postid, String uid, String username, String recipename, String url, String datetime, String preptime, String cooktime, String serves, String tag1, String tag2, String tag3, String likes, String likestotal, String favorites){
+    public Recipe(int postid, String uid, String username, String recipename, String url, String datetime, String preptime, String cooktime, String serves, String tag1, String tag2, String tag3, String likes, String likestotal, String favorites, String rating, String count){
         this.postid = postid;
         this.uid = uid;
         this.username = username;
@@ -40,6 +42,8 @@ public class Recipe {
         this.likes = likes;
         this.likestotal = likestotal;
         this.favorites = favorites;
+        this.rating = rating;
+        this.count = count;
     }
 
     public String getUid() {
@@ -160,6 +164,22 @@ public class Recipe {
 
     public void setFavorites(String favorites) {
         this.favorites = favorites;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
     }
 }
 

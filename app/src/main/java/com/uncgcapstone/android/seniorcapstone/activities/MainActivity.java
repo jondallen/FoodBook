@@ -1,7 +1,5 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.activities;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -10,41 +8,28 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.app.AlertDialog.*;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.JsonArray;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -55,22 +40,20 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
+import com.uncgcapstone.android.seniorcapstone.R;
+import com.uncgcapstone.android.seniorcapstone.fragments.MainFragment;
+import com.uncgcapstone.android.seniorcapstone.fragments.ScheduleFragment;
 
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import mabbas007.tagsedittext.TagsEditText;
 
 public class MainActivity extends CoreActivity {
 
@@ -123,7 +106,7 @@ public class MainActivity extends CoreActivity {
         myRef  = database.getReference("post");
         countRef = database.getReference("count");
 
-        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         emailString = mSharedPreferences.getString("email", "");
 
 
@@ -492,7 +475,7 @@ super.onDestroy();
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!(spinner.getTag(R.id.pos).toString().equals(String.valueOf(position)))) {
                     if (position == 0) {
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "0");
                         editor.commit();
@@ -506,7 +489,7 @@ super.onDestroy();
                                 .addToBackStack(null).commit();
 
                     } else if (position == 1) {
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "1");
                         editor.commit();

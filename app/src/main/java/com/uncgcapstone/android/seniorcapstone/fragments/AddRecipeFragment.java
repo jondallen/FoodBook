@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.fragments;
 
 //Standard Android/Java imports
 import android.content.*;
@@ -31,6 +31,9 @@ import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
+import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
+import com.uncgcapstone.android.seniorcapstone.R;
+
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 

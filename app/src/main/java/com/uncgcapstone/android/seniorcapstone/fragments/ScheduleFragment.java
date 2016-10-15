@@ -1,4 +1,4 @@
-package com.uncgcapstone.android.seniorcapstone;
+package com.uncgcapstone.android.seniorcapstone.fragments;
 
 
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
+import com.uncgcapstone.android.seniorcapstone.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

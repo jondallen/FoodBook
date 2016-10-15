@@ -45,9 +45,9 @@
                 />
             <stroke
                 android:width="2.0dp"
-                android:color="#BDBDBD" />
+                android:color="#999999" />
             <corners
-                android:radius="1dp" />
+                android:radius="0dp" />
         </shape>
     </item>
 
