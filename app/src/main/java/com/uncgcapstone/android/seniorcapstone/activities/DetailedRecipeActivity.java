@@ -40,7 +40,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     JSONArray ingredients = null;
     JSONArray steps = null;
     Gson gson = new Gson();
-    public String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, username = "";
+    public String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, username, loggedinuser = "";
     int likestotal;
     ImageView detailBackButton;
     TextView detailRecipeNameText, detailUsername;
@@ -72,6 +72,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             adapterpos = bundle.getString("adapterpos");
             likestotal = Integer.parseInt(bundle.getString("likestotal"));
             username = bundle.getString("username");
+            loggedinuser = bundle.getString("loggedinuser");
         }
 
 
@@ -286,7 +287,7 @@ public String getServings(){
         return url;
     }
     public String getUsername(){
-        return username;
+        return loggedinuser;
     }
 
 

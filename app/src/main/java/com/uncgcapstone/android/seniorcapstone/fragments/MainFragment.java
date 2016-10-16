@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
@@ -63,9 +64,15 @@ public class MainFragment extends Fragment {
     private final String TAG = "MainFragment";
     JSONParser jParser = new JSONParser();
     private String url_all_recipes = "http://63d42096.ngrok.io/android_connect/get_all_recipes.php";
+    private String url_all_favorites = "http://63d42096.ngrok.io/android_connect/get_all_recipes_favorites.php";
     private String url_all_recipes_likes = "http://63d42096.ngrok.io/android_connect/get_all_recipes_likes.php";
+    private String url_all_recipes_rating = "http://63d42096.ngrok.io/android_connect/get_all_recipes_rating.php";
+    private String url_all_recipes_num__rating = "http://63d42096.ngrok.io/android_connect/get_all_recipes_num_rating.php";
     private String url_search_recipes = "http://63d42096.ngrok.io/android_connect/search_recipes.php";
+    private String url_search_recipes_favorites = "http://63d42096.ngrok.io/android_connect/search_recipes_favorites.php";
     private String url_search_recipes_likes = "http://63d42096.ngrok.io/android_connect/search_recipes_likes.php";
+    private String url_search_recipes_rating = "http://63d42096.ngrok.io/android_connect/search_recipes_rating.php";
+    private String url_search_recipes_num_rating = "http://63d42096.ngrok.io/android_connect/search_recipes_num_rating.php";
     private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
     private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
     private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
@@ -114,7 +121,7 @@ public class MainFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_main, container, false);
         ((MainActivity)getActivity()).showOverflowMenu(true);
 
-        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
 
         searchBarLayout = (RelativeLayout) v.findViewById(R.id.toolbar2);
@@ -187,12 +194,19 @@ public class MainFragment extends Fragment {
             }
         });
 
-        if(!(mSharedPreferences.getString("search", "").equals("")))
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Search: " + mSharedPreferences.getString("search", ""));
+        if(!(mSharedPreferences.getString("search", "").equals(""))) {
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Search: " + mSharedPreferences.getString("search", ""));
+        }
         else if(mSharedPreferences.getString("query", "").equals("0"))
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Latest Recipes");
-        else
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Top Recipes");
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Latest");
+        else if(mSharedPreferences.getString("query", "").equals("1"))
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Most Liked");
+        else if(mSharedPreferences.getString("query", "").equals("2"))
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Favorites");
+        else if(mSharedPreferences.getString("query", "").equals("3"))
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Highest Rated");
+        else if(mSharedPreferences.getString("query", "").equals("4"))
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Most Rated");
 
         fab = (FloatingActionButton) v.findViewById(R.id.myFAB);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -408,8 +422,10 @@ public class MainFragment extends Fragment {
                 mFavoriteButton.setLiked(false);
             }
 
-
-            starRating.setRating(Float.parseFloat(rating));
+            starRating.setStepSize(0.05F);
+            Float f = Float.parseFloat(rating);
+            Log.d("Rating", rating);
+            starRating.setRating(f);
 
             countText.setText("(" + count + ")");
 
@@ -570,15 +586,15 @@ public class MainFragment extends Fragment {
             // Building Parameters
             List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-            mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
+            mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
             String search = mSharedPreferences.getString("search", "");
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             //////editor.putString("search", "");
             //////editor.commit();
             //search.toUpperCase();
             String[] searchArray = search.split(" ");
-            JSONObject json1;
-            JSONObject json;
+            JSONObject json1 = new JSONObject();
+            JSONObject json = new JSONObject();
             if(!(search.equals(""))) {
                 if(mSharedPreferences.getString("query", "").equals("0")){
                     for (int i = 0; i < searchArray.length; i++) {
@@ -592,7 +608,7 @@ public class MainFragment extends Fragment {
                     }
                 json1 = jParser.makeHttpRequest(url_search_recipes, "POST", params);
                }
-                else{
+                else if(mSharedPreferences.getString("query", "").equals("1")){
                     for (int i = 0; i < searchArray.length; i++) {
                         Log.d("For loop to make array", searchArray[i]);
                         params.add(new BasicNameValuePair("search[]", searchArray[i]));
@@ -604,7 +620,42 @@ public class MainFragment extends Fragment {
                     }
                     json1 = jParser.makeHttpRequest(url_search_recipes_likes, "POST", params);
                 }
-
+                else if(mSharedPreferences.getString("query", "").equals("2")){
+                    for (int i = 0; i < searchArray.length; i++) {
+                        Log.d("For loop to make array", searchArray[i]);
+                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
+                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    }
+                    String[] searchUnbroken = {search};
+                    for(int i = 0; i < searchUnbroken.length; i++) {
+                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
+                    }
+                    json1 = jParser.makeHttpRequest(url_search_recipes_favorites, "POST", params);
+                }
+                else if(mSharedPreferences.getString("query", "").equals("3")){
+                    for (int i = 0; i < searchArray.length; i++) {
+                        Log.d("For loop to make array", searchArray[i]);
+                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
+                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    }
+                    String[] searchUnbroken = {search};
+                    for(int i = 0; i < searchUnbroken.length; i++) {
+                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
+                    }
+                    json1 = jParser.makeHttpRequest(url_search_recipes_rating, "POST", params);
+                }
+                else if(mSharedPreferences.getString("query", "").equals("4")){
+                    for (int i = 0; i < searchArray.length; i++) {
+                        Log.d("For loop to make array", searchArray[i]);
+                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
+                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    }
+                    String[] searchUnbroken = {search};
+                    for(int i = 0; i < searchUnbroken.length; i++) {
+                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
+                    }
+                    json1 = jParser.makeHttpRequest(url_search_recipes_num_rating, "POST", params);
+                }
 
                 try {
                     if (json1 != null) {
@@ -650,21 +701,29 @@ public class MainFragment extends Fragment {
                     params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
                     json = jParser.makeHttpRequest(url_all_recipes, "POST", params1);
                 }
-                else{
+                else if(mSharedPreferences.getString("query", "").equals("1")){
                     List<NameValuePair> params1 = new ArrayList<NameValuePair>();
                     params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
                     json = jParser.makeHttpRequest(url_all_recipes_likes, "POST", params1);
                 }
-
+                else if(mSharedPreferences.getString("query", "").equals("2")){
+                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    json = jParser.makeHttpRequest(url_all_favorites, "POST", params1);
+                }
+                else if(mSharedPreferences.getString("query", "").equals("3")){
+                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    json = jParser.makeHttpRequest(url_all_recipes_rating, "POST", params1);
+                }
+                else if(mSharedPreferences.getString("query", "").equals("4")){
+                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
+                    json = jParser.makeHttpRequest(url_all_recipes_num__rating, "POST", params1);
+                }
 
                 try {
-
-
-
-                    // Checking for SUCCESS TAG
-                    int success = json.getInt(TAG_SUCCESS);
-
-                    if (success == 1) {
+                    if (json != null) {
                         // products found
                         // Getting Array of Products
                         recipes = json.getJSONArray("Recipes");
@@ -758,6 +817,9 @@ public class MainFragment extends Fragment {
         i.putExtra("adapterpos", adapterpos);
         i.putExtra("likestotal", likestotal);
         i.putExtra("username", username);
+        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+        String loggedinuser = mSharedPreferences.getString("email", "");
+        i.putExtra("loggedinuser", loggedinuser);
         startActivityForResult(i, 0);
     }
 

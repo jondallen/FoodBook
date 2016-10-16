@@ -500,6 +500,42 @@ super.onDestroy();
                                 .replace(R.id.fragment_container, fragment2, "MainFragment")
                                 .addToBackStack(null).commit();
                     }
+                    else if(position == 2){
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "2");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 2);
+
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
+                    else if(position == 3){
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "3");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 3);
+
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
+                    else if(position == 4){
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "4");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 4);
+
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
 
                 }
             }
@@ -541,6 +577,7 @@ super.onDestroy();
     public String getUID(){
         return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
     }
+
 
     @Override
     public void onBackPressed(){
