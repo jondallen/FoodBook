@@ -273,6 +273,10 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
             editor.putString("query", "0");                 //Used to initialize the feed to display latest recipes
         else
         editor.putString("query", "0");                     //Used to initialize the feed to display latest recipes
+        if(!(mSharedPreferences.contains("imageurl")))
+            editor.putString("imageurl", "");                 //Used to initialize the feed to display latest recipes
+        else
+            editor.putString("imageurl", "");
         editor.commit();
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         startActivity(intent);

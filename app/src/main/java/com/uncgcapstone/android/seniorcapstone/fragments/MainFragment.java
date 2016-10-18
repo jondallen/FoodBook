@@ -1,5 +1,6 @@
 package com.uncgcapstone.android.seniorcapstone.fragments;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import dmax.dialog.SpotsDialog;
+
 import static android.content.Context.MODE_PRIVATE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
@@ -91,7 +94,7 @@ public class MainFragment extends Fragment {
     //TagsEditText searchBar;
     EditText searchBar;
     ImageView searchIcon;
-    ProgressDialog mProgressDialog;
+    AlertDialog mAlertDialog;
     private View v, cardViewHolderView;
     SharedPreferences mSharedPreferences;
     //LikeButton mLikeButtonThumb, mLikeButtonStar;
@@ -424,8 +427,8 @@ public class MainFragment extends Fragment {
 
             starRating.setStepSize(0.05F);
             Float f = Float.parseFloat(rating);
-            Log.d("Rating", rating);
             starRating.setRating(f);
+
 
             countText.setText("(" + count + ")");
 
@@ -516,7 +519,7 @@ public class MainFragment extends Fragment {
         mLinearLayoutManager = null;
         mGridLayoutManager = null;
         mSwipeRefreshLayout = null;
-        mProgressDialog = null;
+        mAlertDialog = null;
         searchBarLayout = null;
         v = null;
         cardViewHolderView = null;
@@ -777,20 +780,17 @@ public class MainFragment extends Fragment {
     }
 
     public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getContext());
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage("Loading...");
+        if (mAlertDialog == null) {
+            mAlertDialog = new SpotsDialog(getContext());
+            mAlertDialog.setCancelable(false);
         }
 
-        mProgressDialog.show();
+        mAlertDialog.show();
     }
 
     public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
         }
     }
 

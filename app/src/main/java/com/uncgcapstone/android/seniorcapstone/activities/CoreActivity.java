@@ -1,9 +1,12 @@
 package com.uncgcapstone.android.seniorcapstone.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import dmax.dialog.SpotsDialog;
 
 /**
  * Created by jon on 8/31/2016.
@@ -12,23 +15,20 @@ import com.google.firebase.auth.FirebaseAuth;
  * of the LogInActivity
  */
 public class CoreActivity extends AppCompatActivity {
-    private ProgressDialog mProgressDialog;
+    private AlertDialog mAlertDialog;
 
     public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage("Loading...");
+        if (mAlertDialog == null) {
+            mAlertDialog = new SpotsDialog(this);
+            mAlertDialog.setCancelable(false);
         }
 
-        mProgressDialog.show();
+        mAlertDialog.show();
     }
 
     public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
         }
     }
 

@@ -5,18 +5,19 @@ package com.uncgcapstone.android.seniorcapstone.data;
  */
 
 public class Comments {
-    String userid, postid, review, rating, username, datetime;
+    String userid, postid, review, rating, username, datetime, url;
 
     public Comments(){
 
     }
-    public Comments(String userid, String postid, String review, String rating, String username, String datetime){
+    public Comments(String userid, String postid, String review, String rating, String username, String datetime, String url){
         this.userid = userid;
         this.postid = postid;
         this.review = review;
         this.rating = rating;
         this.username = username;
         this.datetime = datetime;
+        this.url = url;
     }
 
     public String getUserid() {
@@ -66,4 +67,13 @@ public class Comments {
     public void setDatetime(String datetime) {
         this.datetime = datetime;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
 }

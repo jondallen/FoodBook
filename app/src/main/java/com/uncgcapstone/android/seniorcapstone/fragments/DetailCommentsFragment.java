@@ -19,9 +19,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
@@ -49,7 +52,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import dmax.dialog.SpotsDialog;
+
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
 /**
@@ -70,10 +78,14 @@ public class DetailCommentsFragment extends Fragment {
     RecyclerView commentsRecyclerViewDetail;
     RecyclerView.Adapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
-    TextView emptyText;
-    ProgressDialog mProgressDialog;
+    TextView emptyText, commentsTitle, avgRatingText;
+    android.app.AlertDialog mAlertDialog;
     JSONArray comments = null;
     FloatingActionButton commentsFAB;
+    SimpleRatingBar avgRatingBar;
+    TextView numRatingText;
+    String mAvg, mCount = "";
+    LinearLayout commentsRelLayout;
 
 
     public DetailCommentsFragment() {
@@ -95,8 +107,17 @@ public class DetailCommentsFragment extends Fragment {
         mComments = new ArrayList<>();
         commentsRecyclerViewDetail = (RecyclerView) v.findViewById(R.id.commentsRecyclerViewDetail);
 
+        avgRatingBar = (SimpleRatingBar) v.findViewById(R.id.avgRatingBar);
+        numRatingText = (TextView) v.findViewById(R.id.numRatingText);
+        avgRatingText = (TextView) v.findViewById(R.id.avgRatingText);
+
+        commentsRelLayout = (LinearLayout) v.findViewById(R.id.commentsRelLayout);
+        commentsRelLayout.setVisibility(GONE);
+
         emptyText = (TextView) v.findViewById(R.id.emptyText);
         emptyText.setVisibility(GONE);
+
+        commentsTitle = (TextView) v.findViewById(R.id.commentsTitle);
 
       commentsFAB = (FloatingActionButton) v.findViewById(R.id.commentsFAB);
         commentsFAB.setOnClickListener(new View.OnClickListener() {
@@ -140,15 +161,34 @@ public class DetailCommentsFragment extends Fragment {
                         .create().show();
             }
         });
-
+        showProgressDialog();
         new GetAllReviews().execute();
         return v;
+    }
+
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        /**
+         * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
+         * It may or may not be actually necessary
+         */
+        new Thread(new Runnable() {
+            public void run() {
+                Glide.get(getContext()).clearDiskCache();
+            }
+        }).start();
+        Glide.get(getContext()).clearMemory();
+        /**
+         *
+         */
     }
 
 
     private class CommentsHolder extends RecyclerView.ViewHolder {
         TextView commentsUsername, commentsComment, commentsDateTime;
         SimpleRatingBar commentsRating;
+        CircleImageView commentsIcon;
 
         public CommentsHolder(View itemView) {
             super(itemView);
@@ -157,6 +197,8 @@ public class DetailCommentsFragment extends Fragment {
             commentsComment = (TextView) itemView.findViewById(R.id.commentsComment);
             commentsRating = (SimpleRatingBar) itemView.findViewById(R.id.commentsRating);
             commentsDateTime = (TextView) itemView.findViewById(R.id.commentsDateTime);
+            commentsIcon = (CircleImageView) itemView.findViewById(R.id.commentsIcon);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -166,11 +208,15 @@ public class DetailCommentsFragment extends Fragment {
             });
         }
 
-        public void bindCard(String username, String comment, String datetime, String rating) {
+        public void bindCard(String username, String comment, String datetime, String rating, String url) {
             commentsUsername.setText(username);
             commentsComment.setText(comment);
-            commentsDateTime.setText("Submitted " + datetime);
+            commentsDateTime.setText(datetime);
             commentsRating.setRating(Float.parseFloat(rating));
+            if(url.length() > 0){
+                Glide.with(getContext()).load(url).centerCrop().placeholder(R.drawable.person).dontAnimate().diskCacheStrategy(RESULT).into(commentsIcon);
+            }
+
 
         }
     }
@@ -196,7 +242,8 @@ public class DetailCommentsFragment extends Fragment {
             String comment = commentz.get(position).getReview();
             String datetime = commentz.get(position).getDatetime();
             String rating = commentz.get(position).getRating();
-            holder.bindCard(username, comment, datetime, rating);
+            String url = commentz.get(position).getUrl();
+            holder.bindCard(username, comment, datetime, rating, url);
         }
 
         @Override
@@ -233,6 +280,7 @@ public class DetailCommentsFragment extends Fragment {
                 params.add(new BasicNameValuePair("rating", args[1]));
                 params.add(new BasicNameValuePair("username", ((DetailedRecipeActivity)getActivity()).getUsername()));
                 params.add(new BasicNameValuePair("datetime", datetime));
+
 
                 JSONObject json = jParser.makeHttpRequest(url_create_review, "POST", params);
 
@@ -293,8 +341,11 @@ public class DetailCommentsFragment extends Fragment {
                             JSONObject c = comments.getJSONObject(i);
                             //Log.d(TAG, c.toString());
                             Comments comment = gson.fromJson(c.toString(), Comments.class);
-                            mComments.add(new Comments(comment.getUserid(), comment.getPostid(), comment.getReview(), comment.getRating(), comment.getUsername(), comment.getDatetime()));
+                            mComments.add(new Comments(comment.getUserid(), comment.getPostid(), comment.getReview(), comment.getRating(), comment.getUsername(), comment.getDatetime(), comment.getUrl()));
                         }
+
+                        mAvg = json.getString("average");
+                        mCount = json.getString("count");
 
                     } else {
                         // no products found
@@ -314,15 +365,23 @@ public class DetailCommentsFragment extends Fragment {
         protected void onPostExecute(String file_url) {
             if(mComments.size() == 0){
                 commentsRecyclerViewDetail.setVisibility(GONE);
-                emptyText.setVisibility(View.VISIBLE);
+                emptyText.setVisibility(VISIBLE);
                 hideProgressDialog();
             }
             else {
                 emptyText.setVisibility(GONE);
-                commentsRecyclerViewDetail.setVisibility(View.VISIBLE);
+                commentsRelLayout.setVisibility(VISIBLE);
+
+                avgRatingBar.setRating(Float.parseFloat(mAvg));
+                numRatingText.setText("Number of reviews: " + mCount);
+
+                avgRatingText.setText("Average Review: ");
+
+                commentsTitle.setText("Reviews for  " + ((DetailedRecipeActivity)getActivity()).getRecipename());
+
+                commentsRecyclerViewDetail.setVisibility(VISIBLE);
 
                 mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-                commentsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
                 commentsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
                 commentsRecyclerViewDetail.setHasFixedSize(true);
                 mAdapter = new CommentsAdapter(mComments);
@@ -347,20 +406,17 @@ public class DetailCommentsFragment extends Fragment {
     }
 
     public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getContext());
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage("Loading...");
+        if (mAlertDialog == null) {
+            mAlertDialog = new SpotsDialog(getContext());
+            mAlertDialog.setCancelable(false);
         }
 
-        mProgressDialog.show();
+        mAlertDialog.show();
     }
 
     public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
         }
     }
 }

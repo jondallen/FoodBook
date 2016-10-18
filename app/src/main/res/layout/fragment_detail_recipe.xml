@@ -28,7 +28,18 @@
                 android:scaleType="fitXY"
                 android:layout_width="fill_parent"
                 android:layout_height="240dp"/>
-
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_edittext_thick"
+                >
             <TextView
                 android:maxLines="1"
                 android:fontFamily="sans-serif-bold"
@@ -39,17 +50,22 @@
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
                 android:maxLength="30"
-                android:layout_marginTop="4dp"
-                android:layout_marginLeft="6dp"
+                android:gravity="center"
                 />
+
             <TextView
                 android:id="@+id/detailUsername"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
                 android:textSize="15dp"
-                android:layout_marginLeft="6dp"
+                android:layout_below="@id/detailRecipeNameText"
+                android:gravity="center"
+                android:fontFamily="sans-serif-bold"
                 />
+
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -59,7 +75,7 @@
                 android:gravity="center_horizontal"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="12dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_edittext_thick"
                 >

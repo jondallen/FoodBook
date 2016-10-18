@@ -1,6 +1,7 @@
 package com.uncgcapstone.android.seniorcapstone.fragments;
 
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,7 +59,7 @@ public class DetailRecipeFragment extends Fragment {
     Gson gson = new Gson();
     Ingredients[] mIngredients;
     Steps[] mSteps;
-    ProgressDialog mProgressDialog;
+    AlertDialog mAlertDialog;
     RecyclerView.Adapter mAdapter, mAdapter1;
     LinearLayoutManager mLinearLayoutManager, mLinearLayoutManager1;
     ImageView detailImage;
@@ -225,20 +228,17 @@ public class DetailRecipeFragment extends Fragment {
 
 
     public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getContext());
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage("Loading...");
+        if (mAlertDialog == null) {
+            mAlertDialog = new SpotsDialog(getContext());
+            mAlertDialog.setCancelable(false);
         }
 
-        mProgressDialog.show();
+        mAlertDialog.show();
     }
 
     public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
+        if (mAlertDialog != null && mAlertDialog.isShowing()) {
+            mAlertDialog.dismiss();
         }
     }
 

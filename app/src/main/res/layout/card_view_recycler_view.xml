@@ -65,10 +65,12 @@
             app:srb_stepSize="0.05"
             app:srb_borderColor="#C5B358"
             app:srb_fillColor="#C5B358"
+            app:srb_isIndicator="true"
             android:layout_marginLeft="3dp"
             android:layout_marginTop="3dp"
             android:layout_below="@id/cardUsername"
             android:layout_centerVertical="true"
+
             />
         <TextView
             android:id="@+id/countText"

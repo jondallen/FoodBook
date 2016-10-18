@@ -5,34 +5,49 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:padding="4dp"
+              android:background="@drawable/rounded_edittext_thin"
     >
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <ImageView
-        android:src="@drawable/usericon_small"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="#007399"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        >
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/commentsIcon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/person"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#ffffff"
         />
+
     <TextView
+        android:layout_toRightOf="@id/commentsIcon"
+        android:layout_centerVertical="true"
         android:id="@+id/commentsUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
         android:hint="jon2056"
+        android:fontFamily="sans-serif-bold"
         />
-</LinearLayout>
+</RelativeLayout>
+
     <TextView
+        android:layout_marginTop="6dp"
         android:id="@+id/commentsComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Comment goes here"
-        android:textSize="19sp"
+        android:layout_marginLeft="4dp"
+        android:textSize="20sp"
         />
     <TextView
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="4dp"
         android:id="@+id/commentsDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +56,10 @@
         />
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        >
     <TextView
         android:id="@+id/userratingtext"
         android:layout_width="wrap_content"
@@ -60,6 +78,8 @@
             app:srb_stepSize="0.5"
             app:srb_borderColor="#C5B358"
             app:srb_fillColor="#C5B358"
+            app:srb_isIndicator="true"
+
             android:layout_toRightOf="@id/userratingtext"
             android:layout_centerVertical="true"
             />

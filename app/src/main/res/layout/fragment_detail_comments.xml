@@ -3,30 +3,111 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
               android:orientation="vertical"
+                android:background="#f2f2f2"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context="com.uncgcapstone.android.seniorcapstone.fragments.DetailCommentsFragment">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants"
+            >
+
+    <LinearLayout
+        android:id="@+id/commentsRelLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_thin"
+        android:orientation="vertical"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/commentsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Reviews for Cheeseburger"
+                android:fontFamily="sans-serif-bold"
+                android:textColor="#4da6ff"
+                android:textSize="23sp"
+                android:layout_centerHorizontal="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commentsRelLayout"
+            android:gravity="center"
+            >
+            <TextView
+                android:id="@+id/avgRatingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Average Review: "
+                android:fontFamily="sans-serif"
+                android:textColor="#000000"
+                android:textSize="17sp"
+
+                />
+            <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                android:id="@+id/avgRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srb_starSize="15dp"
+                app:srb_numberOfStars="5"
+                app:srb_rating="3"
+                app:srb_stepSize="0.5"
+                app:srb_borderColor="#C5B358"
+                app:srb_fillColor="#C5B358"
+                app:srb_isIndicator="true"
+                android:layout_toRightOf="@id/avgRatingText"
+
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/numRatingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Number of Reviews: "
+                android:fontFamily="sans-serif"
+                android:textColor="#000000"
+                android:textSize="17sp"
+                android:layout_centerHorizontal="true"
+                />
+        </RelativeLayout>
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/commentsRelLayout"
+        android:layout_margin="4dp"
         android:id="@+id/commentsRecyclerViewDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
         tools:listitem="@layout/comments_recyclerview"
-        android:layout_margin="5dp"
+
         >
     </android.support.v7.widget.RecyclerView>
 
-    <TextView
-        android:id="@+id/emptyText"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:textSize="28dp"
-        android:layout_centerInParent="true"
-        android:fontFamily="sans-serif-thin"
-        android:text="Nothing here! Help out by adding a review."
-        />
 
 
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
     <android.support.design.widget.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/commentsFAB"
@@ -44,6 +125,15 @@
         app:fabSize="normal"
         />
 
+    <TextView
+        android:id="@+id/emptyText"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:textSize="28dp"
+        android:layout_centerInParent="true"
+        android:fontFamily="sans-serif-thin"
+        android:text="Nothing here! Help out by adding a review."
+        />
 </RelativeLayout>
 
 

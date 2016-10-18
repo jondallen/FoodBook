@@ -18,6 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.bumptech.glide.Glide;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,6 +34,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -40,20 +45,25 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.uncgcapstone.android.seniorcapstone.data.Recipe;
+import com.uncgcapstone.android.seniorcapstone.data.User;
 import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.fragments.MainFragment;
-import com.uncgcapstone.android.seniorcapstone.fragments.ScheduleFragment;
+
 
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 public class MainActivity extends CoreActivity {
 
@@ -81,14 +91,26 @@ public class MainActivity extends CoreActivity {
     OnFailureListener mOnFailureListener;
     OnPausedListener mOnPausedListener;
     OnSuccessListener mOnSuccessListener;
+    final int PICK_PIC = 0;
+    JSONParser jParser = new JSONParser();
+    String tempUrlSet = "";
+    boolean urlGet, hasLoadedImage = false;
+    List<User> mUser;
+    Gson gson = new Gson();
+    JSONArray jsonuser = null;
+    String tempUrl = "";
+
 
 
 
     // url to create new product
     private String url_create_product = "http://63d42096.ngrok.io/android_connect/create_recipe.php";
+    private String url_set_profile_image = "http://63d42096.ngrok.io/android_connect/set_profile_image.php";
+    private String url_get_profile_image = "http://63d42096.ngrok.io/android_connect/get_profile_image.php";
 
     // JSON Node names
     private final String TAG_SUCCESS = "success";
+    IProfile profile;
 
 
 
@@ -128,6 +150,11 @@ public class MainActivity extends CoreActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+                    if(hasLoadedImage == false) {
+                        new GetProfileImage().execute();
+                        hasLoadedImage = true;
+                    }
+
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
@@ -136,18 +163,31 @@ public class MainActivity extends CoreActivity {
 
             }
         };
+
+
+
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.background_gradient_vertical)
+                .withHeaderBackground(R.drawable.header1)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
-                        new ProfileDrawerItem().withEmail(emailString)
-                        .withIcon(getResources().getDrawable(R.drawable.usericon_small))
+                        profile = new ProfileDrawerItem().withEmail(emailString)
+                        .withIcon(getResources().getDrawable(R.drawable.person))
                                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                        getIntent.setType("image/*");
+
+                        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        pickIntent.setType("image/*");
+
+                        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                        startActivityForResult(chooserIntent, PICK_PIC);
                         return false;
                     }
                 })
@@ -195,13 +235,8 @@ public class MainActivity extends CoreActivity {
                             return false;
                         }
                         else if(drawerItem.getIdentifier() == 3){
-                            ScheduleFragment fragment = ScheduleFragment.newInstance();
-                            fm = getSupportFragmentManager();
-                            fm.beginTransaction()
-                                    .replace(R.id.fragment_container, fragment, "ScheduleFragment")
-                                    .addToBackStack(null)
-                                    .commit();
-                            toolbar.setTitle("Schedule");
+                            Intent i = new Intent(MainActivity.this, BasicActivity.class);
+                            startActivity(i);
                             return false;
                         }
                         else if(drawerItem.getIdentifier() == 4){
@@ -215,6 +250,7 @@ public class MainActivity extends CoreActivity {
                 })
                 .withAccountHeader(headerResult).withSelectedItem(-1).
                         build();
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
@@ -258,7 +294,9 @@ public class MainActivity extends CoreActivity {
     public void onDestroy(){
 super.onDestroy();
     }
- //Inflate spinner on toolbar
+
+
+
 
     public FirebaseUser getUser(){
         return user;
@@ -407,22 +445,11 @@ super.onDestroy();
             for(int i = 0; i < ingredtags.length; i++){
                 params.add(new BasicNameValuePair("ingredtags[]", ingredtags[i]));
             }
-
-
-
-            // getting JSON Object
-            // Note that create product url accepts POST method
-
             JSONObject json = jsonParser.makeHttpRequest(url_create_product,
                     "POST", params);
 
-                args = null;
-                params = null;
-
-            // check log cat fro response
-            //Log.d("Create Response", json.toString());
-
-            // check for success tag
+            args = null;
+            params = null;
             try {
                 int success = json.getInt(TAG_SUCCESS);
 
@@ -449,11 +476,203 @@ super.onDestroy();
         }
 
     }
-    /**
-     *
-     * Set options for Spinner on toolbar
-     * implements AdapterView.OnItemSelectedListener
-     */
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_PIC) {
+            if (resultCode == RESULT_OK) {
+                showProgressDialog();
+                final Uri photoUri = data.getData();
+                new Thread(new Runnable() {
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Random random = new Random();
+                                    int rand = random.nextInt(200000);
+                                    StorageReference storageRef = storage.getReferenceFromUrl("gs://seniorcapstone-831a0.appspot.com");
+                                    StorageReference imagesRef = storageRef.child("profilepics/" +  String.valueOf(rand));
+                                    UploadTask uploadTask = imagesRef.putFile(photoUri);
+                                    StorageTask<UploadTask.TaskSnapshot> prog = uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                            showProgressDialog();
+                                            //double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                            //System.out.println("Upload is " + progress + "% done");
+                                            //int currentprogress = (int) progress;
+                                            //progressBar.setProgress(currentprogress);
+                                        }
+                                    });
+                                    StorageTask<UploadTask.TaskSnapshot> paus = uploadTask.addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                                            hideProgressDialog();
+                                            //System.out.println("Upload is paused");
+                                        }
+                                    });
+
+                                    StorageTask<UploadTask.TaskSnapshot> fail = uploadTask.addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception exception) {
+                                            hideProgressDialog();
+                                            // Handle unsuccessful uploads
+                                        }
+                                    });
+
+                                    StorageTask<UploadTask.TaskSnapshot> succ = uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                            downloadUrl1 = taskSnapshot.getDownloadUrl().toString();
+
+                                            new SetProfileImage().execute(downloadUrl1);
+
+                                        }
+                                    });
+                                    uploadTask.removeOnProgressListener((OnProgressListener) prog).removeOnFailureListener((OnFailureListener) fail).removeOnPausedListener((OnPausedListener) paus).removeOnSuccessListener((OnSuccessListener) succ);
+                                    rand = 0;
+                                    storageRef = null;
+                                    imagesRef = null;
+                                    uploadTask = null;
+                                    downloadUrl1 = null;
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+                    }
+                }).start();
+
+            } else {
+            }
+        }
+    }
+
+    class SetProfileImage extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        /**
+         * Creating product
+         * */
+        protected String doInBackground(String... args) {
+            String url = args[0];
+
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("userid", user.getUid().toString()));
+            params.add(new BasicNameValuePair("url", url));
+            JSONObject json = jParser.makeHttpRequest(url_set_profile_image, "POST", params);
+
+
+            args = null;
+            params = null;
+            try {
+                int success = json.getInt(TAG_SUCCESS);
+
+                if (success == 1) {
+                    tempUrl = url;
+
+                } else {
+                    tempUrl = "";
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+    if(tempUrl.length() > 0){
+    profile.withIcon(tempUrl);
+    headerResult.updateProfile(profile);
+
+}
+            hideProgressDialog();
+        }
+
+    }
+
+
+
+    class GetProfileImage extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        /**
+         * Creating product
+         * */
+        protected String doInBackground(String... args) {
+
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("userid", user.getUid().toString()));;
+            JSONObject json = jParser.makeHttpRequest(url_get_profile_image, "POST", params);
+            args = null;
+            params = null;
+            String imageUrl = "";
+            try {
+                if (json != null) {
+                    jsonuser = json.getJSONArray("url");
+                    int count = jsonuser.length();
+                    mUser = new ArrayList<>();
+                    // looping through All Products
+                    for (int i = 0; i < jsonuser.length(); i++) {
+                        JSONObject c = jsonuser.getJSONObject(i);
+                        //Log.d(TAG, c.toString());
+                        User gsonUser = gson.fromJson(c.toString(), User.class);
+                        mUser.add(new User(gsonUser.getUrl()));
+                        imageUrl = gsonUser.getUrl().toString();
+                    }
+                } else {
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                int success = json.getInt(TAG_SUCCESS);
+
+                if (success == 1) {
+                    urlGet = true;
+                    mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mSharedPreferences.edit();
+                    editor.putString("imageurl", imageUrl);
+                    editor.commit();
+                } else {
+                    urlGet = false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            if(urlGet == true){
+                profile.withIcon(mUser.get(0).getUrl());
+                headerResult.updateProfile(profile);
+            }
+            hideProgressDialog();
+        }
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -591,6 +810,15 @@ super.onDestroy();
             editor.commit();
         }
         super.onBackPressed();
+    }
+
+    public void toast(String toast){
+        SuperActivityToast.create(this, new Style(), Style.TYPE_STANDARD)
+                .setText(toast)
+                .setDuration(Style.DURATION_VERY_SHORT)
+                .setFrame(Style.FRAME_STANDARD)
+                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
 }
