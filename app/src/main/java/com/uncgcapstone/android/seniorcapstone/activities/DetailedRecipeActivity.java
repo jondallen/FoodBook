@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,17 +18,17 @@ import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
-import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
+import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
+import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.adapters.PagerAdapter;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class DetailedRecipeActivity extends AppCompatActivity{
 
@@ -36,19 +37,18 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
     private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
     private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
-    JSONParser jParser = new JSONParser();
     JSONArray ingredients = null;
     JSONArray steps = null;
     Gson gson = new Gson();
     public String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, username, loggedinuser = "";
     int likestotal;
-    ImageView detailBackButton;
     TextView detailRecipeNameText, detailUsername;
     String postid;
     NestedScrollView testScrollView;
     ImageView backarrow; // detailStar, detailThumb;
     LikeButton detailStar, detailThumb;
-
+    //Toolbar toolbar1;
+    TextView detailBackButton;
 
 
 
@@ -59,6 +59,13 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
+        //toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
+        /*toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });*/
 
         if(bundle != null){
             url = bundle.getString("url");
@@ -77,7 +84,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         }
 
 
-        detailBackButton = (ImageView) findViewById(R.id.detailBackButton);
+        detailBackButton = (TextView) findViewById(R.id.detailBackButton);
         detailBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,37 +114,50 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             public void liked(LikeButton likeButton) {
                 int inte = Integer.parseInt(favorites);
                 if (inte == 0) {
-                    toast("Favorited " + recipename);
                     favorites = "1";
-                    //ImageView img = (ImageView) v;
-                    //img.setImageResource(R.drawable.star_big_on);
-                    new Thread() {
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Favorited " + recipename);
+
+                    Call<Void> call = apiService.favorites(userid, postid);
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void run() {
-                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                            params1.add(new BasicNameValuePair("userid", userid));
-                            params1.add(new BasicNameValuePair("postid", postid));
-                            JSONObject json = jParser.makeHttpRequest(url_favorites, "POST", params1);
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
                         }
-                    }.start();
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
                 }
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                    toast("Unfavorited " + recipename);
+
                     favorites = "0";
-                    //ImageView img = (ImageView) v;
-                    //img.setImageResource(R.drawable.star_big);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                            params1.add(new BasicNameValuePair("userid", userid));
-                            params1.add(new BasicNameValuePair("postid", postid));
-                            JSONObject json = jParser.makeHttpRequest(url_unfavorites, "POST", params1);
-                        }
-                    }.start();
+
+                Retrofit retrofit = ApiClient.getClient();
+                ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                toast("Unfavorited " +recipename);
+
+                Call<Void> call = apiService.unfavorites(userid, postid);
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
             }
         });
 
@@ -146,20 +166,26 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             public void liked(LikeButton likeButton) {
                 int inte = Integer.parseInt(likes);
                 if (inte == 0) {
-                    toast("Liked " + recipename);
                     likes = "1";
                     likestotal++;
-                    //ImageView img = (ImageView) v;
-                    //img.setImageResource(R.drawable.thumb_up_big);
-                    new Thread() {
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Liked " + recipename);
+
+                    Call<Void> call = apiService.likes(userid, postid);
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void run() {
-                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                            params1.add(new BasicNameValuePair("userid", userid));
-                            params1.add(new BasicNameValuePair("postid", postid));
-                            JSONObject json = jParser.makeHttpRequest(url_likes, "POST", params1);
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
                         }
-                    }.start();
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
                 }
             }
 
@@ -167,20 +193,26 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             public void unLiked(LikeButton likeButton) {
                 int inte = Integer.parseInt(likes);
                 if (inte == 1) {
-                    toast("Unliked " + recipename);
                     likes = "0";
                     likestotal--;
-                    //ImageView img = (ImageView) v;
-                    //img.setImageResource(R.drawable.thumb_big);
-                    new Thread() {
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Unliked " + recipename);
+
+                    Call<Void> call = apiService.unlikes(userid, postid);
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void run() {
-                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                            params1.add(new BasicNameValuePair("userid", userid));
-                            params1.add(new BasicNameValuePair("postid", postid));
-                            JSONObject json = jParser.makeHttpRequest(url_unlikes, "POST", params1);
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
                         }
-                    }.start();
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
                 }
             }
         });
@@ -212,15 +244,16 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             }
         });
 
+        /**
+         * Nutrition info stuff
+         */
+
     }
 
 
     @Override
     public void onStop(){
         super.onStop();
-
-
-
         /**
          * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
          * It may or may not be actually necessary
@@ -256,6 +289,8 @@ public class DetailedRecipeActivity extends AppCompatActivity{
 
         super.onBackPressed();
     }
+
+
 
     public void toast(String toast){
         SuperActivityToast.create(DetailedRecipeActivity.this, new Style(), Style.TYPE_STANDARD)

@@ -6,48 +6,47 @@ package com.uncgcapstone.android.seniorcapstone.data;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class Steps {
+public class Url {
 
-    @SerializedName("Steps")
+    @SerializedName("user")
     @Expose
-    private List<Step> steps = new ArrayList<Step>();
+    private List<User> user = new ArrayList<User>();
 
     /**
      * No args constructor for use in serialization
      *
      */
-    public Steps() {
+    public Url() {
     }
 
     /**
      *
-     * @param steps
+     * @param user
      */
-    public Steps(List<Step> steps) {
-        this.steps = steps;
+    public Url(List<User> user) {
+        this.user = user;
     }
 
     /**
      *
      * @return
-     * The steps
+     * The user
      */
-    public List<Step> getSteps() {
-        return steps;
+    public List<User> getUser() {
+        return user;
     }
 
     /**
      *
-     * @param steps
-     * The Steps
+     * @param user
+     * The user
      */
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
+    public void setUser(List<User> user) {
+        this.user = user;
     }
 
 }

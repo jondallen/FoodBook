@@ -1,46 +1,48 @@
 package com.uncgcapstone.android.seniorcapstone.data;
 
-/**
- * Created by jon on 10/4/2016
- * Used to temporarily store a list of ingredients to be displayed in DetailedRecipeActivity
- */
+        import java.util.ArrayList;
+        import java.util.List;
+
+        import com.google.gson.annotations.Expose;
+        import com.google.gson.annotations.SerializedName;
 
 public class Ingredients {
-    String quantity;
-    String unit;
-    String ingredient;
 
-    public Ingredients(){
+    @SerializedName("Ingredients")
+    @Expose
+    private List<Ingredient> ingredients = new ArrayList<Ingredient>();
 
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Ingredients() {
     }
 
-    public Ingredients(String quantity, String unit, String ingredient){
-        this.quantity = quantity;
-        this.unit = unit;
-        this.ingredient = ingredient;
+    /**
+     *
+     * @param ingredients
+     */
+    public Ingredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public String getQuantity() {
-        return quantity;
+    /**
+     *
+     * @return
+     * The ingredients
+     */
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
+    /**
+     *
+     * @param ingredients
+     * The Ingredients
+     */
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getIngredient() {
-        return ingredient;
-    }
-
-    public void setIngredient(String ingredient) {
-        this.ingredient = ingredient;
-    }
 }

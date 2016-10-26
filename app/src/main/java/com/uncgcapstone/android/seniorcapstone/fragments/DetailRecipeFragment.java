@@ -2,8 +2,6 @@ package com.uncgcapstone.android.seniorcapstone.fragments;
 
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,26 +15,25 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
+import com.uncgcapstone.android.seniorcapstone.data.Ingredient;
 import com.uncgcapstone.android.seniorcapstone.data.Ingredients;
-import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
-import com.uncgcapstone.android.seniorcapstone.R;
-import com.uncgcapstone.android.seniorcapstone.data.Recipe;
+import com.uncgcapstone.android.seniorcapstone.data.Step;
 import com.uncgcapstone.android.seniorcapstone.data.Steps;
+import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
+import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
+import com.uncgcapstone.android.seniorcapstone.R;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 /**
@@ -49,16 +46,17 @@ public class DetailRecipeFragment extends Fragment {
     RecyclerView ingredsRecyclerViewDetail, stepsRecyclerViewDetail;
     TextView servesTextDetail, prepTextDetail, cookTextDetail;
     private String url_get_ingredients_and_steps = "http://63d42096.ngrok.io/android_connect/get_ingredients_and_steps.php";
+    private String url_get_ingredients = "http://63d42096.ngrok.io/android_connect_retro/get_ingredients.php";
+    private String url_get_steps = "http://63d42096.ngrok.io/android_connect_retro/get_steps.php";
     private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
     private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
     private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
     private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
-    JSONParser jParser = new JSONParser();
     JSONArray ingredients = null;
     JSONArray steps = null;
     Gson gson = new Gson();
-    Ingredients[] mIngredients;
-    Steps[] mSteps;
+    List<Ingredient> mIngredients;
+    List<Step> mSteps;
     AlertDialog mAlertDialog;
     RecyclerView.Adapter mAdapter, mAdapter1;
     LinearLayoutManager mLinearLayoutManager, mLinearLayoutManager1;
@@ -114,117 +112,107 @@ public class DetailRecipeFragment extends Fragment {
         detailUsername = (TextView) v.findViewById(R.id.detailUsername);
         detailUsername.setText("Added by " + username);
 
-        new LoadAllProducts().execute();
         showProgressDialog();
+        getIngredients();
         return v;
     }
 
-
-
-    /**
-     * Background Async Task to Load all product by making HTTP Request
-     * */
-    class LoadAllProducts extends AsyncTask<String, String, String> {
-
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-        /**
-         * getting All products from url
-         * */
-        protected String doInBackground(String... args) {
-            Log.d("1", "1");
-            Type listType = new TypeToken<List<Recipe>>(){}.getType();
-            // Building Parameters
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-
-            params.add(new BasicNameValuePair("postid", postid));
-
-            JSONObject json1 = jParser.makeHttpRequest(url_get_ingredients_and_steps, "POST", params);
-
-            try {
-
-                if (json1.getJSONArray("Ingredients") != null) {
-
-                    // products found
-                    // Getting Array of Products
-                    ingredients = json1.getJSONArray("Ingredients");
-                    int count = ingredients.length();
-                    mIngredients = new Ingredients[count];
-                    // looping through All Products
-                    for (int i = 0; i < ingredients.length(); i++) {
-                        JSONObject c = ingredients.getJSONObject(i);
-                        //Log.d(TAG, c.toString());
-                        Ingredients ingredient = gson.fromJson(c.toString(), Ingredients.class);
-                        mIngredients[i] = new Ingredients(ingredient.getQuantity(), ingredient.getUnit(), ingredient.getIngredient());
-                    }
-                }
-                if (json1.getJSONArray("Steps") != null) {
-
-                    // products found
-                    // Getting Array of Products
-                    steps = json1.getJSONArray("Steps");
-                    int count = steps.length();
-                    mSteps = new Steps[count];
-                    // looping through All Products
-                    for (int i = 0; i < steps.length(); i++) {
-                        JSONObject c = steps.getJSONObject(i);
-                        //Log.d(TAG, c.toString());
-                        Steps step = gson.fromJson(c.toString(), Steps.class);
-                        mSteps[i] = new Steps(step.getStep());
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            listType = null;
-            params = null;
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after getting all products
-            // pDialog.dismiss();
-            // updating UI from Background Thread
-            //(getActivity()).runOnUiThread(new Runnable() {
-            //public void run() {
-
-            mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            mLinearLayoutManager1 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-
-            ingredsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
-            ingredsRecyclerViewDetail.setHasFixedSize(true);
-            mAdapter = new IngredAdapter(mIngredients);
-            ingredsRecyclerViewDetail.setAdapter(mAdapter);
-            ingredsRecyclerViewDetail.setNestedScrollingEnabled(false);
-            ingredsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
-
-            stepsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager1);
-            stepsRecyclerViewDetail.setHasFixedSize(true);
-            mAdapter1 = new StepAdapter(mSteps);
-            stepsRecyclerViewDetail.setAdapter(mAdapter1);
-            stepsRecyclerViewDetail.setNestedScrollingEnabled(false);
-            stepsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
-
-
-
-            servesTextDetail.setText("Serves " + servings);
-            prepTextDetail.setText("Prep: " + preptime + "m");
-            cookTextDetail.setText("Cook: " + cooktime + "m");
-            hideProgressDialog();
-
-        }
+    @Override
+    public void onStop(){
+        super.onStop();
 
     }
+
+    /*public void getInfo(){
+        Log.d("get info", "called");
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+        Call<Void> call = apiService.getInfo("2 eggs");
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("We in ", "there");
+                Log.d("Response:", String.valueOf(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("Error", t.toString());
+            }
+        });
+    }*/
+
+    private void getIngredients(){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+        Call<Ingredients> call = apiService.getIngredients(((DetailedRecipeActivity)getActivity()).getPostid());
+        call.enqueue(new Callback<Ingredients>() {
+            @Override
+            public void onResponse(Call<Ingredients> call, Response<Ingredients> response) {
+                if (response.body() != null) {
+                    mIngredients = response.body().getIngredients();
+                    getSteps();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Ingredients> call, Throwable t) {
+                Log.d("DetailRecipeFrag Ingr", t.toString());
+            }
+        });
+
+    }
+
+    private void getSteps(){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+        Call<Steps> call = apiService.getSteps(((DetailedRecipeActivity)getActivity()).getPostid());
+        call.enqueue(new Callback<Steps>() {
+            @Override
+            public void onResponse(Call<Steps> call, Response<Steps> response) {
+                if (response.body() != null) {
+                    mSteps = response.body().getSteps();
+                    refreshUI();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Steps> call, Throwable t) {
+                Log.d("DetailRecipeFrag Steps", t.toString());
+            }
+        });
+
+    }
+
+    public void refreshUI() {
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager1 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+
+        ingredsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
+        ingredsRecyclerViewDetail.setHasFixedSize(true);
+        mAdapter = new IngredAdapter(mIngredients);
+        ingredsRecyclerViewDetail.setAdapter(mAdapter);
+        ingredsRecyclerViewDetail.setNestedScrollingEnabled(false);
+        ingredsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
+
+        stepsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager1);
+        stepsRecyclerViewDetail.setHasFixedSize(true);
+        mAdapter1 = new StepAdapter(mSteps);
+        stepsRecyclerViewDetail.setAdapter(mAdapter1);
+        stepsRecyclerViewDetail.setNestedScrollingEnabled(false);
+        stepsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
+
+
+
+        servesTextDetail.setText("Serves " + servings);
+        prepTextDetail.setText("Prep: " + preptime + "m");
+        cookTextDetail.setText("Cook: " + cooktime + "m");
+        hideProgressDialog();
+    }
+
 
 
     public void showProgressDialog() {
@@ -276,9 +264,9 @@ public class DetailRecipeFragment extends Fragment {
 
 
     private class IngredAdapter extends RecyclerView.Adapter<IngredHolder> {
-        private Ingredients[] ingredz;
+        private List<Ingredient> ingredz;
 
-        public IngredAdapter(Ingredients[] s){
+        public IngredAdapter(List<Ingredient> s){
             ingredz = s;
         }
 
@@ -291,16 +279,16 @@ public class DetailRecipeFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(IngredHolder holder, int position){
-            String quantity = ingredz[position].getQuantity().toString();
-            String unit = ingredz[position].getUnit().toString();
-            String ingredient = ingredz[position].getIngredient().toString();
+            String quantity = ingredz.get(position).getQuantity().toString();
+            String unit = ingredz.get(position).getUnit().toString();
+            String ingredient = ingredz.get(position).getIngredient().toString();
             holder.bindCard(quantity, unit, ingredient);
         }
 
         @Override
         public int getItemCount(){
             if(ingredz != null)
-                return ingredz.length;
+                return ingredz.size();
             return 0;
         }
         @Override
@@ -359,9 +347,9 @@ public class DetailRecipeFragment extends Fragment {
 
 
     private class StepAdapter extends RecyclerView.Adapter<StepHolder> {
-        private Steps[] stepz;
+        private List<Step> stepz;
 
-        public StepAdapter(Steps[] s){
+        public StepAdapter(List<Step> s){
             stepz = s;
         }
 
@@ -374,14 +362,14 @@ public class DetailRecipeFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(StepHolder holder, int position){
-            String step = stepz[position].getStep();
+            String step = stepz.get(position).getStep();
             holder.bindCard(step);
         }
 
         @Override
         public int getItemCount(){
             if(stepz != null)
-                return stepz.length;
+                return stepz.size();
             return 0;
         }
         @Override

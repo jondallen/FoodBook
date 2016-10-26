@@ -199,6 +199,7 @@ public class AddRecipeFragment extends Fragment {
         addPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("CLICKED", "LOL");
                 Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 getIntent.setType("image/*");
 
@@ -372,6 +373,7 @@ public class AddRecipeFragment extends Fragment {
         });
 
 
+
         return v;
     }
 
@@ -473,10 +475,15 @@ public class AddRecipeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_PIC) {
             if (resultCode == getActivity().RESULT_OK) {
+                Log.d("We here now", "lol");
                 photoUri = data.getData();
                 Glide.with(AddRecipeFragment.this).load(photoUri).centerCrop().diskCacheStrategy(RESULT).into(addPicture);
             } else {
+                Log.d("We failed ", "lol");
             }
+        }
+        else{
+            Log.d("Bucket", "lol");
         }
     }
 

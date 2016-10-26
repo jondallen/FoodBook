@@ -21,28 +21,36 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/detailUsername"
-        android:background="?attr/colorPrimary"
-        android:elevation="6dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tab_layout"
-        />
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_below="@+id/detailUsername"
+            android:background="?attr/colorPrimary"
+            android:elevation="6dp"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:tabIndicatorColor="@android:color/white"
+            app:tabIndicatorHeight="4dp"
+            />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tab_layout"
+            />
+
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
+
     <RelativeLayout
         android:background="@drawable/rounded_edittext_thicker"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         >
         <com.like.LikeButton
@@ -51,60 +59,69 @@
             android:layout_height="wrap_content"
             app:icon_type="heart"
             app:circle_start_color="@color/colorPrimary"
-            app:like_drawable="@drawable/heart_on"
-            app:unlike_drawable="@drawable/heart_off"
+            app:like_drawable="@drawable/heart_big"
+            app:unlike_drawable="@drawable/heart_big_gray"
             app:dots_primary_color="@color/yellow"
             app:dots_secondary_color="@color/colorAccent"
             app:circle_end_color="@color/orange"
-            app:icon_size="24dp"
+            app:icon_size="32dp"
             app:liked="false"
             app:anim_scale_factor="2"
             app:is_enabled="true"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
             />
 
         <com.like.LikeButton
             android:id="@+id/thumbDetail"
+            android:layout_toLeftOf="@id/starDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon_type="thumb"
             app:circle_start_color="@color/colorPrimary"
-            app:like_drawable="@drawable/thumb_on"
-            app:unlike_drawable="@drawable/thumb_off"
+            app:like_drawable="@drawable/thumb_up_big"
+            app:unlike_drawable="@drawable/thumb_up_big_gray"
             app:dots_primary_color="@color/colorAccent"
             app:dots_secondary_color="@color/colorPrimaryDark"
             app:circle_end_color="@color/colorAccent"
-            app:icon_size="24dp"
+            app:icon_size="32dp"
             app:liked="false"
             app:anim_scale_factor="2"
             app:is_enabled="true"
-            android:layout_toLeftOf="@id/starDetail"
             android:layout_centerVertical="true"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
             />
 
-        <ImageView
+        <TextView
             android:id="@+id/detailBackButton"
-            android:src="@drawable/back_arrow"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:padding="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textSize="19dp"
             android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/detailBackButton"
+            android:drawableLeft="@drawable/arrow_left"
+            android:text="Back"
+            android:textColor="#000000"
+            android:padding="10dp"
             />
 
     </RelativeLayout>
-    </LinearLayout>
+</LinearLayout>
 
 
 <!--
+
+ <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar1"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/colorPrimary"
+            android:elevation="6dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            />
+
 <EditText
             android:id="@+id/commentdetail"
             android:background="@drawable/rounded_edittext_white"

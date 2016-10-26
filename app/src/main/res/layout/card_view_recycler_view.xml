@@ -114,13 +114,13 @@
 
             <ImageView
                 android:id="@+id/cardTimer"
+                android:src="@drawable/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="21dp"
-                android:layout_toRightOf="@id/feedsText"
-                android:src="@drawable/timer"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="2dp"
-                />
+                android:layout_alignTop="@+id/cardPerson"
+                android:layout_toEndOf="@+id/feedsText"/>
+
             <TextView
                 android:id="@+id/cardTime"
                 android:layout_width="wrap_content"
@@ -171,6 +171,7 @@
                 android:layout_toRightOf="@id/tag2"
                 android:layout_marginTop="5dp"
                 />
+
         </RelativeLayout>
 
         <ImageView
@@ -189,40 +190,35 @@
     android:layout_height="wrap_content"
     android:layout_below="@id/dotted"
     >
-
     <com.like.LikeButton
         android:id="@+id/thumb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:icon_type="thumb"
         app:circle_start_color="@color/colorPrimary"
-        app:like_drawable="@drawable/thumb_on"
-        app:unlike_drawable="@drawable/thumb_off"
+        app:like_drawable="@drawable/thumb_up"
+        app:unlike_drawable="@drawable/thumb_up_gray"
         app:dots_primary_color="@color/colorAccent"
         app:dots_secondary_color="@color/colorPrimaryDark"
         app:circle_end_color="@color/colorAccent"
-        app:icon_size="20dp"
+        app:icon_size="24dp"
         app:liked="false"
         app:anim_scale_factor="2"
         app:is_enabled="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp"
-        android:paddingLeft="2dp"
-
         />
 
-            <TextView
-                android:id="@+id/likesText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:textSize="14dp"
-                android:hint="490"
-                android:layout_toRightOf="@id/thumb"
-                android:layout_centerVertical="true"
-                />
+    <TextView
+        android:id="@+id/likesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textSize="14dp"
+        android:hint="490"
+        android:layout_toRightOf="@id/thumb"
+        android:layout_centerVertical="true"
+        />
 
     <com.like.LikeButton
         android:id="@+id/star"
@@ -230,22 +226,19 @@
         android:layout_height="wrap_content"
         app:icon_type="heart"
         app:circle_start_color="@color/colorPrimary"
-        app:like_drawable="@drawable/heart_on"
-        app:unlike_drawable="@drawable/heart_off"
+        app:like_drawable="@drawable/heart"
+        app:unlike_drawable="@drawable/heart_gray"
         app:dots_primary_color="@color/yellow"
         app:dots_secondary_color="@color/colorAccent"
         app:circle_end_color="@color/orange"
-        app:icon_size="20dp"
+        app:icon_size="24dp"
         app:liked="false"
         app:anim_scale_factor="2"
         app:is_enabled="true"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
         />
+
 
 </RelativeLayout>
 
@@ -253,6 +246,19 @@
 
 
 </android.support.v7.widget.CardView>
+
+
+
+
+<!--
+app:like_drawable="@drawable/heart_on"
+        app:unlike_drawable="@drawable/heart_off"
+
+
+app:like_drawable="@drawable/thumb_on"
+        app:unlike_drawable="@drawable/thumb_off"
+
+        -->
 
 
 <!--

@@ -1,60 +1,43 @@
 package com.uncgcapstone.android.seniorcapstone.fragments;
 
-
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
-import com.uncgcapstone.android.seniorcapstone.data.Comments;
-import com.uncgcapstone.android.seniorcapstone.data.Ingredients;
-import com.uncgcapstone.android.seniorcapstone.data.Recipe;
-import com.uncgcapstone.android.seniorcapstone.data.Steps;
-import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+import com.uncgcapstone.android.seniorcapstone.data.Review;
+import com.uncgcapstone.android.seniorcapstone.data.Reviews;
+import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
+import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
-
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
@@ -66,15 +49,15 @@ import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 public class DetailCommentsFragment extends Fragment {
 
 
-    JSONParser jParser = new JSONParser();
+
     JSONArray ingredients = null;
     JSONArray steps = null;
     Gson gson = new Gson();
     private String url_create_review = "http://63d42096.ngrok.io/android_connect/create_review.php";
-    private String url_get_all_reviews = "http://63d42096.ngrok.io/android_connect/get_all_reviews.php";
+    private String url_get_all_reviews = "http://63d42096.ngrok.io/android_connect_retro/get_all_reviews.php";
 
 
-    List<Comments> mComments;
+    List<Review> mReviews;
     RecyclerView commentsRecyclerViewDetail;
     RecyclerView.Adapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
@@ -104,7 +87,7 @@ public class DetailCommentsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_detail_comments, container, false);
 
-        mComments = new ArrayList<>();
+        mReviews = new ArrayList<>();
         commentsRecyclerViewDetail = (RecyclerView) v.findViewById(R.id.commentsRecyclerViewDetail);
 
         avgRatingBar = (SimpleRatingBar) v.findViewById(R.id.avgRatingBar);
@@ -143,7 +126,7 @@ public class DetailCommentsFragment extends Fragment {
                                         }
                                         else{
                                             showProgressDialog();
-                                           new CreateReview().execute(review, rating);
+                                           createReview(review, rating);
                                             dialog.dismiss();
                                         }
 
@@ -161,8 +144,8 @@ public class DetailCommentsFragment extends Fragment {
                         .create().show();
             }
         });
-        showProgressDialog();
-        new GetAllReviews().execute();
+        //showProgressDialog();
+        getAllReviews();
         return v;
     }
 
@@ -223,9 +206,9 @@ public class DetailCommentsFragment extends Fragment {
 
 
     private class CommentsAdapter extends RecyclerView.Adapter<CommentsHolder> {
-        private List<Comments> commentz;
+        private List<Review> commentz;
 
-        public CommentsAdapter(List<Comments> s) {
+        public CommentsAdapter(List<Review> s) {
             commentz = s;
         }
 
@@ -259,140 +242,79 @@ public class DetailCommentsFragment extends Fragment {
         }
     }
 
-        /**
-         * Background Async Task to Load all product by making HTTP Request
-         * */
-       public class CreateReview extends AsyncTask<String, String, String> {
+    public void createReview(String review, String rating){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+        Calendar calendar = Calendar.getInstance();
+        String datetime = new SimpleDateFormat("MM/dd/yyyy , hh:mm a").format(calendar.getTime());
+
+        Call<Void> call = apiService.createReview(((DetailedRecipeActivity)getActivity()).getUserid(), ((DetailedRecipeActivity)getActivity()).getPostid(), review, rating, ((DetailedRecipeActivity)getActivity()).getUsername(), datetime);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                getAllReviews();
+            }
 
             @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("Error", t.toString());
+                getAllReviews();
             }
-            protected String doInBackground(String... args) {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+        });
+    }
 
-                Calendar calendar = Calendar.getInstance();
-                String datetime = new SimpleDateFormat("MM/dd/yyyy , hh:mm a").format(calendar.getTime());
-
-                params.add(new BasicNameValuePair("userid", ((DetailedRecipeActivity)getActivity()).getUserid()));
-                params.add(new BasicNameValuePair("postid", ((DetailedRecipeActivity)getActivity()).getPostid()));
-                params.add(new BasicNameValuePair("review", args[0]));
-                params.add(new BasicNameValuePair("rating", args[1]));
-                params.add(new BasicNameValuePair("username", ((DetailedRecipeActivity)getActivity()).getUsername()));
-                params.add(new BasicNameValuePair("datetime", datetime));
+    public void getAllReviews(){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
 
 
-                JSONObject json = jParser.makeHttpRequest(url_create_review, "POST", params);
-
-                try {
-                    int success = json.getInt("success");
-
-                    if (success == 1) {
-
-                    } else {
-                        toast("Review failed!");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } ;
-                params = null;
-                return null;
-            }
-
-            protected void onPostExecute(String file_url) {
-            new GetAllReviews().execute();
-            }
-
-        }
-
-
-    /**
-     * Background Async Task to Load all product by making HTTP Request
-     * */
-    class GetAllReviews extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        protected String doInBackground(String... args) {
-            // Building Parameters
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-            JSONObject json;
-
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("postid", ((DetailedRecipeActivity)getActivity()).getPostid()));
-                    json = jParser.makeHttpRequest(url_get_all_reviews, "POST", params1);
-
-
-                try {
-
-                    // Checking for SUCCESS TAG
-                    int success = json.getInt("success");
-
-                    if (success == 1) {
-                        comments = json.getJSONArray("Reviews");
-                        int count = comments.length();
-                        mComments = new ArrayList<>();
-                        // looping through All Products
-                        for (int i = 0; i < comments.length(); i++) {
-                            JSONObject c = comments.getJSONObject(i);
-                            //Log.d(TAG, c.toString());
-                            Comments comment = gson.fromJson(c.toString(), Comments.class);
-                            mComments.add(new Comments(comment.getUserid(), comment.getPostid(), comment.getReview(), comment.getRating(), comment.getUsername(), comment.getDatetime(), comment.getUrl()));
-                        }
-
-                        mAvg = json.getString("average");
-                        mCount = json.getString("count");
-
-                    } else {
-                        // no products found
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        Call<Reviews> call = apiService.getAllReviews(((DetailedRecipeActivity)getActivity()).getPostid());
+        call.enqueue(new Callback<Reviews>() {
+            @Override
+            public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+                if (response.body().getReviews().size() > 0) {
+                    mReviews = response.body().getReviews();
+                    mAvg = String.valueOf(response.body().getAverage());
+                    mCount = String.valueOf(response.body().getCount());
+                    refreshUI();
                 }
-                params = null;
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-            if(mComments.size() == 0){
-                commentsRecyclerViewDetail.setVisibility(GONE);
-                emptyText.setVisibility(VISIBLE);
-                hideProgressDialog();
             }
-            else {
-                emptyText.setVisibility(GONE);
-                commentsRelLayout.setVisibility(VISIBLE);
 
-                avgRatingBar.setRating(Float.parseFloat(mAvg));
-                numRatingText.setText("Number of reviews: " + mCount);
-
-                avgRatingText.setText("Average Review: ");
-
-                commentsTitle.setText("Reviews for  " + ((DetailedRecipeActivity)getActivity()).getRecipename());
-
-                commentsRecyclerViewDetail.setVisibility(VISIBLE);
-
-                mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-                commentsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
-                commentsRecyclerViewDetail.setHasFixedSize(true);
-                mAdapter = new CommentsAdapter(mComments);
-                commentsRecyclerViewDetail.setAdapter(mAdapter);
-                hideProgressDialog();
+            @Override
+            public void onFailure(Call<Reviews> call, Throwable t) {
+                Log.d("DetailComm getallRev", t.toString());
+                refreshUI();
             }
+        });
+    }
+
+    public void refreshUI() {
+        hideProgressDialog();
+        if(mReviews.size() == 0){
+            commentsRecyclerViewDetail.setVisibility(GONE);
+            emptyText.setVisibility(VISIBLE);
+            hideProgressDialog();
         }
-        //});
+        else {
+            emptyText.setVisibility(GONE);
+            commentsRelLayout.setVisibility(VISIBLE);
 
-        // }
+            avgRatingBar.setRating(Float.parseFloat(mAvg));
+            numRatingText.setText("Number of reviews: " + mCount);
 
+            avgRatingText.setText("Average Review: ");
+
+            commentsTitle.setText("Reviews for  " + ((DetailedRecipeActivity)getActivity()).getRecipename());
+
+            commentsRecyclerViewDetail.setVisibility(VISIBLE);
+
+            mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            commentsRecyclerViewDetail.setLayoutManager(mLinearLayoutManager);
+            commentsRecyclerViewDetail.setHasFixedSize(true);
+            mAdapter = new CommentsAdapter(mReviews);
+            commentsRecyclerViewDetail.setAdapter(mAdapter);
+            //hideProgressDialog();
+        }
     }
 
 

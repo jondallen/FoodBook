@@ -8,44 +8,43 @@ package com.uncgcapstone.android.seniorcapstone.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+public class Step {
 
-public class User {
-
-    @SerializedName("url")
+    @SerializedName("step")
     @Expose
-    private String url;
+    private String step;
 
     /**
      * No args constructor for use in serialization
      *
      */
-    public User() {
+    public Step() {
     }
 
     /**
      *
-     * @param url
+     * @param step
      */
-    public User(String url) {
-        this.url = url;
+    public Step(String step) {
+        this.step = step;
     }
 
     /**
      *
      * @return
-     * The url
+     * The step
      */
-    public String getUrl() {
-        return url;
+    public String getStep() {
+        return step;
     }
 
     /**
      *
-     * @param url
-     * The url
+     * @param step
+     * The step
      */
-    public void setUrl(String url) {
-        this.url = url;
+    public void setStep(String step) {
+        this.step = step;
     }
 
 }

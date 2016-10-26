@@ -3,7 +3,6 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
@@ -45,25 +43,25 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.uncgcapstone.android.seniorcapstone.data.Recipe;
+import com.uncgcapstone.android.seniorcapstone.data.Url;
 import com.uncgcapstone.android.seniorcapstone.data.User;
-import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
+import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
+import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.fragments.MainFragment;
 
 
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MainActivity extends CoreActivity {
 
@@ -85,14 +83,12 @@ public class MainActivity extends CoreActivity {
     FirebaseStorage storage;
     String downloadUrl1 = null;
     Menu menu;
-    JSONParser jsonParser = new JSONParser();
     public String search = "";
     OnProgressListener mOnProgressListener;
     OnFailureListener mOnFailureListener;
     OnPausedListener mOnPausedListener;
     OnSuccessListener mOnSuccessListener;
-    final int PICK_PIC = 0;
-    JSONParser jParser = new JSONParser();
+    final int CHOOSE_PIC = 1;
     String tempUrlSet = "";
     boolean urlGet, hasLoadedImage = false;
     List<User> mUser;
@@ -106,7 +102,7 @@ public class MainActivity extends CoreActivity {
     // url to create new product
     private String url_create_product = "http://63d42096.ngrok.io/android_connect/create_recipe.php";
     private String url_set_profile_image = "http://63d42096.ngrok.io/android_connect/set_profile_image.php";
-    private String url_get_profile_image = "http://63d42096.ngrok.io/android_connect/get_profile_image.php";
+    private String url_get_profile_image = "http://63d42096.ngrok.io/android_connect_retro/get_profile_image.php";
 
     // JSON Node names
     private final String TAG_SUCCESS = "success";
@@ -122,6 +118,8 @@ public class MainActivity extends CoreActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mUser = new ArrayList<>();
 
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -151,7 +149,7 @@ public class MainActivity extends CoreActivity {
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     if(hasLoadedImage == false) {
-                        new GetProfileImage().execute();
+                        getProfileImage();
                         hasLoadedImage = true;
                     }
 
@@ -169,8 +167,9 @@ public class MainActivity extends CoreActivity {
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header1)
+                .withHeaderBackground(R.drawable.background_gradient_vertical)
                 .withSelectionListEnabledForSingleProfile(false)
+                .withCompactStyle(true)
                 .addProfiles(
                         profile = new ProfileDrawerItem().withEmail(emailString)
                         .withIcon(getResources().getDrawable(R.drawable.person))
@@ -187,7 +186,7 @@ public class MainActivity extends CoreActivity {
                         Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
                         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
 
-                        startActivityForResult(chooserIntent, PICK_PIC);
+                        startActivityForResult(chooserIntent, CHOOSE_PIC);
                         return false;
                     }
                 })
@@ -346,20 +345,56 @@ super.onDestroy();
                                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                                     downloadUrl1 = taskSnapshot.getDownloadUrl().toString();
                                     String[] downloadUrl = {downloadUrl1};
-                                    Log.d(TAG, "Photo URL: " + downloadUrl);
-                                    Log.d(TAG, uid.toString() + " " + username.toString() + " " + recipeName.toString() + " " + datetime.toString() + " " + preptext.toString() + " " + cooktext.toString() + " " + servestext.toString());
-                                    new CreateNewRecipe().execute(uid, username, recipeName, downloadUrl, datetime, preptext, cooktext, servestext, tagsfinal, ingredients, ingredients2, ingredients3, steps, ingredtags);
-                                    hideProgressDialog();
 
-                                    toolbar.setTitle("Add a Recipe");
-                                    //fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                    //fm.beginTransaction().remove(fm.findFragmentById(R.id.fragment_container)).commit();
-                                    Fragment fragment = MainFragment.newInstance();
-                                    fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                                    Retrofit retrofit = ApiClient.getClient();
+                                    ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-                                    //getSupportFragmentManager().beginTransaction()
-                                            //.replace(R.id.fragment_container, fragment, "MainFragment")
-                                           // .addToBackStack(null).commit();
+
+                                    List<String> tagzTemp = new ArrayList<String>(Arrays.asList(tagsfinal));
+                                    ArrayList<String> tagz = new ArrayList<>(tagsfinal.length);
+                                    tagz.addAll(tagzTemp);
+
+                                    List<String> ingredientzTemp =  new ArrayList<String>(Arrays.asList(ingredients));
+                                    ArrayList<String> ingredientz = new ArrayList<>(ingredients.length);
+                                    ingredientz.addAll(ingredientzTemp);
+
+                                    List<String> ingredientz2Temp =  new ArrayList<String>(Arrays.asList(ingredients2));
+                                    ArrayList<String> ingredientz2 = new ArrayList<>(ingredients2.length);
+                                    ingredientz2.addAll(ingredientz2Temp);
+
+                                    List<String> ingredientz3Temp =  new ArrayList<String>(Arrays.asList(ingredients3));
+                                    ArrayList<String> ingredientz3 = new ArrayList<>(ingredients3.length);
+                                    ingredientz3.addAll(ingredientz3Temp);
+
+                                    List<String> stepzTemp =  new ArrayList<String>(Arrays.asList(steps));
+                                    ArrayList<String> stepz = new ArrayList<>(steps.length);
+                                    stepz.addAll(stepzTemp);
+
+                                    List<String> ingredtagzTemp =  new ArrayList<String>(Arrays.asList(ingredtags));
+                                    ArrayList<String> ingredtagz = new ArrayList<>(ingredtags.length);
+                                    ingredtagz.addAll(ingredtagzTemp);
+
+                                    Call<Void> call = apiService.createRecipe(getUID().toString(), username[0], recipeName[0], downloadUrl1, datetime[0], preptext[0], cooktext[0], servestext[0], tagz, ingredientz, ingredientz2, ingredientz3, stepz, ingredtagz);
+                                    call.enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                            hideProgressDialog();
+                                            toolbar.setTitle("Add a Recipe");
+                                            Fragment fragment = MainFragment.newInstance();
+                                            fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call, Throwable t) {
+                                            Log.d("Error", t.toString());
+                                            hideProgressDialog();
+                                            toolbar.setTitle("Add a Recipe");
+                                            Fragment fragment = MainFragment.newInstance();
+                                            fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                                        }
+                                    });
+
+
                                 }
                             });
                             uploadTask.removeOnProgressListener((OnProgressListener) prog).removeOnFailureListener((OnFailureListener) fail).removeOnPausedListener((OnPausedListener) paus).removeOnSuccessListener((OnSuccessListener) succ);
@@ -377,109 +412,10 @@ super.onDestroy();
         }).start();
     }
 
-    class CreateNewRecipe extends AsyncTask<String[], String[], String> {
-
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //((MainActivity)getActivity()).showProgressDialog();
-        }
-
-        /**
-         * Creating product
-         * */
-        protected String doInBackground(String[]... args) {
-            String[] uid1 = args[0];
-            String uid = uid1[0];
-            String[] username1 = args[1];
-            String username = username1[0];
-            String[] recipeName1 = args[2];
-            String recipename = recipeName1[0];
-            String[] url1 = args[3];
-            String url = url1[0];
-            String[] datetime1 = args[4];
-            String datetime = datetime1[0];
-            String[] preptime1 = args[5];
-            String preptime = preptime1[0];
-            String[] cooktime1 = args[6];
-            String cooktime = cooktime1[0];
-            String[] serves1 = args[7];
-            String serves = serves1[0];
-            String[] tags = args[8];
-            String[] ingredients = args[9];
-            String[] ingredients2 = args[10];
-            String[] ingredients3 = args[11];
-            String[] steps = args[12];
-            String[] ingredtags = args[13];
-
-
-
-            // Building Parameters
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("uid", uid));
-            params.add(new BasicNameValuePair("username", username));
-            params.add(new BasicNameValuePair("recipename", recipename));
-            params.add(new BasicNameValuePair("url", url));
-            params.add(new BasicNameValuePair("datetime", datetime));
-            params.add(new BasicNameValuePair("preptime", preptime));
-            params.add(new BasicNameValuePair("cooktime", cooktime));
-            params.add(new BasicNameValuePair("serves", serves));
-            for(int i = 0; i < tags.length; i++){
-                params.add(new BasicNameValuePair("tags[]", tags[i]));
-            }
-            for(int i = 0; i < ingredients.length; i++){
-                params.add(new BasicNameValuePair("ingredients[]", ingredients[i]));
-            }
-            for(int i = 0; i < ingredients2.length; i++){
-                params.add(new BasicNameValuePair("ingredients2[]", ingredients2[i]));
-            }
-            for(int i = 0; i < ingredients3.length; i++){
-                params.add(new BasicNameValuePair("ingredients3[]", ingredients3[i]));
-            }
-            for(int i = 0; i < steps.length; i++){
-                params.add(new BasicNameValuePair("steps[]", steps[i]));
-            }
-            for(int i = 0; i < ingredtags.length; i++){
-                params.add(new BasicNameValuePair("ingredtags[]", ingredtags[i]));
-            }
-            JSONObject json = jsonParser.makeHttpRequest(url_create_product,
-                    "POST", params);
-
-            args = null;
-            params = null;
-            try {
-                int success = json.getInt(TAG_SUCCESS);
-
-                if (success == 1) {
-                    // successfully created product
-                    Log.d(TAG, "Success!");
-
-                } else {
-                    // failed to create product
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog once done
-            //((MainActivity)getActivity()).hideProgressDialog();
-        }
-
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_PIC) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CHOOSE_PIC) {
             if (resultCode == RESULT_OK) {
                 showProgressDialog();
                 final Uri photoUri = data.getData();
@@ -497,17 +433,12 @@ super.onDestroy();
                                         @Override
                                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                             showProgressDialog();
-                                            //double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                                            //System.out.println("Upload is " + progress + "% done");
-                                            //int currentprogress = (int) progress;
-                                            //progressBar.setProgress(currentprogress);
                                         }
                                     });
                                     StorageTask<UploadTask.TaskSnapshot> paus = uploadTask.addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                                             hideProgressDialog();
-                                            //System.out.println("Upload is paused");
                                         }
                                     });
 
@@ -515,7 +446,6 @@ super.onDestroy();
                                         @Override
                                         public void onFailure(@NonNull Exception exception) {
                                             hideProgressDialog();
-                                            // Handle unsuccessful uploads
                                         }
                                     });
 
@@ -525,7 +455,24 @@ super.onDestroy();
                                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                                             downloadUrl1 = taskSnapshot.getDownloadUrl().toString();
 
-                                            new SetProfileImage().execute(downloadUrl1);
+                                            Retrofit retrofit = ApiClient.getClient();
+                                            ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                                            Call<Void> call = apiService.setProfileImage(getUID().toString(), downloadUrl1);
+                                            call.enqueue(new Callback<Void>() {
+                                                @Override
+                                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                                    hideProgressDialog();
+                                                    profile.withIcon(downloadUrl1);
+                                                    headerResult.updateProfile(profile);
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Void> call, Throwable t) {
+                                                    Log.d("Error", t.toString());
+                                                    hideProgressDialog();
+                                                }
+                                            });
 
                                         }
                                     });
@@ -542,137 +489,44 @@ super.onDestroy();
                     }
                 }).start();
 
-            } else {
             }
         }
     }
 
-    class SetProfileImage extends AsyncTask<String, String, String> {
+    public void getProfileImage(){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+        Call<Url> call = apiService.getProfileImage(getUID());
+        call.enqueue(new Callback<Url>() {
+            @Override
+            public void onResponse(Call<Url> call, Response<Url> response) {
+                if (response.body().getUser() != null) {
+                    String imageUrl = "";
+                    mUser = response.body().getUser();
+                    if(mUser.size() > 0) {
+                        imageUrl = mUser.get(0).getUrl().toString();
 
-        /**
-         * Creating product
-         * */
-        protected String doInBackground(String... args) {
-            String url = args[0];
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("imageurl", imageUrl);
+                        editor.commit();
 
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userid", user.getUid().toString()));
-            params.add(new BasicNameValuePair("url", url));
-            JSONObject json = jParser.makeHttpRequest(url_set_profile_image, "POST", params);
-
-
-            args = null;
-            params = null;
-            try {
-                int success = json.getInt(TAG_SUCCESS);
-
-                if (success == 1) {
-                    tempUrl = url;
-
-                } else {
-                    tempUrl = "";
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-    if(tempUrl.length() > 0){
-    profile.withIcon(tempUrl);
-    headerResult.updateProfile(profile);
-
-}
-            hideProgressDialog();
-        }
-
-    }
-
-
-
-    class GetProfileImage extends AsyncTask<String, String, String> {
-
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        /**
-         * Creating product
-         * */
-        protected String doInBackground(String... args) {
-
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("userid", user.getUid().toString()));;
-            JSONObject json = jParser.makeHttpRequest(url_get_profile_image, "POST", params);
-            args = null;
-            params = null;
-            String imageUrl = "";
-            try {
-                if (json != null) {
-                    jsonuser = json.getJSONArray("url");
-                    int count = jsonuser.length();
-                    mUser = new ArrayList<>();
-                    // looping through All Products
-                    for (int i = 0; i < jsonuser.length(); i++) {
-                        JSONObject c = jsonuser.getJSONObject(i);
-                        //Log.d(TAG, c.toString());
-                        User gsonUser = gson.fromJson(c.toString(), User.class);
-                        mUser.add(new User(gsonUser.getUrl()));
-                        imageUrl = gsonUser.getUrl().toString();
+                        profile.withIcon(mUser.get(0).getUrl().toString());
+                        headerResult.updateProfile(profile);
                     }
-                } else {
+                    hideProgressDialog();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                int success = json.getInt(TAG_SUCCESS);
-
-                if (success == 1) {
-                    urlGet = true;
-                    mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
-                    SharedPreferences.Editor editor = mSharedPreferences.edit();
-                    editor.putString("imageurl", imageUrl);
-                    editor.commit();
-                } else {
-                    urlGet = false;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-            if(urlGet == true){
-                profile.withIcon(mUser.get(0).getUrl());
-                headerResult.updateProfile(profile);
+            @Override
+            public void onFailure(Call<Url> call, Throwable t) {
+                Log.d("Error", t.toString());
             }
-            hideProgressDialog();
-        }
-
+        });
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

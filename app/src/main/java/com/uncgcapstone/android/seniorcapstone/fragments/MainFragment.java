@@ -1,11 +1,8 @@
 package com.uncgcapstone.android.seniorcapstone.fragments;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -31,29 +28,29 @@ import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
-import com.uncgcapstone.android.seniorcapstone.io.JSONParser;
+import com.uncgcapstone.android.seniorcapstone.data.Recipes;
+import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
+import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.data.Recipe;
 
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
@@ -65,17 +62,6 @@ public class MainFragment extends Fragment {
 
     FloatingActionButton fab;
     private final String TAG = "MainFragment";
-    JSONParser jParser = new JSONParser();
-    private String url_all_recipes = "http://63d42096.ngrok.io/android_connect/get_all_recipes.php";
-    private String url_all_favorites = "http://63d42096.ngrok.io/android_connect/get_all_recipes_favorites.php";
-    private String url_all_recipes_likes = "http://63d42096.ngrok.io/android_connect/get_all_recipes_likes.php";
-    private String url_all_recipes_rating = "http://63d42096.ngrok.io/android_connect/get_all_recipes_rating.php";
-    private String url_all_recipes_num__rating = "http://63d42096.ngrok.io/android_connect/get_all_recipes_num_rating.php";
-    private String url_search_recipes = "http://63d42096.ngrok.io/android_connect/search_recipes.php";
-    private String url_search_recipes_favorites = "http://63d42096.ngrok.io/android_connect/search_recipes_favorites.php";
-    private String url_search_recipes_likes = "http://63d42096.ngrok.io/android_connect/search_recipes_likes.php";
-    private String url_search_recipes_rating = "http://63d42096.ngrok.io/android_connect/search_recipes_rating.php";
-    private String url_search_recipes_num_rating = "http://63d42096.ngrok.io/android_connect/search_recipes_num_rating.php";
     private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
     private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
     private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
@@ -116,12 +102,12 @@ public class MainFragment extends Fragment {
 
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_main, container, false);
+        showProgressDialog();
         ((MainActivity)getActivity()).showOverflowMenu(true);
 
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
@@ -135,9 +121,6 @@ public class MainFragment extends Fragment {
         }
         String str = mSharedPreferences.getString("search", "");
         searchBar.setText(str);
-
-        //searchBar.setTagsBackground(R.drawable.rounded_edittext_orange);
-        //searchBar.setTextColor(getResources().getColor(black));
         searchBar.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -162,31 +145,16 @@ public class MainFragment extends Fragment {
             }
         });
 
-        //searchIcon = (ImageView) v.findViewById(R.id.search_icon);
-
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefresh);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Refresh items
-                new LoadAllProducts().execute();
+                getRecipes();
             }
         });
 
-
-        //mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        //////mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        //////mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        //////mRecyclerView.setHasFixedSize(true);
-        //////mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
-        ////mLinearLayoutManager = new LinearLayoutManager(getActivity());
-        //mLinearLayoutManager.setReverseLayout(true);
-        //mLinearLayoutManager.setStackFromEnd(true);
-
-
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -223,274 +191,20 @@ public class MainFragment extends Fragment {
 
             }
         });
-        new LoadAllProducts().execute();
-        showProgressDialog();
+
+
+        //new LoadAllProducts().execute();
+        //showProgressDialog();
+        mRecipes = new ArrayList<Recipe>();
+        getRecipes();
+
         return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
     }
-
-    private class CardViewHolder extends RecyclerView.ViewHolder {
-        private CardView mCardView;
-        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText, countText;
-        private ImageView cardImage;
-        ImageView mLikeButtonThumb, mLikeButtonStar;
-        LikeButton mLikeButton, mFavoriteButton;
-        SimpleRatingBar starRating;
-        public CardViewHolder(View itemView){
-            super(itemView);
-
-            cardTitle = (TextView) itemView.findViewById(R.id.cardTitle);
-            cardUsername = (TextView) itemView.findViewById(R.id.cardUsername);
-            cardImage = (ImageView) itemView.findViewById(R.id.cardImage);
-            //mLikeButtonThumb = (ImageView) itemView.findViewById(R.id.thumb);
-            mLikeButton = (LikeButton) itemView.findViewById(R.id.thumb);
-            mFavoriteButton = (LikeButton) itemView.findViewById(R.id.star);
-            //mLikeButtonStar = (ImageView) itemView.findViewById(R.id.star);
-            cardTime = (TextView) itemView.findViewById(R.id.cardTime);
-            feedsText = (TextView) itemView.findViewById(R.id.feedsText);
-            tag1 = (TextView) itemView.findViewById(R.id.tag1);
-            tag2 = (TextView) itemView.findViewById(R.id.tag2);
-            tag3 = (TextView) itemView.findViewById(R.id.tag3);
-            likesText = (TextView) itemView.findViewById(R.id.likesText);
-            starRating = (SimpleRatingBar) itemView.findViewById(R.id.starRating);
-            countText = (TextView) itemView.findViewById(R.id.countText);
-
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String postid = String.valueOf(mRecipes.get(getAdapterPosition()).getPostId());
-                    String url = mRecipes.get(getAdapterPosition()).getUrl();
-                    String recipename = mRecipes.get(getAdapterPosition()).getRecipename();
-                    String servings = mRecipes.get(getAdapterPosition()).getServes();
-                    String preptime = mRecipes.get(getAdapterPosition()).getPreptime();
-                    String cooktime = mRecipes.get(getAdapterPosition()).getCooktime();
-                    String likes = mRecipes.get(getAdapterPosition()).getLikes();
-                    String favorites = mRecipes.get(getAdapterPosition()).getFavorites();
-                    String userid = ((MainActivity) getActivity()).getUID().toString();
-                    String adapterpos = String.valueOf(getAdapterPosition());
-                    String likestotal = mRecipes.get(getAdapterPosition()).getLikestotal();
-                    String username = mRecipes.get(getAdapterPosition()).getUsername();
-                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username);
-
-
-
-                }
-            });
-
-            mLikeButton.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-                    String str = mRecipes.get(getAdapterPosition()).getLikes().toString();
-                    int inte = Integer.parseInt(str);
-                    if (inte == 0) {
-                        toast("Liked " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
-                        mRecipes.get(getAdapterPosition()).setLikes("1");
-                        //ImageView img = (ImageView) v;
-                        //img.setImageResource(R.drawable.thumb_up);
-                        final int pos = getAdapterPosition();
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                                params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
-                                params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes.get(pos).getPostId())));
-                                JSONObject json = jParser.makeHttpRequest(url_likes, "POST", params1);
-                            }
-                        }.start();
-                        int total = Integer.parseInt(mRecipes.get(getAdapterPosition()).getLikestotal().toString());
-                        total++;
-                        mRecipes.get(getAdapterPosition()).setLikestotal(String.valueOf(total));
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void unLiked(LikeButton likeButton) {
-                    toast("Unliked " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
-                    mRecipes.get(getAdapterPosition()).setLikes("0");
-                    //ImageView img = (ImageView) v;
-                    //img.setImageResource(R.drawable.thumb);
-                    final int pos = getAdapterPosition();
-
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                            params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
-                            params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes.get(pos).getPostId())));
-                            JSONObject json = jParser.makeHttpRequest(url_unlikes, "POST", params1);
-                        }
-                    }.start();
-                    int total = Integer.parseInt(mRecipes.get(getAdapterPosition()).getLikestotal().toString());
-                    total--;
-                    mRecipes.get(getAdapterPosition()).setLikestotal(String.valueOf(total));
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
-
-            mFavoriteButton.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-                    String str = mRecipes.get(getAdapterPosition()).getFavorites().toString();
-                    int inte = Integer.parseInt(str);
-                    if (inte == 0) {
-                        toast("Favorited " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
-                        mRecipes.get(getAdapterPosition()).setFavorites("1");
-                        //ImageView img = (ImageView) v;
-                        //img.setImageResource(R.drawable.star_on);
-                        final int pos = getAdapterPosition();
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                                params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
-                                params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes.get(pos).getPostId())));
-                                JSONObject json = jParser.makeHttpRequest(url_favorites, "POST", params1);
-                            }
-                        }.start();
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void unLiked(LikeButton likeButton) {
-                        toast("Unfavorited " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
-                        mRecipes.get(getAdapterPosition()).setFavorites("0");
-                        //ImageView img = (ImageView) v;
-                        //img.setImageResource(R.drawable.star);
-                        final int pos = getAdapterPosition();
-
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                                params1.add(new BasicNameValuePair("userid", ((MainActivity) getActivity()).getUID()));
-                                params1.add(new BasicNameValuePair("postid", String.valueOf(mRecipes.get(pos).getPostId())));
-                                JSONObject json = jParser.makeHttpRequest(url_unfavorites, "POST", params1);
-                            }
-                        }.start();
-                        mAdapter.notifyDataSetChanged();
-                }
-            });
-
-
-        }
-
-        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites, String rating, String count) {
-            cardUsername.setText("Added by " + username);
-            cardTitle.setText(recipename);
-            cardTime.setText(cardtime);
-            feedsText.setText(feedstext);
-            int length1 = tagText1.length();
-            int length2 = tagText2.length();
-            int length3 = tagText3.length();
-            int total = 0;
-            if(length1 < 25 && length1 > 0) {
-                tag1.setText(tagText1);
-                tag1.setBackgroundResource(R.drawable.rounded_edittext_orange);
-                total += length1;
-            }
-                if(total + length2 < 25 && length2 > 0) {
-                    tag2.setText(tagText2);
-                    tag2.setBackgroundResource(R.drawable.rounded_edittext_blue);
-                    total += length2;
-                }
-                    if(total + length3 < 25 && length3 > 0){
-                        tag3.setText(tagText3);
-                        tag3.setBackgroundResource(R.drawable.rounded_edittext_green);
-                    }
-
-            Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
-
-            likesText.setText(likestext);
-
-        if(likes.equals("1")){
-            mLikeButton.setLiked(true);
-        }
-            else{
-            mLikeButton.setLiked(false);
-        }
-
-            if(favorites.equals("1")){
-                mFavoriteButton.setLiked(true);
-            }
-            else{
-                mFavoriteButton.setLiked(false);
-            }
-
-            starRating.setStepSize(0.05F);
-            Float f = Float.parseFloat(rating);
-            starRating.setRating(f);
-
-
-            countText.setText("(" + count + ")");
-
-
-        }
-    }
-
-
-    public class CardAdapter extends RecyclerView.Adapter<CardViewHolder> {
-        private List<Recipe> recipez;
-
-        public CardAdapter(List<Recipe> s){
-            recipez = s;
-        }
-
-        @Override
-        public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            cardViewHolderView = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
-            return new CardViewHolder(cardViewHolderView);
-        }
-
-        @Override
-        public void onBindViewHolder(CardViewHolder holder, int position){
-            String username = recipez.get(position).getUsername();
-            String recipename = recipez.get(position).getRecipename();
-            String url = recipez.get(position).getUrl();
-            String cardtime = String.valueOf( Integer.parseInt(recipez.get(position).getCooktime()) + Integer.parseInt(recipez.get(position).getPreptime()));
-            String feedstext = String.valueOf(recipez.get(position).getServes());
-            String tag1 = recipez.get(position).getTag1();
-            String tag2 = recipez.get(position).getTag2();
-            String tag3 = recipez.get(position).getTag3();
-            String likes = recipez.get(position).getLikes();
-            String likestext = recipez.get(position).getLikestotal();
-            String favorites = recipez.get(position).getFavorites();
-            String rating = String.valueOf(recipez.get(position).getRating());
-            String count = recipez.get(position).getCount().toString();
-            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext, favorites, rating, count);
-        }
-
-        @Override
-        public int getItemCount(){
-            if(recipez != null)
-            return recipez.size();
-            return 0;
-        }
-        @Override
-        public int getItemViewType(int position) {
-            return position;
-        }
-
-        public List<Recipe> getData(){
-            return recipez;
-        }
-        public void setData(List<Recipe> data){
-            recipez = data;
-        }
-
-
-    }
-
-
 
     @Override
     public void onStart() {
@@ -552,230 +266,495 @@ public class MainFragment extends Fragment {
         ((MainActivity)getActivity()).showOverflowMenu(true);
     }
 
+    private void getRecipes() {
+        mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+        String search = mSharedPreferences.getString("search", "");
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        String[] searchArray = search.split(" ");
 
+        /*
+        Create our retrofit client ApiClient
+         */
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
 
+        if (!(search.equals(""))) {
+            if(mSharedPreferences.getString("query", "").equals("0")){
+                Log.d("Here ", "searching for " + search);
+                String[] searchUnbroken = {search};
 
+                Call<Recipes> call = apiService.searchAllRecipes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body().getRecipes());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
 
-    //Swipe to refresh - Code for managing the refresh itself
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("1")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesLikes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("2")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesFavorites(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("3")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("4")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesNumRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+
+        }
+        else {
+            if(mSharedPreferences.getString("query", "").equals("0")) {
+                Call<Recipes> call = apiService.getAllRecipes(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("1")){
+                Call<Recipes> call = apiService.getAllRecipesLikes(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("2")){
+                Call<Recipes> call = apiService.getAllRecipesFavorites(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("3")){
+                Call<Recipes> call = apiService.getAllRecipesRating(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("4")){
+                Call<Recipes> call = apiService.getAllRecipesNumRating(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                    }
+                });
+            }
+
+        }
+    }
+
     void refreshItems(){
         onItemsLoadComplete();
     }
 
-    //Swipe to refresh - what to do after the refreshing is complete
     void onItemsLoadComplete() {
     }
 
 
+    private class CardViewHolder extends RecyclerView.ViewHolder {
+        private CardView mCardView;
+        private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText, countText;
+        private ImageView cardImage;
+        ImageView mLikeButtonThumb, mLikeButtonStar;
+        LikeButton mLikeButton, mFavoriteButton;
+        SimpleRatingBar starRating;
+        public CardViewHolder(View itemView){
+            super(itemView);
 
-    /**
-     * Background Async Task to Load all product by making HTTP Request
-     * */
-    class LoadAllProducts extends AsyncTask<String, String, String> {
+            cardTitle = (TextView) itemView.findViewById(R.id.cardTitle);
+            cardUsername = (TextView) itemView.findViewById(R.id.cardUsername);
+            cardImage = (ImageView) itemView.findViewById(R.id.cardImage);
+            //mLikeButtonThumb = (ImageView) itemView.findViewById(R.id.thumb);
+            mLikeButton = (LikeButton) itemView.findViewById(R.id.thumb);
+            mFavoriteButton = (LikeButton) itemView.findViewById(R.id.star);
+            //mLikeButtonStar = (ImageView) itemView.findViewById(R.id.star);
+            cardTime = (TextView) itemView.findViewById(R.id.cardTime);
+            feedsText = (TextView) itemView.findViewById(R.id.feedsText);
+            tag1 = (TextView) itemView.findViewById(R.id.tag1);
+            tag2 = (TextView) itemView.findViewById(R.id.tag2);
+            tag3 = (TextView) itemView.findViewById(R.id.tag3);
+            likesText = (TextView) itemView.findViewById(R.id.likesText);
+            starRating = (SimpleRatingBar) itemView.findViewById(R.id.starRating);
+            countText = (TextView) itemView.findViewById(R.id.countText);
 
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String postid = String.valueOf(mRecipes.get(getAdapterPosition()).getPostid());
+                    String url = mRecipes.get(getAdapterPosition()).getUrl();
+                    String recipename = mRecipes.get(getAdapterPosition()).getRecipename();
+                    String servings = mRecipes.get(getAdapterPosition()).getServes();
+                    String preptime = mRecipes.get(getAdapterPosition()).getPreptime();
+                    String cooktime = mRecipes.get(getAdapterPosition()).getCooktime();
+                    String likes = mRecipes.get(getAdapterPosition()).getLikes();
+                    String favorites = mRecipes.get(getAdapterPosition()).getFavorites();
+                    String userid = ((MainActivity) getActivity()).getUID().toString();
+                    String adapterpos = String.valueOf(getAdapterPosition());
+                    String likestotal = String.valueOf(mRecipes.get(getAdapterPosition()).getLikestotal());
+                    String username = mRecipes.get(getAdapterPosition()).getUsername();
+                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username);
+
+
+
+                }
+            });
+
+            mLikeButton.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    String str = mRecipes.get(getAdapterPosition()).getLikes().toString();
+                    int inte = Integer.parseInt(str);
+                    if (inte == 0) {
+                        mRecipes.get(getAdapterPosition()).setLikes("1");
+                        final int pos = getAdapterPosition();
+                        Retrofit retrofit = ApiClient.getClient();
+                        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                        //Do before call to make app feel less laggy
+                        toast("Liked " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
+                        int total = Integer.parseInt(mRecipes.get(getAdapterPosition()).getLikestotal().toString());
+                        total++;
+                        mRecipes.get(getAdapterPosition()).setLikestotal(String.valueOf(total));
+                        mAdapter.notifyDataSetChanged();
+
+                        Call<Void> call = apiService.likes(((MainActivity) getActivity()).getUID(), String.valueOf(mRecipes.get(pos).getPostid()));
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Log.d("Error", t.toString());
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    mRecipes.get(getAdapterPosition()).setLikes("0");
+                    final int pos = getAdapterPosition();
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Unliked " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
+                    int total = Integer.parseInt(mRecipes.get(getAdapterPosition()).getLikestotal().toString());
+                    total--;
+                    mRecipes.get(getAdapterPosition()).setLikestotal(String.valueOf(total));
+                    mAdapter.notifyDataSetChanged();
+
+                    Call<Void> call = apiService.unlikes(((MainActivity) getActivity()).getUID(), String.valueOf(mRecipes.get(pos).getPostid()));
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
+                }
+            });
+
+            mFavoriteButton.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    String str = mRecipes.get(getAdapterPosition()).getFavorites().toString();
+                    int inte = Integer.parseInt(str);
+                    if (inte == 0) {
+                        mRecipes.get(getAdapterPosition()).setFavorites("1");
+
+                        final int pos = getAdapterPosition();
+                        Retrofit retrofit = ApiClient.getClient();
+                        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                        toast("Favorited " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
+                        mAdapter.notifyDataSetChanged();
+
+                        Call<Void> call = apiService.favorites(((MainActivity) getActivity()).getUID(), String.valueOf(mRecipes.get(pos).getPostid()));
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Log.d("Error", t.toString());
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    mRecipes.get(getAdapterPosition()).setFavorites("0");
+
+                    final int pos = getAdapterPosition();
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Unfavorited " + mRecipes.get(getAdapterPosition()).getRecipename().toString());
+                    mAdapter.notifyDataSetChanged();
+
+                    Call<Void> call = apiService.unfavorites(((MainActivity) getActivity()).getUID(), String.valueOf(mRecipes.get(pos).getPostid()));
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
+                }
+            });
+
+
+        }
+
+        public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites, String rating, String count) {
+            cardUsername.setText("Added by " + username);
+            cardTitle.setText(recipename);
+            cardTime.setText(cardtime);
+            feedsText.setText(feedstext);
+            int length1 = tagText1.length();
+            int length2 = tagText2.length();
+            int length3 = tagText3.length();
+            int total = 0;
+            if(length1 < 25 && length1 > 0) {
+                tag1.setText(tagText1);
+                tag1.setBackgroundResource(R.drawable.rounded_edittext_orange);
+                total += length1;
+            }
+            if(total + length2 < 25 && length2 > 0) {
+                tag2.setText(tagText2);
+                tag2.setBackgroundResource(R.drawable.rounded_edittext_blue);
+                total += length2;
+            }
+            if(total + length3 < 25 && length3 > 0){
+                tag3.setText(tagText3);
+                tag3.setBackgroundResource(R.drawable.rounded_edittext_green);
+            }
+
+            Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
+
+            likesText.setText(likestext);
+
+            if(likes.equals("1")){
+                mLikeButton.setLiked(true);
+            }
+            else{
+                mLikeButton.setLiked(false);
+            }
+
+            if(favorites.equals("1")){
+                mFavoriteButton.setLiked(true);
+            }
+            else{
+                mFavoriteButton.setLiked(false);
+            }
+
+            starRating.setStepSize(0.05F);
+            Float f = Float.parseFloat(rating);
+            starRating.setRating(f);
+
+
+            countText.setText("(" + count + ")");
+
+
+
+        }
+    }
+
+
+    public class CardAdapter extends RecyclerView.Adapter<CardViewHolder> {
+        private List<Recipe> recipez;
+
+        public CardAdapter(List<Recipe> s){
+            recipez = s;
+        }
+
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
+        public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            cardViewHolderView = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
+            return new CardViewHolder(cardViewHolderView);
         }
 
-        /**
-         * getting All products from url
-         * */
-        protected String doInBackground(String... args) {
-            Type listType = new TypeToken<List<Recipe>>(){}.getType();
-            // Building Parameters
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-            mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
-            String search = mSharedPreferences.getString("search", "");
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            //////editor.putString("search", "");
-            //////editor.commit();
-            //search.toUpperCase();
-            String[] searchArray = search.split(" ");
-            JSONObject json1 = new JSONObject();
-            JSONObject json = new JSONObject();
-            if(!(search.equals(""))) {
-                if(mSharedPreferences.getString("query", "").equals("0")){
-                    for (int i = 0; i < searchArray.length; i++) {
-                        Log.d("For loop to make array", searchArray[i]);
-                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
-                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    }
-                    String[] searchUnbroken = {search};
-                    for(int i = 0; i < searchUnbroken.length; i++) {
-                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
-                    }
-                json1 = jParser.makeHttpRequest(url_search_recipes, "POST", params);
-               }
-                else if(mSharedPreferences.getString("query", "").equals("1")){
-                    for (int i = 0; i < searchArray.length; i++) {
-                        Log.d("For loop to make array", searchArray[i]);
-                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
-                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    }
-                    String[] searchUnbroken = {search};
-                    for(int i = 0; i < searchUnbroken.length; i++) {
-                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
-                    }
-                    json1 = jParser.makeHttpRequest(url_search_recipes_likes, "POST", params);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("2")){
-                    for (int i = 0; i < searchArray.length; i++) {
-                        Log.d("For loop to make array", searchArray[i]);
-                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
-                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    }
-                    String[] searchUnbroken = {search};
-                    for(int i = 0; i < searchUnbroken.length; i++) {
-                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
-                    }
-                    json1 = jParser.makeHttpRequest(url_search_recipes_favorites, "POST", params);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("3")){
-                    for (int i = 0; i < searchArray.length; i++) {
-                        Log.d("For loop to make array", searchArray[i]);
-                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
-                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    }
-                    String[] searchUnbroken = {search};
-                    for(int i = 0; i < searchUnbroken.length; i++) {
-                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
-                    }
-                    json1 = jParser.makeHttpRequest(url_search_recipes_rating, "POST", params);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("4")){
-                    for (int i = 0; i < searchArray.length; i++) {
-                        Log.d("For loop to make array", searchArray[i]);
-                        params.add(new BasicNameValuePair("search[]", searchArray[i]));
-                        params.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    }
-                    String[] searchUnbroken = {search};
-                    for(int i = 0; i < searchUnbroken.length; i++) {
-                        params.add(new BasicNameValuePair("searchUnbroken[]", searchUnbroken[i]));
-                    }
-                    json1 = jParser.makeHttpRequest(url_search_recipes_num_rating, "POST", params);
-                }
-
-                try {
-                    if (json1 != null) {
-                        // products found
-                        // Getting Array of Products
-                        recipes = json1.getJSONArray("Recipes");
-                        int count = recipes.length();
-                        Log.d("Count: ", String.valueOf(count));
-                        mRecipes = new ArrayList<>();
-                        // looping through All Products
-                        for (int i = 0; i < recipes.length(); i++) {
-                            JSONObject c = recipes.getJSONObject(i);
-                            //Log.d(TAG, c.toString());
-                            Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
-                            mRecipes.add(new Recipe(recipe.getPostId(),
-                                    recipe.getUid().toString(),
-                                    recipe.getUsername().toString(),
-                                    recipe.getRecipename().toString(),
-                                    recipe.getUrl().toString(),
-                                    recipe.getDatetime().toString()
-                                    , recipe.getPreptime().toString(),
-                                    recipe.getCooktime().toString(),
-                                    recipe.getServes().toString(),
-                                    recipe.getTag1().toString(),
-                                    recipe.getTag2().toString(),
-                                    recipe.getTag3().toString(),
-                                    recipe.getLikes().toString(),
-                                    recipe.getLikestotal().toString()
-                            , recipe.getFavorites().toString(), recipe.getRating().toString(), recipe.getCount().toString()));
-                        }
-                    } else {
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                listType = null;
-                params = null;
-            }
-            else {
-
-                if(mSharedPreferences.getString("query", "").equals("0")){
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    json = jParser.makeHttpRequest(url_all_recipes, "POST", params1);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("1")){
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    json = jParser.makeHttpRequest(url_all_recipes_likes, "POST", params1);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("2")){
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    json = jParser.makeHttpRequest(url_all_favorites, "POST", params1);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("3")){
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    json = jParser.makeHttpRequest(url_all_recipes_rating, "POST", params1);
-                }
-                else if(mSharedPreferences.getString("query", "").equals("4")){
-                    List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-                    params1.add(new BasicNameValuePair("userid", ((MainActivity)getActivity()).getUID()));
-                    json = jParser.makeHttpRequest(url_all_recipes_num__rating, "POST", params1);
-                }
-
-                try {
-                    if (json != null) {
-                        // products found
-                        // Getting Array of Products
-                        recipes = json.getJSONArray("Recipes");
-                        int count = recipes.length();
-                        mRecipes = new ArrayList<>();
-                        // looping through All Products
-                        for (int i = 0; i < recipes.length(); i++) {
-                            JSONObject c = recipes.getJSONObject(i);
-                            //Log.d(TAG, c.toString());
-                            Recipe recipe = gson.fromJson(c.toString(), Recipe.class);
-                            mRecipes.add(new Recipe(recipe.getPostId(), recipe.getUid().toString(), recipe.getUsername().toString(), recipe.getRecipename().toString(), recipe.getUrl().toString(), recipe.getDatetime().toString()
-                                    , recipe.getPreptime().toString(), recipe.getCooktime().toString(), recipe.getServes().toString(), recipe.getTag1().toString(), recipe.getTag2().toString(), recipe.getTag3().toString(), recipe.getLikes().toString(), recipe.getLikestotal().toString()
-                            , recipe.getFavorites().toString(), recipe.getRating().toString(), recipe.getCount()));
-                        }
-
-                    } else {
-                        // no products found
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                listType = null;
-                params = null;
-            }
-            return null;
+        @Override
+        public void onBindViewHolder(CardViewHolder holder, int position){
+            String username = recipez.get(position).getUsername();
+            String recipename = recipez.get(position).getRecipename();
+            String url = recipez.get(position).getUrl();
+            String cardtime = String.valueOf( Integer.parseInt(recipez.get(position).getCooktime()) + Integer.parseInt(recipez.get(position).getPreptime()));
+            String feedstext = String.valueOf(recipez.get(position).getServes());
+            String tag1 = recipez.get(position).getTag1();
+            String tag2 = recipez.get(position).getTag2();
+            String tag3 = recipez.get(position).getTag3();
+            String likes = recipez.get(position).getLikes();
+            String likestext = String.valueOf(recipez.get(position).getLikestotal());
+            String favorites = recipez.get(position).getFavorites();
+            String rating = String.valueOf(recipez.get(position).getRating());
+            String count = recipez.get(position).getCount().toString();
+            holder.bindCard(username, recipename, url, cardtime, feedstext, tag1, tag2, tag3, likes, likestext, favorites, rating, count);
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after getting all products
-           // pDialog.dismiss();
-            // updating UI from Background Thread
-            //(getActivity()).runOnUiThread(new Runnable() {
-               //public void run() {
-                    mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-                    mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-                    mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
-                    mRecyclerView.setHasFixedSize(true);
-                    mAdapter = new CardAdapter(mRecipes);
-                    mRecyclerView.setAdapter(mAdapter);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    hideProgressDialog();
-               }
-            //});
+        @Override
+        public int getItemCount(){
+            if(recipez != null)
+                return recipez.size();
+            return 0;
+        }
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
 
-       // }
+        public List<Recipe> getData(){
+            return recipez;
+        }
+        public void setData(List<Recipe> data){
+            recipez = data;
+        }
+
 
     }
 
@@ -794,11 +773,22 @@ public class MainFragment extends Fragment {
         }
     }
 
+    public void refreshUI(){
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+        mAdapter = new CardAdapter(mRecipes);
+        mRecyclerView.setAdapter(mAdapter);
+        mSwipeRefreshLayout.setRefreshing(false);
+        hideProgressDialog();
+    }
+
     public void toast(String toast){
         SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
                 .setDuration(Style.DURATION_VERY_SHORT)
-                .setFrame(Style.FRAME_LOLLIPOP)
+                .setFrame(Style.FRAME_STANDARD)
                 .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
                 .setAnimations(Style.ANIMATIONS_FLY).show();
     }
@@ -835,8 +825,6 @@ public class MainFragment extends Fragment {
             mRecipes.get(adapterpos).setLikes(likes);
             mRecipes.get(adapterpos).setFavorites(favorites);
             mRecipes.get(adapterpos).setLikestotal(likestotal);
-            //mAdapter.swapItems(mRecipes);
-            //mAdapter.notifyItemChanged(adapterpos);
             mAdapter.notifyItemChanged(adapterpos);
         }
 
