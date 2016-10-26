@@ -2,6 +2,7 @@ package com.uncgcapstone.android.seniorcapstone.fragments;
 
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,10 +17,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
+import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
 import com.uncgcapstone.android.seniorcapstone.data.Ingredient;
 import com.uncgcapstone.android.seniorcapstone.data.Ingredients;
 import com.uncgcapstone.android.seniorcapstone.data.Step;
 import com.uncgcapstone.android.seniorcapstone.data.Steps;
+import com.uncgcapstone.android.seniorcapstone.data.Url;
+import com.uncgcapstone.android.seniorcapstone.data.User;
 import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
 import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.R;
@@ -29,11 +33,14 @@ import org.json.JSONArray;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
 /**
@@ -62,6 +69,9 @@ public class DetailRecipeFragment extends Fragment {
     LinearLayoutManager mLinearLayoutManager, mLinearLayoutManager1;
     ImageView detailImage;
     TextView detailRecipeNameText, detailUsername;
+    CircleImageView uploaderIcon;
+    String imageUrl = "";
+    List<User> mUser;
 
 
     public DetailRecipeFragment() {
@@ -110,7 +120,9 @@ public class DetailRecipeFragment extends Fragment {
         detailRecipeNameText.setText(recipename);
 
         detailUsername = (TextView) v.findViewById(R.id.detailUsername);
-        detailUsername.setText("Added by " + username);
+        detailUsername.setText(username);
+
+        uploaderIcon = (CircleImageView) v.findViewById(R.id.uploaderIcon);
 
         showProgressDialog();
         getIngredients();
@@ -175,7 +187,7 @@ public class DetailRecipeFragment extends Fragment {
             public void onResponse(Call<Steps> call, Response<Steps> response) {
                 if (response.body() != null) {
                     mSteps = response.body().getSteps();
-                    refreshUI();
+                    getUploader();
                 }
             }
 
@@ -187,7 +199,36 @@ public class DetailRecipeFragment extends Fragment {
 
     }
 
+    private void getUploader(){
+            Retrofit retrofit = ApiClient.getClient();
+            ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+            Call<Url> call = apiService.getProfileImage(((DetailedRecipeActivity)getActivity()).getPostuserid());
+            call.enqueue(new Callback<Url>() {
+                @Override
+                public void onResponse(Call<Url> call, Response<Url> response) {
+                    if (response.body().getUser() != null) {
+                        mUser = response.body().getUser();
+                        if(mUser.size() > 0) {
+                            Log.d("We here", "yo");
+                            imageUrl = mUser.get(0).getUrl().toString();
+                        }
+                    }
+                    refreshUI();
+                }
+
+                @Override
+                public void onFailure(Call<Url> call, Throwable t) {
+                    Log.d("Error", t.toString());
+                    refreshUI();
+                }
+            });
+
+    }
+
     public void refreshUI() {
+        Glide.with(getContext()).load(imageUrl).diskCacheStrategy(RESULT).placeholder(R.drawable.person).dontAnimate().into(uploaderIcon);
+
         mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         mLinearLayoutManager1 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
@@ -204,7 +245,6 @@ public class DetailRecipeFragment extends Fragment {
         stepsRecyclerViewDetail.setAdapter(mAdapter1);
         stepsRecyclerViewDetail.setNestedScrollingEnabled(false);
         stepsRecyclerViewDetail.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).size(5).build());
-
 
 
         servesTextDetail.setText("Serves " + servings);

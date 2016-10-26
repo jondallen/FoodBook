@@ -2,7 +2,11 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -53,6 +57,9 @@ import com.uncgcapstone.android.seniorcapstone.fragments.MainFragment;
 
 import org.json.JSONArray;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -303,6 +310,21 @@ super.onDestroy();
 
     public void post(final String[] servestext, final String[] preptext, final String[] cooktext, final String[] datetime, final String[] photoUri, final String[] uid, final String[] username, final String[] recipeName, final String[] tagsfinal, final String[] ingredients, final String[] ingredients2, final String[] ingredients3, final String[] steps, final String[] ingredtags){
         final Uri picUri = Uri.parse(photoUri[0]);
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+        }
+        catch (IOException e){
+
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, out);
+
+        final byte[] byteArray = out.toByteArray();
+
+        bitmap.recycle();
+
         new Thread(new Runnable() {
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -312,7 +334,7 @@ super.onDestroy();
                             int rand = random.nextInt(200000);
                             StorageReference storageRef = storage.getReferenceFromUrl("gs://seniorcapstone-831a0.appspot.com");
                             StorageReference imagesRef = storageRef.child("images/" +  String.valueOf(rand));
-                            UploadTask uploadTask = imagesRef.putFile(picUri);
+                            UploadTask uploadTask = imagesRef.putBytes(byteArray);
                            StorageTask<UploadTask.TaskSnapshot> prog = uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
@@ -419,6 +441,27 @@ super.onDestroy();
             if (resultCode == RESULT_OK) {
                 showProgressDialog();
                 final Uri photoUri = data.getData();
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
+                }
+                catch (IOException e){
+
+                }
+
+                    Bitmap smaller = getResizedBitmap(bitmap, 240, 240);
+
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                smaller.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+                final byte[] byteArray = stream.toByteArray();
+
+                bitmap.recycle();
+                smaller.recycle();
+
+                //ByteArrayOutputStream out = new ByteArrayOutputStream();
+                //file.compress(Bitmap.CompressFormat.PNG, 0, out);
+                //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
                 new Thread(new Runnable() {
                     public void run() {
                         runOnUiThread(new Runnable() {
@@ -428,7 +471,7 @@ super.onDestroy();
                                     int rand = random.nextInt(200000);
                                     StorageReference storageRef = storage.getReferenceFromUrl("gs://seniorcapstone-831a0.appspot.com");
                                     StorageReference imagesRef = storageRef.child("profilepics/" +  String.valueOf(rand));
-                                    UploadTask uploadTask = imagesRef.putFile(photoUri);
+                                    UploadTask uploadTask = imagesRef.putBytes(byteArray);
                                     StorageTask<UploadTask.TaskSnapshot> prog = uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
@@ -649,6 +692,23 @@ super.onDestroy();
     }
     public String getUID(){
         return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+    }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 
 

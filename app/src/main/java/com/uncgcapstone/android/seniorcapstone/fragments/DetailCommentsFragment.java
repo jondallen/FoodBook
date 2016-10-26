@@ -248,7 +248,7 @@ public class DetailCommentsFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String datetime = new SimpleDateFormat("MM/dd/yyyy , hh:mm a").format(calendar.getTime());
 
-        Call<Void> call = apiService.createReview(((DetailedRecipeActivity)getActivity()).getUserid(), ((DetailedRecipeActivity)getActivity()).getPostid(), review, rating, ((DetailedRecipeActivity)getActivity()).getUsername(), datetime);
+        Call<Void> call = apiService.createReview(((DetailedRecipeActivity)getActivity()).getUserid(), ((DetailedRecipeActivity)getActivity()).getPostid(), review, rating, ((DetailedRecipeActivity)getActivity()).getLoggedinuser(), datetime);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

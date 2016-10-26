@@ -522,7 +522,8 @@ public class MainFragment extends Fragment {
                     String adapterpos = String.valueOf(getAdapterPosition());
                     String likestotal = String.valueOf(mRecipes.get(getAdapterPosition()).getLikestotal());
                     String username = mRecipes.get(getAdapterPosition()).getUsername();
-                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username);
+                    String postuserid = mRecipes.get(getAdapterPosition()).getUid();
+                    launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username, postuserid);
 
 
 
@@ -793,7 +794,7 @@ public class MainFragment extends Fragment {
                 .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
-    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal, String username){
+    public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal, String username, String postuserid){
         Intent i = new Intent(getActivity(), DetailedRecipeActivity.class);
         i.putExtra("postid", postid);
         i.putExtra("url", url);
@@ -810,6 +811,7 @@ public class MainFragment extends Fragment {
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         String loggedinuser = mSharedPreferences.getString("email", "");
         i.putExtra("loggedinuser", loggedinuser);
+        i.putExtra("postuserid", postuserid);
         startActivityForResult(i, 0);
     }
 
