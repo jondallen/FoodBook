@@ -9,6 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     //private static final String url_all_recipes = "http://63d42096.ngrok.io/android_connect_retro/";
+    /*
+    New Database
+     */
     private static final String url_all_recipes = "http://54.201.252.62/test/";
     private static Retrofit retrofit = null;
 
