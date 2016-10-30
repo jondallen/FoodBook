@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,10 +26,14 @@ import com.uncgcapstone.android.seniorcapstone.adapters.PagerAdapter;
 
 import org.json.JSONArray;
 
+import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+import static android.view.View.GONE;
 
 public class DetailedRecipeActivity extends AppCompatActivity{
 
@@ -47,8 +52,13 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     NestedScrollView testScrollView;
     ImageView backarrow; // detailStar, detailThumb;
     LikeButton detailStar, detailThumb;
-    //Toolbar toolbar1;
-    TextView detailBackButton;
+    Toolbar toolbar1;
+    //TextView detailBackButton;
+    HashMap likePost;
+    HashMap favoritePost;
+    HashMap likesTotalPost;
+    HashMap followsUser;
+    LikeButton followButtonDetail;
 
 
 
@@ -59,13 +69,15 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-        //toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
-        /*toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar1 = (Toolbar) findViewById(R.id.toolbar1);
+        toolbar1.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });*/
+        });
+
+        followsUser = new HashMap();
 
         if(bundle != null){
             url = bundle.getString("url");
@@ -82,21 +94,109 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             username = bundle.getString("username");
             loggedinuser = bundle.getString("loggedinuser");
             postuserid = bundle.getString("postuserid");
+            likePost = (HashMap) bundle.getSerializable("likePost");
+            favoritePost = (HashMap) bundle.getSerializable("favoritePost");
+            likesTotalPost = (HashMap) bundle.getSerializable("likesTotalPost");
+            if(bundle.containsKey("followsUser")){
+                followsUser = (HashMap) bundle.getSerializable("followsUser");
+            }
+
         }
 
 
-        detailBackButton = (TextView) findViewById(R.id.detailBackButton);
-        detailBackButton.setOnClickListener(new View.OnClickListener() {
+
+
+        //detailBackButton = (TextView) findViewById(R.id.detailBackButton);
+        /*detailBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });
+        });*/
 
         detailStar = (LikeButton) findViewById(R.id.starDetail);
         detailThumb = (LikeButton) findViewById(R.id.thumbDetail);
 
-        if(likes.equals("1")){
+        followButtonDetail = (LikeButton) findViewById(R.id.followButtonDetail);
+        if(userid.equals(postuserid)){
+            followButtonDetail.setVisibility(GONE);
+        }
+
+        updateButtons();
+        isFollowing();
+
+        followButtonDetail.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+
+                if(!(userid.equals(postuserid))) {
+                    if(followsUser.containsKey(postuserid)){
+                        followsUser.remove(postuserid);
+                        followsUser.put(postuserid, "1");
+                    }
+                    else{
+                        followsUser.put(postuserid, "1");
+                    }
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Followed " + username);
+
+                    Call<Void> call = apiService.follows(userid, postuserid);
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
+                }
+                else{
+                    toast("You can't follow yourself!");
+                }
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                if(!(userid.equals(postuserid))) {
+                    if(followsUser.containsKey(postuserid)){
+                        followsUser.remove(postuserid);
+                        followsUser.put(postuserid, "0");
+                    }
+                    else{
+                        followsUser.put(postuserid, "0");
+                    }
+
+                    Retrofit retrofit = ApiClient.getClient();
+                    ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+                    toast("Unfollowed " + username);
+
+                    Call<Void> call = apiService.unfollows(userid, postuserid);
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Error", t.toString());
+                        }
+                    });
+                }
+                else{
+                    toast("You can't unfollow yourself!");
+                }
+            }
+        });
+
+        /*if(likes.equals("1")){
             detailThumb.setLiked(true);
         }
         else{
@@ -108,14 +208,18 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         }
         else{
             detailStar.setLiked(false);
-        }
+        }*/
 
         detailStar.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-                int inte = Integer.parseInt(favorites);
-                if (inte == 0) {
-                    favorites = "1";
+                if(favoritePost.containsKey(postid)){
+                    favoritePost.remove(postid);
+                    favoritePost.put(postid, "1");
+                }
+                else{
+                    favoritePost.put(postid, "1");
+                }
 
                     Retrofit retrofit = ApiClient.getClient();
                     ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -135,12 +239,16 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                         }
                     });
                 }
-            }
-
             @Override
             public void unLiked(LikeButton likeButton) {
 
-                    favorites = "0";
+                if(favoritePost.containsKey(postid)){
+                    favoritePost.remove(postid);
+                    favoritePost.put(postid, "0");
+                }
+                else{
+                    favoritePost.put(postid, "0");
+                }
 
                 Retrofit retrofit = ApiClient.getClient();
                 ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -165,10 +273,19 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         detailThumb.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-                int inte = Integer.parseInt(likes);
-                if (inte == 0) {
-                    likes = "1";
-                    likestotal++;
+
+                if(likePost.containsKey(postid)){
+                    likePost.remove(postid);
+                    likePost.put(postid, "1");
+                }
+                else{
+                    likePost.put(postid, "1");
+                }
+
+                String total = String.valueOf(likesTotalPost.get(postid));
+                int totalInt = Integer.parseInt(total);
+                totalInt++;
+                likesTotalPost.put(postid, String.valueOf(totalInt));
 
                     Retrofit retrofit = ApiClient.getClient();
                     ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -187,15 +304,22 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                             Log.d("Error", t.toString());
                         }
                     });
-                }
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                int inte = Integer.parseInt(likes);
-                if (inte == 1) {
-                    likes = "0";
-                    likestotal--;
+                if(likePost.containsKey(postid)){
+                    likePost.remove(postid);
+                    likePost.put(postid, "0");
+                }
+                else{
+                    likePost.put(postid, "0");
+                }
+
+                String total = String.valueOf(likesTotalPost.get(postid));
+                int totalInt = Integer.parseInt(total);
+                totalInt--;
+                likesTotalPost.put(postid, String.valueOf(totalInt));
 
                     Retrofit retrofit = ApiClient.getClient();
                     ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -214,7 +338,6 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                             Log.d("Error", t.toString());
                         }
                     });
-                }
             }
         });
 
@@ -255,6 +378,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     @Override
     public void onStop(){
         super.onStop();
+        SuperActivityToast.cancelAllSuperToasts();
         /**
          * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
          * It may or may not be actually necessary
@@ -275,6 +399,11 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         SuperActivityToast.cancelAllSuperToasts();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+
 
     @Override
     public void onBackPressed(){
@@ -285,10 +414,20 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         bundle.putString("favorites", favorites);
         bundle.putString("likes", likes);
         bundle.putString("likestotal", String.valueOf(likestotal));
+        bundle.putSerializable("likePost", likePost);
+        bundle.putSerializable("favoritePost", favoritePost);
+        bundle.putSerializable("likesTotalPost", likesTotalPost);
+        bundle.putSerializable("followsUser", followsUser);
         data.putExtras(bundle);
         setResult(RESULT_OK, data);
 
         super.onBackPressed();
+    }
+
+
+    public void showUserProfile(){
+    Intent i = new Intent(DetailedRecipeActivity.this, SelfProfileActivity.class);
+        startActivity(i);
     }
 
 
@@ -333,5 +472,140 @@ public String getServings(){
         return username;
     }
 
+    public HashMap getLikePost(){
+        return likePost;
+    }
+    public HashMap getFavoritePost(){
+        return favoritePost;
+    }
+    public HashMap getLikesTotalPost(){
+        return likesTotalPost;
+    }
 
-}
+    public void updateHashMaps(HashMap likePost, HashMap favoritePost, HashMap likesTotalPost){
+        this.likePost = likePost;
+        this.favoritePost = favoritePost;
+        this.likesTotalPost = likesTotalPost;
+    }
+
+    public void updateButtons(){
+        if(likePost.containsKey(postid)){
+            if(likePost.get(postid).equals("0")){
+                detailThumb.setLiked(false);
+            }
+            else{
+                detailThumb.setLiked(true);
+            }
+        }
+        else{
+            detailThumb.setLiked(false);
+        }
+
+        if(favoritePost.containsKey(postid)){
+            if(favoritePost.get(postid).equals("0")){
+                detailStar.setLiked(false);
+            }
+            else{
+                detailStar.setLiked(true);
+            }
+        }
+        else{
+            detailStar.setLiked(false);
+        }
+    }
+
+    private void isFollowing(){
+        Retrofit retrofit = ApiClient.getClient();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+        Call<Object> call = apiService.isFollowing(userid, postuserid);
+        call.enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                if(response.body() != null) {
+                    if (response.body().toString().equals("1")) {
+                        followButtonDetail.setLiked(true);
+                        followsUser.put(postuserid, "1");
+                    }
+                    else {
+                        followButtonDetail.setLiked(false);
+                        followsUser.put(postuserid, "0");
+                    }
+                }
+                else{
+                    followButtonDetail.setLiked(false);
+                    followsUser.put(postuserid, "0");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                Log.d("Error", t.toString());
+            }
+        });
+    }
+
+    public void showUserProfile(Bundle b){
+        Bundle bundle = b;
+
+        bundle.putString("username", username);
+        bundle.putString("postuserid", postuserid);
+        bundle.putString("userid", userid);
+
+        bundle.putSerializable("followsUser", followsUser);
+        bundle.putSerializable("likePost", likePost);
+        bundle.putSerializable("favoritePost", favoritePost);
+        bundle.putSerializable("likesTotalPost", likesTotalPost);
+        Intent i = new Intent(DetailedRecipeActivity.this, SelfProfileActivity.class);
+        i.putExtras(bundle);
+        startActivityForResult(i, 3);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if(requestCode == 3) {
+            likePost = (HashMap) data.getSerializableExtra("likePost");
+            favoritePost = (HashMap) data.getSerializableExtra("favoritePost");
+            likesTotalPost = (HashMap) data.getSerializableExtra("likesTotalPost");
+            followsUser = (HashMap) data.getSerializableExtra("followsUser");
+
+            if(likePost.containsKey(postid)) {
+                if (likePost.get(postid).equals("0")) {
+                    detailThumb.setLiked(false);
+                } else {
+                    detailThumb.setLiked(true);
+                }
+            }
+            else{
+                detailThumb.setLiked(false);
+            }
+
+                if(favoritePost.containsKey(postid)) {
+                    if (favoritePost.get(postid).equals("0")) {
+                        detailStar.setLiked(false);
+                    } else {
+                        detailStar.setLiked(true);
+                    }
+                }
+            else{
+                    detailThumb.setLiked(false);
+                }
+
+                    if(followsUser.containsKey(postuserid)) {
+                        if (followsUser.get(postuserid).equals("0")) {
+                            followButtonDetail.setLiked(false);
+                        } else {
+                            followButtonDetail.setLiked(true);
+                        }
+                    }
+            else{
+                        followButtonDetail.setLiked(false);
+                    }
+
+            }
+
+        }
+
+    }
+

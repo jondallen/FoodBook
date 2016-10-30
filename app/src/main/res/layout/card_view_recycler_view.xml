@@ -59,7 +59,7 @@
             android:id="@+id/starRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srb_starSize="20dp"
+            app:srb_starSize="15dp"
             app:srb_numberOfStars="5"
             app:srb_rating="3"
             app:srb_stepSize="0.05"
@@ -78,10 +78,13 @@
             android:layout_height="wrap_content"
             android:textSize="13dp"
             android:hint="(15)"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif"
             android:layout_below="@id/cardUsername"
             android:layout_toRightOf="@id/starRating"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:layout_marginLeft="6dp"
+            android:layout_alignBottom="@id/starRating"
             />
         <RelativeLayout
             android:id="@+id/rel1"

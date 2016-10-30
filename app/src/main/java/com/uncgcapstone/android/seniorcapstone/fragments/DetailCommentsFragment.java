@@ -1,6 +1,7 @@
 package com.uncgcapstone.android.seniorcapstone.fragments;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
@@ -22,6 +24,7 @@ import com.google.gson.Gson;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
+import com.uncgcapstone.android.seniorcapstone.activities.SelfProfileActivity;
 import com.uncgcapstone.android.seniorcapstone.data.Review;
 import com.uncgcapstone.android.seniorcapstone.data.Reviews;
 import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
@@ -69,6 +72,7 @@ public class DetailCommentsFragment extends Fragment {
     TextView numRatingText;
     String mAvg, mCount = "";
     LinearLayout commentsRelLayout;
+    RelativeLayout relLayoutCommentsProfile;
 
 
     public DetailCommentsFragment() {
@@ -145,6 +149,8 @@ public class DetailCommentsFragment extends Fragment {
             }
         });
         //showProgressDialog();
+
+
         getAllReviews();
         return v;
     }
@@ -152,6 +158,7 @@ public class DetailCommentsFragment extends Fragment {
     @Override
     public void onDestroyView(){
         super.onDestroyView();
+        SuperActivityToast.cancelAllSuperToasts();
         /**
          * The below code is used to allow memory to be GC'd correctly upon leaving the fragment
          * It may or may not be actually necessary
@@ -172,6 +179,8 @@ public class DetailCommentsFragment extends Fragment {
         TextView commentsUsername, commentsComment, commentsDateTime;
         SimpleRatingBar commentsRating;
         CircleImageView commentsIcon;
+        RelativeLayout relLayoutCommentsProfile;
+
 
         public CommentsHolder(View itemView) {
             super(itemView);
@@ -181,6 +190,7 @@ public class DetailCommentsFragment extends Fragment {
             commentsRating = (SimpleRatingBar) itemView.findViewById(R.id.commentsRating);
             commentsDateTime = (TextView) itemView.findViewById(R.id.commentsDateTime);
             commentsIcon = (CircleImageView) itemView.findViewById(R.id.commentsIcon);
+            relLayoutCommentsProfile = (RelativeLayout) itemView.findViewById(R.id.relLayoutCommentsProfile);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +199,26 @@ public class DetailCommentsFragment extends Fragment {
 
                 }
             });
+
+            relLayoutCommentsProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //((DetailedRecipeActivity)getActivity()).showUserProfile();
+
+                    Bundle extras = new Bundle();
+                    if(mReviews.get(getAdapterPosition()).getUrl().length() > 0){
+                        extras.putString("url", mReviews.get(getAdapterPosition()).getUrl());
+                    }
+
+                    else
+                        extras.putString("url", "");
+                    extras.putString("username", mReviews.get(getAdapterPosition()).getUsername());
+                    extras.putString("postuserid", mReviews.get(getAdapterPosition()).getUserid());
+                    extras.putString("userid", ((DetailedRecipeActivity)getActivity()).getUserid());
+                    ((DetailedRecipeActivity) getActivity()).showUserProfile(extras);
+                }
+            });
+
         }
 
         public void bindCard(String username, String comment, String datetime, String rating, String url) {

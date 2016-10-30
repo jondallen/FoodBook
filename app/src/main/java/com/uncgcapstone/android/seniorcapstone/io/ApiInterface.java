@@ -53,6 +53,13 @@ import retrofit2.http.Query;
     );
 
     @FormUrlEncoded
+    @POST("get_all_recipes_user.php")
+    Call<Recipes> getAllRecipesUser(
+            @Field("userid") String userid,
+            @Field("loggedinuser") String loggedinuser
+    );
+
+    @FormUrlEncoded
     @POST("get_all_recipes_rating.php")
     Call<Recipes> getAllRecipesRating(
             @Field("userid") String userid
@@ -192,6 +199,27 @@ import retrofit2.http.Query;
     Call<Void> unfavorites(
             @Field("userid") String userid,
             @Field("postid") String postid
+    );
+
+    @FormUrlEncoded
+    @POST("follows.php")
+    Call<Void> follows(
+            @Field("userid1") String userid1,
+            @Field("userid2") String userid2
+    );
+
+    @FormUrlEncoded
+    @POST("unfollows.php")
+    Call<Void> unfollows(
+            @Field("userid1") String userid1,
+            @Field("userid2") String userid2
+    );
+
+    @FormUrlEncoded
+    @POST("is_following.php")
+    Call<Object> isFollowing(
+            @Field("userid1") String userid1,
+            @Field("userid2") String userid2
     );
 
 }

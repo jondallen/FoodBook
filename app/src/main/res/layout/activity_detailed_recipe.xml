@@ -21,13 +21,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar1"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="?attr/colorPrimary"
+            android:elevation="6dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            />
 
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="24dp"
             android:layout_below="@+id/detailUsername"
             android:background="?attr/colorPrimary"
             android:elevation="6dp"
@@ -50,9 +59,10 @@
     <RelativeLayout
         android:background="@drawable/rounded_edittext_babypowder"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         >
+
         <com.like.LikeButton
             android:id="@+id/starDetail"
             android:layout_width="wrap_content"
@@ -90,21 +100,24 @@
             app:is_enabled="true"
             android:layout_centerVertical="true"
             />
-
-        <TextView
-            android:id="@+id/detailBackButton"
+        <com.like.LikeButton
+            android:id="@+id/followButtonDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textSize="19dp"
+            app:icon_type="thumb"
+            app:circle_start_color="@color/colorPrimary"
+            app:like_drawable="@drawable/account_plus_enabled"
+            app:unlike_drawable="@drawable/account_plus"
+            app:dots_primary_color="@color/colorAccent"
+            app:dots_secondary_color="@color/colorPrimaryDark"
+            app:circle_end_color="@color/colorAccent"
+            app:icon_size="28dp"
+            app:liked="false"
+            app:anim_scale_factor="2"
+            app:is_enabled="true"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/detailBackButton"
-            android:drawableLeft="@drawable/arrow_left"
-            android:text="Back"
-            android:textColor="#000000"
-            android:padding="10dp"
+            android:layout_toLeftOf="@id/thumbDetail"
             />
-
     </RelativeLayout>
 </LinearLayout>
 
@@ -145,5 +158,19 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:navigationIcon="?attr/homeAsUpIndicator"
         />
+
+         <TextView
+            android:id="@+id/detailBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textSize="19dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/detailBackButton"
+            android:drawableLeft="@drawable/arrow_left"
+            android:text="Back"
+            android:textColor="#000000"
+            android:padding="10dp"
+            />
 
 -->

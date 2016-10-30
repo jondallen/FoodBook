@@ -2,6 +2,7 @@ package com.uncgcapstone.android.seniorcapstone.fragments;
 
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,13 +12,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.gson.Gson;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.uncgcapstone.android.seniorcapstone.activities.DetailedRecipeActivity;
 import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
+import com.uncgcapstone.android.seniorcapstone.activities.SelfProfileActivity;
 import com.uncgcapstone.android.seniorcapstone.data.Ingredient;
 import com.uncgcapstone.android.seniorcapstone.data.Ingredients;
 import com.uncgcapstone.android.seniorcapstone.data.Step;
@@ -31,6 +40,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.json.JSONArray;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -40,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.view.View.GONE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
@@ -48,7 +59,7 @@ import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
  */
 public class DetailRecipeFragment extends Fragment {
 
-    String  servings, preptime, cooktime, postid, userid, recipename, url, username;
+    String  servings, preptime, cooktime, postid, userid, recipename, url, username, postuserid = "";
 
     RecyclerView ingredsRecyclerViewDetail, stepsRecyclerViewDetail;
     TextView servesTextDetail, prepTextDetail, cookTextDetail;
@@ -72,6 +83,9 @@ public class DetailRecipeFragment extends Fragment {
     CircleImageView uploaderIcon;
     String imageUrl = "";
     List<User> mUser;
+    RelativeLayout relLayoutProfile;
+
+
 
 
     public DetailRecipeFragment() {
@@ -96,6 +110,8 @@ public class DetailRecipeFragment extends Fragment {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_detail_recipe, container, false);
 
+
+
         ingredsRecyclerViewDetail = (RecyclerView) v.findViewById(R.id.ingredsRecyclerViewDetail);
         stepsRecyclerViewDetail = (RecyclerView) v.findViewById(R.id.stepsRecyclerViewDetail);
 
@@ -111,6 +127,8 @@ public class DetailRecipeFragment extends Fragment {
         recipename = ((DetailedRecipeActivity)getActivity()).getRecipename();
         url = ((DetailedRecipeActivity)getActivity()).getUrl();
         username = ((DetailedRecipeActivity)getActivity()).getUsername();
+        postuserid = ((DetailedRecipeActivity)getActivity()).getPostuserid();
+
 
 
         detailImage = (ImageView) v.findViewById(R.id.detailImage);
@@ -124,6 +142,23 @@ public class DetailRecipeFragment extends Fragment {
 
         uploaderIcon = (CircleImageView) v.findViewById(R.id.uploaderIcon);
 
+        relLayoutProfile = (RelativeLayout) v.findViewById(R.id.relLayoutProfile);
+        relLayoutProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle extras = new Bundle();
+                if(imageUrl.length() > 0)
+                extras.putString("url", imageUrl);
+                else
+                    extras.putString("url", "");
+                extras.putString("username", username);
+                extras.putString("postuserid", ((DetailedRecipeActivity)getActivity()).getPostuserid());
+                extras.putString("userid", userid);
+                ((DetailedRecipeActivity)getActivity()).showUserProfile(extras);
+            }
+        });
+
+
         showProgressDialog();
         getIngredients();
         return v;
@@ -133,6 +168,12 @@ public class DetailRecipeFragment extends Fragment {
     public void onStop(){
         super.onStop();
 
+    }
+
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        SuperActivityToast.cancelAllSuperToasts();
     }
 
     /*public void getInfo(){
@@ -210,7 +251,6 @@ public class DetailRecipeFragment extends Fragment {
                     if (response.body().getUser() != null) {
                         mUser = response.body().getUser();
                         if(mUser.size() > 0) {
-                            Log.d("We here", "yo");
                             imageUrl = mUser.get(0).getUrl().toString();
                         }
                     }
@@ -225,6 +265,7 @@ public class DetailRecipeFragment extends Fragment {
             });
 
     }
+
 
     public void refreshUI() {
         Glide.with(getContext()).load(imageUrl).diskCacheStrategy(RESULT).placeholder(R.drawable.person).dontAnimate().into(uploaderIcon);
@@ -416,6 +457,15 @@ public class DetailRecipeFragment extends Fragment {
         public int getItemViewType(int position) {
             return position;
         }
+    }
+
+    public void toast(String toast){
+        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_STANDARD)
+                .setText(toast)
+                .setDuration(Style.DURATION_VERY_SHORT)
+                .setFrame(Style.FRAME_STANDARD)
+                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
 }

@@ -43,6 +43,7 @@ import com.uncgcapstone.android.seniorcapstone.data.Recipe;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -62,14 +63,8 @@ public class MainFragment extends Fragment {
 
     FloatingActionButton fab;
     private final String TAG = "MainFragment";
-    private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
-    private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
-    private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
-    private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
-    private final String TAG_SUCCESS = "success";
     JSONArray recipes = null;
     List<Recipe> mRecipes;
-    Gson gson = new Gson();
     RecyclerView mRecyclerView;
     CardAdapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
@@ -83,6 +78,9 @@ public class MainFragment extends Fragment {
     AlertDialog mAlertDialog;
     private View v, cardViewHolderView;
     SharedPreferences mSharedPreferences;
+    HashMap likePost = new HashMap();
+    HashMap favoritePost = new HashMap();
+    HashMap likesTotalPost = new HashMap();
     //LikeButton mLikeButtonThumb, mLikeButtonStar;
     
 
@@ -215,7 +213,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroyView(){
         super.onDestroyView();
-
+        SuperActivityToast.cancelAllSuperToasts();
         mSwipeRefreshLayout.setOnRefreshListener(null);
         //mRecyclerView.addOnScrollListener(null);
         fab.setOnClickListener(null);
@@ -796,22 +794,37 @@ public class MainFragment extends Fragment {
 
     public void launchTest(String postid, String url, String recipename, String servings, String preptime, String cooktime, String likes, String favorites, String userid, String adapterpos, String likestotal, String username, String postuserid){
         Intent i = new Intent(getActivity(), DetailedRecipeActivity.class);
-        i.putExtra("postid", postid);
-        i.putExtra("url", url);
-        i.putExtra("recipename", recipename);
-        i.putExtra("servings", servings);
-        i.putExtra("preptime", preptime);
-        i.putExtra("cooktime", cooktime);
-        i.putExtra("likes", likes);
-        i.putExtra("favorites", favorites);
-        i.putExtra("userid", userid);
-        i.putExtra("adapterpos", adapterpos);
-        i.putExtra("likestotal", likestotal);
-        i.putExtra("username", username);
+        Bundle extras = new Bundle();
+        extras.putString("postid", postid);
+        extras.putString("url", url);
+        extras.putString("recipename", recipename);
+        extras.putString("servings", servings);
+        extras.putString("preptime", preptime);
+        extras.putString("cooktime", cooktime);
+        extras.putString("likes", likes);
+        extras.putString("favorites", favorites);
+        extras.putString("userid", userid);
+        extras.putString("adapterpos", adapterpos);
+        extras.putString("likestotal", likestotal);
+        extras.putString("username", username);
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         String loggedinuser = mSharedPreferences.getString("email", "");
-        i.putExtra("loggedinuser", loggedinuser);
-        i.putExtra("postuserid", postuserid);
+        extras.putString("loggedinuser", loggedinuser);
+        extras.putString("postuserid", postuserid);
+
+        likePost = new HashMap();
+        favoritePost = new HashMap();
+        likesTotalPost = new HashMap();
+
+        likePost.put(postid, likes);
+        favoritePost.put(postid, favorites);
+        likesTotalPost.put(postid, likestotal);
+
+        extras.putSerializable("likePost", likePost);
+        extras.putSerializable("favoritePost", favoritePost);
+        extras.putSerializable("likesTotalPost", likesTotalPost);
+        i.putExtras(extras);
+
         startActivityForResult(i, 0);
     }
 
@@ -824,11 +837,33 @@ public class MainFragment extends Fragment {
             Log.d(TAG, String.valueOf(adapterpos));
             String likes = data.getStringExtra("likes");
             String favorites = data.getStringExtra("favorites");
-            mRecipes.get(adapterpos).setLikes(likes);
-            mRecipes.get(adapterpos).setFavorites(favorites);
-            mRecipes.get(adapterpos).setLikestotal(likestotal);
-            mAdapter.notifyItemChanged(adapterpos);
+            likePost = (HashMap) data.getSerializableExtra("likePost");
+            favoritePost = (HashMap) data.getSerializableExtra("favoritePost");
+            likesTotalPost = (HashMap) data.getSerializableExtra("likesTotalPost");
+
+
+            for(int i = 0; i < mRecipes.size(); i++){
+                if(likePost.containsKey(mRecipes.get(i).getPostid())){
+                    mRecipes.get(i).setLikes((String) likePost.get(mRecipes.get(i).getPostid()));
+                    mRecipes.get(i).setLikestotal((String) likesTotalPost.get(mRecipes.get(i).getPostid()));
+                }
+            }
+
+            for(int i = 0; i < mRecipes.size(); i++){
+                if(favoritePost.containsKey(mRecipes.get(i).getPostid())){
+                    mRecipes.get(i).setFavorites((String) favoritePost.get(mRecipes.get(i).getPostid()));
+                }
+            }
+            //mRecipes.get(adapterpos).setLikes(likes);
+            //mRecipes.get(adapterpos).setFavorites(favorites);
+            //mRecipes.get(adapterpos).setLikestotal(likestotal);
+            likePost.clear();
+            favoritePost.clear();
+            likesTotalPost.clear();
+            mAdapter.notifyDataSetChanged();
+
         }
+
 
     }
 

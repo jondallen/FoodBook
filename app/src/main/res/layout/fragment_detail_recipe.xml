@@ -29,6 +29,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="240dp"/>
             <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edittext_babypowder"
+                android:elevation="4dp"
+                >
+
+            <RelativeLayout
+                android:id="@+id/relLayoutName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -55,11 +63,14 @@
             </RelativeLayout>
 
 
+
                 <RelativeLayout
+                    android:id="@+id/relLayoutProfile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/detailRecipeNameText"
+                    android:layout_below="@id/relLayoutName"
                     android:layout_marginLeft="4dp"
+                    android:background="@drawable/rounded_edittext_babypowder_press"
                     >
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -84,10 +95,12 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="4dp"
                         android:layout_toRightOf="@id/uploaderIcon"
+                        android:textStyle=""
                         />
+
                 </RelativeLayout>
 
-
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -241,3 +254,23 @@
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </LinearLayout>
+
+
+
+<!--
+
+ <Button
+                        android:id="@+id/followButtonDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Follow"
+                        android:backgroundTint="#80aaff"
+                        android:layout_margin="3dp"
+                        android:textAlignment="center"
+                        android:fontFamily="sans-serif"
+                        android:layout_alignParentRight="true"
+                        android:drawableRight="@drawable/account"
+                        android:textColor="#ffffff"
+                        />
+
+                        -->

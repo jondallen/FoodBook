@@ -735,4 +735,12 @@ super.onDestroy();
                 .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SuperActivityToast.onSaveState(outState);
+
+    }
+
 }
