@@ -47,6 +47,18 @@ import retrofit2.http.Query;
     );
 
     @FormUrlEncoded
+    @POST("get_all_recipes_suggested.php")
+    Call<Recipes> getAllRecipesSuggested(
+            @Field("userid") String userid
+    );
+
+    @FormUrlEncoded
+    @POST("get_all_recipes_follows.php")
+    Call<Recipes> getAllRecipesFollows(
+            @Field("userid") String userid
+    );
+
+    @FormUrlEncoded
     @POST("get_all_recipes_likes.php")
     Call<Recipes> getAllRecipesLikes(
             @Field("userid") String userid
@@ -82,6 +94,14 @@ import retrofit2.http.Query;
     @FormUrlEncoded
     @POST("search_recipes_likes.php")
     Call<Recipes> searchRecipesLikes(
+            @Field("userid") String userid,
+            @Field("search") String[] search,
+            @Field("searchUnbroken") String[] searchUnbroken
+    );
+
+    @FormUrlEncoded
+    @POST("search_recipes_follows.php")
+    Call<Recipes> searchRecipesFollows(
             @Field("userid") String userid,
             @Field("search") String[] search,
             @Field("searchUnbroken") String[] searchUnbroken

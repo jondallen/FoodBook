@@ -253,6 +253,9 @@ public class DetailRecipeFragment extends Fragment {
                         if(mUser.size() > 0) {
                             imageUrl = mUser.get(0).getUrl().toString();
                         }
+                        else{
+                            imageUrl = "";
+                        }
                     }
                     refreshUI();
                 }
@@ -260,6 +263,7 @@ public class DetailRecipeFragment extends Fragment {
                 @Override
                 public void onFailure(Call<Url> call, Throwable t) {
                     Log.d("Error", t.toString());
+                    imageUrl = "";
                     refreshUI();
                 }
             });

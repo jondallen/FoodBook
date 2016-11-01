@@ -16,6 +16,7 @@
     android:elevation="@dimen/cardview_default_elevation"
     card_view:cardCornerRadius="2dp"
     android:clickable="true"
+    android:background="#ffffff"
     >
 
     <RelativeLayout

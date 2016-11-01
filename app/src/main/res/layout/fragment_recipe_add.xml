@@ -162,7 +162,7 @@
     >
             <EditText
                 android:id="@+id/ingredientsText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Quantity"
                 android:textSize="16dp"
@@ -177,7 +177,7 @@
                 />
     <AutoCompleteTextView
         android:id="@+id/ingredientsText2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Unit"
         android:textSize="16dp"
@@ -192,7 +192,7 @@
         />
     <EditText
         android:id="@+id/ingredientsText3"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Ingredient"
         android:textSize="16dp"

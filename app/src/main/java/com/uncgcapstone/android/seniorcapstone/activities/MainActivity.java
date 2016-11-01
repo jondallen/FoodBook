@@ -652,6 +652,30 @@ super.onDestroy();
                                 .replace(R.id.fragment_container, fragment2, "MainFragment")
                                 .addToBackStack(null).commit();
                     }
+                    else if(position == 5){
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "5");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 5);
+
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
+                    else if(position == 6){
+                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("query", "6");
+                        editor.commit();
+                        spinner.setTag(R.id.pos, 6);
+
+                        Fragment fragment2 = MainFragment.newInstance();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment2, "MainFragment")
+                                .addToBackStack(null).commit();
+                    }
 
                 }
             }

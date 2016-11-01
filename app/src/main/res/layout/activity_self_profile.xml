@@ -115,6 +115,7 @@
         android:layout_height="2dp"
         android:background="@android:color/darker_gray"/>
 
+
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recyclerviewProfile"
@@ -124,6 +125,8 @@
         tools:listitem="@layout/card_view_recycler_view"
         >
     </android.support.v7.widget.RecyclerView>
+
+
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -290,11 +290,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -309,11 +313,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -328,11 +336,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -347,11 +359,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -366,10 +382,37 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("5")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesFollows(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                        else{
+                            System.out.println("NULL");
+                            refreshUI();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -386,11 +429,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -404,11 +451,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -422,11 +473,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -440,11 +495,15 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -458,11 +517,59 @@ public class MainFragment extends Fragment {
                             mRecipes = response.body().getRecipes();
                             refreshUI();
                         }
+                        else{
+                            refreshUI();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Recipes> call, Throwable t) {
                         Log.d("Error", t.toString());
+                        refreshUI();
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("5")){
+                Call<Recipes> call = apiService.getAllRecipesFollows(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                        else{
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                        refreshUI();
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("6")){
+                Call<Recipes> call = apiService.getAllRecipesSuggested(((MainActivity) getActivity()).getUID());
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                        else{
+                            refreshUI();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                        refreshUI();
                     }
                 });
             }
@@ -773,13 +880,14 @@ public class MainFragment extends Fragment {
     }
 
     public void refreshUI(){
-        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
-        mAdapter = new CardAdapter(mRecipes);
-        mRecyclerView.setAdapter(mAdapter);
-        mSwipeRefreshLayout.setRefreshing(false);
+            mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+            mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+            mRecyclerView.setHasFixedSize(true);
+            mAdapter = new CardAdapter(mRecipes);
+            mRecyclerView.setAdapter(mAdapter);
+            mSwipeRefreshLayout.setRefreshing(false);
+
         hideProgressDialog();
     }
 

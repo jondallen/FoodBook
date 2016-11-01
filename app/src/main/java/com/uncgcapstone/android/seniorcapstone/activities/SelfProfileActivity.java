@@ -78,8 +78,10 @@ public class SelfProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if(bundle != null){
-            if(bundle.getString("url").length() > 0)
+            if(bundle.getString("url") != null)
             url = bundle.getString("url");
+            else
+            url = "";
             username = bundle.getString("username");
             postuserid = bundle.getString("postuserid");
             userid = bundle.getString("userid");
@@ -509,7 +511,7 @@ public void fetchRecipes(){
 
         @Override
         public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-            LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+            LayoutInflater inflater = LayoutInflater.from(SelfProfileActivity.this);
             View cardViewHolderView = inflater.inflate(R.layout.card_view_recycler_view, parent, false);
             return new CardViewHolder(cardViewHolderView);
         }
@@ -610,7 +612,7 @@ public void fetchRecipes(){
         mAdapter = new CardAdapter(mRecipes);
         mRecyclerView.setAdapter(mAdapter);
 
-        if(mRecipes.size() <= 1)
+        if(mRecipes.size() == 1)
             profileNumRecipes.setText(mRecipes.size() + " recipe");
         else
         profileNumRecipes.setText(mRecipes.size() + " recipes");

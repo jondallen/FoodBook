@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SeniorCapstoneRetro</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_profile_self">Self Profile</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -37,6 +38,8 @@
         <item>My Favorites</item>
         <item>Highest Rating</item>
         <item>Most Rated</item>
+        <item>Following</item>
+        <item>Suggested</item>
     </string-array>
     <string name="prompt">null</string>
 </resources>

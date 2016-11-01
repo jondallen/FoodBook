@@ -99,7 +99,6 @@
                 app:srb_fillColor="#C5B358"
                 app:srb_isIndicator="true"
                 android:layout_toRightOf="@id/avgRatingText"
-
                 android:layout_centerVertical="true"
                 />
         </RelativeLayout>

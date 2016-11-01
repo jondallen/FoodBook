@@ -548,9 +548,9 @@ public String getServings(){
     public void showUserProfile(Bundle b){
         Bundle bundle = b;
 
-        bundle.putString("username", username);
-        bundle.putString("postuserid", postuserid);
-        bundle.putString("userid", userid);
+        //bundle.putString("username", username);
+        //bundle.putString("postuserid", postuserid);
+        //bundle.putString("userid", userid);
 
         bundle.putSerializable("followsUser", followsUser);
         bundle.putSerializable("likePost", likePost);
