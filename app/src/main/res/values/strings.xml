@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SeniorCapstoneRetro</string>
+    <string name="app_name">FoodBook</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_profile_self">Self Profile</string>
 

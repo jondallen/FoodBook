@@ -247,7 +247,7 @@ public class LogInActivity extends CoreActivity {
     public void toast(String toast){
         SuperActivityToast.create(this, new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
-                .setDuration(Style.DURATION_VERY_SHORT)
+                .setDuration(Style.DURATION_SHORT)
                 .setFrame(Style.FRAME_STANDARD)
                 .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
                 .setAnimations(Style.ANIMATIONS_FLY).show();

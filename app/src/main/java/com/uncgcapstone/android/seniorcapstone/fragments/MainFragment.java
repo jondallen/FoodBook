@@ -22,12 +22,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-import com.google.gson.Gson;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
@@ -38,22 +36,15 @@ import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.activities.MainActivity;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.data.Recipe;
-
-
-import org.androidannotations.annotations.res.TextRes;
 import org.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -75,7 +66,6 @@ public class MainFragment extends Fragment {
     StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     SwipeRefreshLayout mSwipeRefreshLayout;
     RelativeLayout searchBarLayout;
-    //TagsEditText searchBar;
     EditText searchBar;
     ImageView searchIcon;
     AlertDialog mAlertDialog;
@@ -85,7 +75,6 @@ public class MainFragment extends Fragment {
     HashMap favoritePost = new HashMap();
     HashMap likesTotalPost = new HashMap();
     TextView noResults;
-    //LikeButton mLikeButtonThumb, mLikeButtonStar;
     
 
     public MainFragment() {
@@ -197,9 +186,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-
-        //new LoadAllProducts().execute();
-        //showProgressDialog();
         mRecipes = new ArrayList<Recipe>();
         getRecipes();
 
@@ -222,18 +208,14 @@ public class MainFragment extends Fragment {
         super.onDestroyView();
         SuperActivityToast.cancelAllSuperToasts();
         mSwipeRefreshLayout.setOnRefreshListener(null);
-        //mRecyclerView.addOnScrollListener(null);
         fab.setOnClickListener(null);
         mRecyclerView = null;
-        //mAdapter = null;
         mRecipes = null;
         fab = null;
         searchBar.setText("");
         searchBar = null;
         searchIcon = null;
-        //jParser = null;
         recipes = null;
-        //gson = null;
         mStaggeredGridLayoutManager = null;
         mLinearLayoutManager = null;
         mGridLayoutManager = null;
@@ -282,13 +264,30 @@ public class MainFragment extends Fragment {
          */
         Retrofit retrofit = ApiClient.getClient();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
-
+        Call<Recipes> call;
         if (!(search.equals(""))) {
-            if(mSharedPreferences.getString("query", "").equals("0")){
-                Log.d("Here ", "searching for " + search);
-                String[] searchUnbroken = {search};
-
-                Call<Recipes> call = apiService.searchAllRecipes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            String[] searchUnbroken = {search};
+            if(mSharedPreferences.getString("query", "").equals("0")) {
+                call = apiService.searchAllRecipes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else if(mSharedPreferences.getString("query", "").equals("1")) {
+                call = apiService.searchRecipesLikes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else if(mSharedPreferences.getString("query", "").equals("2")) {
+                call = apiService.searchRecipesFavorites(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else if(mSharedPreferences.getString("query", "").equals("3")) {
+                call = apiService.searchRecipesRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else  if(mSharedPreferences.getString("query", "").equals("4")) {
+                call = apiService.searchRecipesNumRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else  if(mSharedPreferences.getString("query", "").equals("5")) {
+                 call = apiService.searchRecipesFollows(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
+            else {
+                call = apiService.searchRecipesSuggested(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+            }
                 call.enqueue(new Callback<Recipes>() {
                     @Override
                     public void onResponse(Call<Recipes> call, Response<Recipes> response) {
@@ -309,148 +308,28 @@ public class MainFragment extends Fragment {
                     }
                 });
             }
-            if(mSharedPreferences.getString("query", "").equals("1")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesLikes(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("2")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesFavorites(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("3")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("4")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesNumRating(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("5")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesFollows(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            System.out.println("NULL");
-                            refreshUI();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("6")){
-                String[] searchUnbroken = {search};
-                Call<Recipes> call = apiService.searchRecipesSuggested(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            System.out.println("NULL");
-                            refreshUI();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-
-        }
         else {
             if(mSharedPreferences.getString("query", "").equals("0")) {
-                Call<Recipes> call = apiService.getAllRecipes(((MainActivity) getActivity()).getUID());
+                call = apiService.getAllRecipes(((MainActivity) getActivity()).getUID());
+            }
+            else  if(mSharedPreferences.getString("query", "").equals("1")) {
+                call = apiService.getAllRecipesLikes(((MainActivity) getActivity()).getUID());
+            }
+            else if(mSharedPreferences.getString("query", "").equals("2")) {
+                call = apiService.getAllRecipesFavorites(((MainActivity) getActivity()).getUID());
+            }
+            else if(mSharedPreferences.getString("query", "").equals("3")) {
+                call = apiService.getAllRecipesRating(((MainActivity) getActivity()).getUID());
+            }
+            else if(mSharedPreferences.getString("query", "").equals("4")) {
+                call = apiService.getAllRecipesNumRating(((MainActivity) getActivity()).getUID());
+            }
+            else  if(mSharedPreferences.getString("query", "").equals("5")) {
+                call = apiService.getAllRecipesFollows(((MainActivity) getActivity()).getUID());
+            }
+            else {
+                call = apiService.getAllRecipesSuggested(((MainActivity) getActivity()).getUID());
+            }
                 call.enqueue(new Callback<Recipes>() {
                     @Override
                     public void onResponse(Call<Recipes> call, Response<Recipes> response) {
@@ -471,141 +350,8 @@ public class MainFragment extends Fragment {
                     }
                 });
             }
-            if(mSharedPreferences.getString("query", "").equals("1")){
-                Call<Recipes> call = apiService.getAllRecipesLikes(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("2")){
-                Call<Recipes> call = apiService.getAllRecipesFavorites(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("3")){
-                Call<Recipes> call = apiService.getAllRecipesRating(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("4")){
-                Call<Recipes> call = apiService.getAllRecipesNumRating(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("5")){
-                Call<Recipes> call = apiService.getAllRecipesFollows(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-            if(mSharedPreferences.getString("query", "").equals("6")){
-                Call<Recipes> call = apiService.getAllRecipesSuggested(((MainActivity) getActivity()).getUID());
-                call.enqueue(new Callback<Recipes>() {
-                    @Override
-                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
-                        if (response.body() != null) {
-                            System.out.println(response.body());
-                            mRecipes = response.body().getRecipes();
-                            refreshUI();
-                        }
-                        else{
-                            refreshUI();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Recipes> call, Throwable t) {
-                        Log.d("Error", t.toString());
-                        refreshUI();
-                    }
-                });
-            }
-
         }
-    }
+
 
     void refreshItems(){
         onItemsLoadComplete();
