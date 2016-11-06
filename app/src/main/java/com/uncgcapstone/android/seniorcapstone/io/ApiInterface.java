@@ -33,6 +33,20 @@ import retrofit2.http.Query;
         @Query("query") String query
     );*/
 
+    @FormUrlEncoded
+    @POST("create_user.php")
+    Call<Url> createUser(
+      @Field("username") String username,
+      @Field("password") String password
+    );
+
+    @FormUrlEncoded
+    @POST("sign_in.php")
+    Call<Url> signIn(
+            @Field("username") String username,
+            @Field("password") String password
+    );
+
 
         @FormUrlEncoded
         @POST("get_all_recipes.php")

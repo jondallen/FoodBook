@@ -91,10 +91,6 @@ public class MainActivity extends CoreActivity {
     String downloadUrl1 = null;
     Menu menu;
     public String search = "";
-    OnProgressListener mOnProgressListener;
-    OnFailureListener mOnFailureListener;
-    OnPausedListener mOnPausedListener;
-    OnSuccessListener mOnSuccessListener;
     final int CHOOSE_PIC = 1;
     String tempUrlSet = "";
     boolean urlGet, hasLoadedImage = false;
@@ -102,15 +98,6 @@ public class MainActivity extends CoreActivity {
     Gson gson = new Gson();
     JSONArray jsonuser = null;
     String tempUrl = "";
-
-
-
-
-    // url to create new product
-    private String url_create_product = "http://63d42096.ngrok.io/android_connect/create_recipe.php";
-    private String url_set_profile_image = "http://63d42096.ngrok.io/android_connect/set_profile_image.php";
-    private String url_get_profile_image = "http://63d42096.ngrok.io/android_connect_retro/get_profile_image.php";
-
     // JSON Node names
     private final String TAG_SUCCESS = "success";
     IProfile profile;
@@ -149,25 +136,12 @@ public class MainActivity extends CoreActivity {
         logOutItem = new SecondaryDrawerItem().withIdentifier(4).withName("Log Out").withSelectable(false).withIcon(R.drawable.logout);
         settingsItem = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withSelectable(false).withIcon(R.drawable.settings);
 
-        mAuth = FirebaseAuth.getInstance(); //Gets shared instance of firebase auth object
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+
                     if(hasLoadedImage == false) {
                         getProfileImage();
                         hasLoadedImage = true;
                     }
 
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-
-            }
-        };
 
 
 
@@ -246,8 +220,11 @@ public class MainActivity extends CoreActivity {
                             return false;
                         }
                         else if(drawerItem.getIdentifier() == 4){
-                            FirebaseAuth.getInstance().signOut();
-                            Intent i = new Intent(MainActivity.this, LogInActivity.class);
+                            mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+                            SharedPreferences.Editor editor = mSharedPreferences.edit();
+                            editor.putString("uid","");
+                            editor.commit();
+                            Intent i = new Intent(MainActivity.this, StartActivity.class);
                             startActivity(i);
                             finish();
                         }
@@ -274,7 +251,6 @@ public class MainActivity extends CoreActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -285,9 +261,6 @@ public class MainActivity extends CoreActivity {
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
         Log.d("OnStop Called", "In Main Activity");
     }
     @Override
@@ -303,10 +276,6 @@ super.onDestroy();
 
 
 
-
-    public FirebaseUser getUser(){
-        return user;
-    }
 
     public void post(final String[] servestext, final String[] preptext, final String[] cooktext, final String[] datetime, final String[] photoUri, final String[] uid, final String[] username, final String[] recipeName, final String[] tagsfinal, final String[] ingredients, final String[] ingredients2, final String[] ingredients3, final String[] steps, final String[] ingredtags){
         final Uri picUri = Uri.parse(photoUri[0]);
@@ -715,7 +684,9 @@ super.onDestroy();
 
     }
     public String getUID(){
-        return FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
+        String uid = mSharedPreferences.getString("uid", "");
+        return uid;
     }
 
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {

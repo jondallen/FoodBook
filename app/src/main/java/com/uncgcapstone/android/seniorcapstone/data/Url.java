@@ -15,6 +15,9 @@ public class Url {
     @SerializedName("user")
     @Expose
     private List<User> user = new ArrayList<User>();
+    @SerializedName("uid")
+    @Expose
+    private String uid;
 
     /**
      * No args constructor for use in serialization
@@ -27,8 +30,9 @@ public class Url {
      *
      * @param user
      */
-    public Url(List<User> user) {
+    public Url(List<User> user, String uid) {
         this.user = user;
+        this.uid = uid;
     }
 
     /**
@@ -49,4 +53,11 @@ public class Url {
         this.user = user;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 }

@@ -89,13 +89,5 @@
         android:layout_below="@id/emailText"
         />
 !-->
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/googlebutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/createButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp"
-        />
 
 </RelativeLayout>

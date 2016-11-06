@@ -385,7 +385,7 @@ public class AddRecipeFragment extends Fragment {
             String cooktext = String.valueOf(cookText.getText().toString());
             Calendar calendar = Calendar.getInstance();
             String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
-            String uid = (String) ((MainActivity) getActivity()).getUid();
+            String uid = (String) ((MainActivity) getActivity()).getUID();
             mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), Context.MODE_PRIVATE);
             String tagsTemp = mTagsEditText.getText().toString();
             String[] tags = tagsTemp.split(" ");
