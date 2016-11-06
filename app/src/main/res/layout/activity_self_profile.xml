@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:id="@+id/activity_self_profile"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,6 +22,7 @@
         />
 
     <android.support.v4.widget.NestedScrollView
+        android:layout_below="@id/toolbar2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -32,6 +33,7 @@
             >
 
     <RelativeLayout
+        android:id="@+id/selfRelLayout"
         android:layout_width="match_parent"
         android:layout_height="190dp"
         android:padding="6dp"
@@ -109,13 +111,6 @@
 
     </RelativeLayout>
 
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/darker_gray"/>
-
-
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recyclerviewProfile"
@@ -125,11 +120,17 @@
         tools:listitem="@layout/card_view_recycler_view"
         >
     </android.support.v7.widget.RecyclerView>
-
-
-
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
+    <TextView
+        android:id="@+id/selfEmptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Nothing to see here!"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="28sp"
+        />
 
-</LinearLayout>
+</RelativeLayout>

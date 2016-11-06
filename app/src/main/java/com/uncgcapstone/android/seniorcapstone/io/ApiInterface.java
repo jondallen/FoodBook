@@ -92,6 +92,14 @@ import retrofit2.http.Query;
     );
 
     @FormUrlEncoded
+    @POST("search_recipes_suggested.php")
+    Call<Recipes> searchRecipesSuggested(
+            @Field("userid") String userid,
+            @Field("search") String[] search,
+            @Field("searchUnbroken") String[] searchUnbroken
+    );
+
+    @FormUrlEncoded
     @POST("search_recipes_likes.php")
     Call<Recipes> searchRecipesLikes(
             @Field("userid") String userid,

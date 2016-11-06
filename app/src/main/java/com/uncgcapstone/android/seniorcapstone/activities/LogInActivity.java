@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -110,7 +113,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
 
                 }
                 else{
-                    Toast.makeText(getApplicationContext(), "Please enter a valid username and password", Toast.LENGTH_SHORT).show();
+                    toast("Please enter a valid username and password");
                 }
             }
                                   });
@@ -123,7 +126,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                     signIn(emailText.getText().toString(), passwordText.getText().toString());
                 }
                 else{
-                    Toast.makeText(getApplicationContext(), "Please enter a valid username and password", Toast.LENGTH_SHORT).show();
+                    toast("Please enter a valid username and password");
                 }
             }
                                    });
@@ -166,12 +169,11 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LogInActivity.this, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
+                            toast(getResources().getString(R.string.auth_failed));
                         }
 
                         else{
-                            Toast.makeText(LogInActivity.this, R.string.auth_successful, Toast.LENGTH_SHORT).show();
+                            toast(getResources().getString(R.string.auth_successful));
                         }
                     }
                 });
@@ -191,8 +193,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(getApplicationContext(), R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
+                            toast(getResources().getString(R.string.auth_failed));
                         }
                         else{
                             mainPage();
@@ -214,7 +215,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                Toast.makeText(getApplicationContext(), "Log in failed", Toast.LENGTH_SHORT).show();
+                toast("Log in failed");
             }
         }
     }
@@ -235,8 +236,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LogInActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            toast("Authentication failed.");
                         }
                         // ...
                     }
@@ -248,7 +248,7 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         // An unresolvable error has occurred and a connection to Google APIs
         // could not be established. Display an error message, or handle
         // the failure silently
-    Toast.makeText(getApplicationContext(), "Failed to connect to Google", Toast.LENGTH_SHORT).show();
+    toast("Failed to connect to Google");
         // ...
     }
 
@@ -281,4 +281,22 @@ public class LogInActivity extends CoreActivity implements GoogleApiClient.OnCon
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         startActivity(intent);
     }
+
+    public void toast(String toast){
+        SuperActivityToast.create(this, new Style(), Style.TYPE_STANDARD)
+                .setText(toast)
+                .setDuration(Style.DURATION_VERY_SHORT)
+                .setFrame(Style.FRAME_STANDARD)
+                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_ORANGE))
+                .setAnimations(Style.ANIMATIONS_FLY).show();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SuperActivityToast.onSaveState(outState);
+
+    }
 }
+
+

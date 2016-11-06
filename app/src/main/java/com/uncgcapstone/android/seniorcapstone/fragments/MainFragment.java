@@ -40,6 +40,7 @@ import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.data.Recipe;
 
 
+import org.androidannotations.annotations.res.TextRes;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 
@@ -81,6 +84,7 @@ public class MainFragment extends Fragment {
     HashMap likePost = new HashMap();
     HashMap favoritePost = new HashMap();
     HashMap likesTotalPost = new HashMap();
+    TextView noResults;
     //LikeButton mLikeButtonThumb, mLikeButtonStar;
     
 
@@ -110,6 +114,9 @@ public class MainFragment extends Fragment {
 
         mSharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+        noResults = (TextView) v.findViewById(R.id.noResults);
+        noResults.setVisibility(GONE);
 
         searchBarLayout = (RelativeLayout) v.findViewById(R.id.toolbar2);
         searchBar = (EditText) v.findViewById(R.id.searchbar);
@@ -396,6 +403,29 @@ public class MainFragment extends Fragment {
             if(mSharedPreferences.getString("query", "").equals("5")){
                 String[] searchUnbroken = {search};
                 Call<Recipes> call = apiService.searchRecipesFollows(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
+                call.enqueue(new Callback<Recipes>() {
+                    @Override
+                    public void onResponse(Call<Recipes> call, Response<Recipes> response) {
+                        if (response.body() != null) {
+                            System.out.println(response.body());
+                            mRecipes = response.body().getRecipes();
+                            refreshUI();
+                        }
+                        else{
+                            System.out.println("NULL");
+                            refreshUI();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Recipes> call, Throwable t) {
+                        Log.d("Error", t.toString());
+                        refreshUI();
+                    }
+                });
+            }
+            if(mSharedPreferences.getString("query", "").equals("6")){
+                String[] searchUnbroken = {search};
+                Call<Recipes> call = apiService.searchRecipesSuggested(((MainActivity) getActivity()).getUID(), searchArray, searchUnbroken);
                 call.enqueue(new Callback<Recipes>() {
                     @Override
                     public void onResponse(Call<Recipes> call, Response<Recipes> response) {
@@ -798,6 +828,11 @@ public class MainFragment extends Fragment {
                 mFavoriteButton.setLiked(false);
             }
 
+            if(((MainActivity)getActivity()).getUID().equals(mRecipes.get(getAdapterPosition()).getUid())){
+                mLikeButton.setEnabled(false);
+                mFavoriteButton.setEnabled(false);
+            }
+
             starRating.setStepSize(0.05F);
             Float f = Float.parseFloat(rating);
             starRating.setRating(f);
@@ -887,6 +922,13 @@ public class MainFragment extends Fragment {
             mAdapter = new CardAdapter(mRecipes);
             mRecyclerView.setAdapter(mAdapter);
             mSwipeRefreshLayout.setRefreshing(false);
+
+        if(mRecipes.size() > 0){
+            noResults.setVisibility(GONE);
+        }
+        else{
+            noResults.setVisibility(VISIBLE);
+        }
 
         hideProgressDialog();
     }

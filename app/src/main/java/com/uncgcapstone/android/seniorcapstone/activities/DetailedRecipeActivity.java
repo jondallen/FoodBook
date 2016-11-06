@@ -120,6 +120,8 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         followButtonDetail = (LikeButton) findViewById(R.id.followButtonDetail);
         if(userid.equals(postuserid)){
             followButtonDetail.setVisibility(GONE);
+            detailStar.setEnabled(false);
+            detailThumb.setEnabled(false);
         }
 
         updateButtons();
@@ -402,6 +404,11 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     @Override
     public void onResume(){
         super.onResume();
+        if(userid.equals(postuserid)){
+            followButtonDetail.setVisibility(GONE);
+            detailStar.setEnabled(false);
+            detailThumb.setEnabled(false);
+        }
     }
 
 
@@ -606,6 +613,14 @@ public String getServings(){
             }
 
         }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SuperActivityToast.onSaveState(outState);
+
+    }
 
     }
 

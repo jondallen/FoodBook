@@ -72,8 +72,15 @@ android:layout_marginBottom="16dp"
     app:fabSize="normal"
     />
 
-
-
+    <TextView
+        android:id="@+id/noResults"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="28sp"
+        android:text="0 Results"
+        android:layout_centerInParent="true"
+        />
 </RelativeLayout>
 
 <!--<mabbas007.tagsedittext.TagsEditText

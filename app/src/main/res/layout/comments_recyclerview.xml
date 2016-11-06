@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:padding="4dp"
-              android:background="@drawable/rounded_edittext_babypowder"
+              android:background="@drawable/rounded_edittext_thin"
     >
     <RelativeLayout
         android:id="@+id/relLayoutCommentsProfile"

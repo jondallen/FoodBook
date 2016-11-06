@@ -41,6 +41,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
 public class SelfProfileActivity extends AppCompatActivity {
@@ -61,6 +63,7 @@ public class SelfProfileActivity extends AppCompatActivity {
     HashMap likesTotalPost;
     HashMap followsUser;
     LikeButton profileFollowButton;
+    TextView selfEmptyText;
 
     android.app.AlertDialog mAlertDialog;
 
@@ -92,6 +95,13 @@ public class SelfProfileActivity extends AppCompatActivity {
         }
 
         profileFollowButton = (LikeButton) findViewById(R.id.profileFollowButton);
+
+        if(userid.equals(postuserid)){
+            profileFollowButton.setVisibility(GONE);
+        }
+
+        selfEmptyText = (TextView) findViewById(R.id.selfEmptyText);
+        selfEmptyText.setVisibility(GONE);
 
         profileFollowButton.setOnLikeListener(new OnLikeListener() {
             @Override
@@ -193,6 +203,14 @@ public class SelfProfileActivity extends AppCompatActivity {
 
         fetchRecipes();
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(userid.equals(postuserid)){
+            profileFollowButton.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -489,6 +507,11 @@ public void fetchRecipes(){
                 mFavoriteButton.setLiked(false);
             }
 
+            if(userid.equals(postuserid)){
+                mLikeButton.setEnabled(false);
+                mFavoriteButton.setEnabled(false);
+            }
+
             starRating.setStepSize(0.05F);
             Float f = Float.parseFloat(rating);
             starRating.setRating(f);
@@ -617,6 +640,13 @@ public void fetchRecipes(){
         else
         profileNumRecipes.setText(mRecipes.size() + " recipes");
 
+        if(mRecipes.size() > 0){
+            selfEmptyText.setVisibility(GONE);
+        }
+        else{
+            selfEmptyText.setVisibility(VISIBLE);
+        }
+
         hideProgressDialog();
 
     }
@@ -708,6 +738,13 @@ public void fetchRecipes(){
             mAdapter.notifyDataSetChanged();
 
         }
+
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SuperActivityToast.onSaveState(outState);
 
     }
 }
