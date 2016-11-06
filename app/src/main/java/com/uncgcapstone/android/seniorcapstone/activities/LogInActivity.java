@@ -87,7 +87,7 @@ public class LogInActivity extends CoreActivity {
 
                 }
                 else{
-                    toast("To create an account, please enter a valid username and password.");
+                    toast("To create an account, please enter a valid username and password");
                 }
             }
                                   });
@@ -100,7 +100,7 @@ public class LogInActivity extends CoreActivity {
                     signIn(emailText.getText().toString(), passwordText.getText().toString());
                 }
                 else{
-                    toast("To log in, please enter a valid username and password.");
+                    toast("To log in, please enter a valid username and password");
                 }
             }
                                    });
