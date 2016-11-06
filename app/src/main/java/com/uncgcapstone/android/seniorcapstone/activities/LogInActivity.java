@@ -141,6 +141,7 @@ public class LogInActivity extends CoreActivity {
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("uid", response.body().getUid().toString()); //used to display username within the app
                         editor.commit();
+                        Toast.makeText(LogInActivity.this, "Account created!", Toast.LENGTH_SHORT).show();
                         mainPage(email);
                     }
                 }
@@ -190,6 +191,7 @@ public class LogInActivity extends CoreActivity {
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("uid", response.body().getUid().toString()); //used to display username within the app
                         editor.commit();
+                        Toast.makeText(LogInActivity.this, "Sign in successful!", Toast.LENGTH_SHORT).show();
                         mainPage(email);
                     }
                 }

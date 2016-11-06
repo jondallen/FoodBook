@@ -334,7 +334,7 @@ public class DetailCommentsFragment extends Fragment {
 
             avgRatingText.setText("Average Review: ");
 
-            commentsTitle.setText("Reviews for  " + ((DetailedRecipeActivity)getActivity()).getRecipename());
+            commentsTitle.setText(((DetailedRecipeActivity)getActivity()).getRecipename());
 
             commentsRecyclerViewDetail.setVisibility(VISIBLE);
 
