@@ -293,7 +293,7 @@ public class AddRecipeFragment extends Fragment {
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         event.getAction() == KeyEvent.ACTION_DOWN &&
                                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    if (ingredientsText3.getText().toString().length() > 0) {
+                    if (ingredientsText3.getText().toString().length() > 0 && ingredientsText3.getText().toString().trim().length() > 0) {
                         if(!(ingredientsText.getText().toString().equals("")) && !(ingredientsText2.getText().toString().equals(""))) {
                             placeholder_ingredients.setVisibility(GONE);
                             mIngredients.add(ingredientsText.getText().toString());
@@ -360,7 +360,7 @@ public class AddRecipeFragment extends Fragment {
                         actionId == EditorInfo.IME_ACTION_DONE ||
                         event.getAction() == KeyEvent.ACTION_DOWN &&
                                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    if (stepsText.getText().toString().length() > 0) {
+                    if (stepsText.getText().toString().length() > 0 && stepsText.getText().toString().trim().length() > 0) {
                         placeholder_steps.setVisibility(GONE);
                         mSteps.add(stepsText.getText().toString());
                         stepsText.setText("");
