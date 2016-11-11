@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -57,6 +58,7 @@ public class SelfProfileActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     CardAdapter mAdapter;
     StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    LinearLayoutManager mLinearLayoutManager;
 
     HashMap likePost;
     HashMap favoritePost;
@@ -464,7 +466,10 @@ public void fetchRecipes(){
 
         public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites, String rating, String count) {
             cardUsername.setText("Added by " + username);
-            cardTitle.setText(recipename);
+            if(recipename.length() <= 20)
+                cardTitle.setText(recipename);
+            else
+                cardTitle.setText(recipename.substring(0,19) + "...");
             cardTime.setText(cardtime);
             feedsText.setText(feedstext);
             int length1 = tagText1.length();
@@ -486,7 +491,7 @@ public void fetchRecipes(){
                 tag3.setBackgroundResource(R.drawable.rounded_edittext_green);
             }
 
-            Glide.with(SelfProfileActivity.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
+            Glide.with(SelfProfileActivity.this).load(url).centerCrop().placeholder(R.drawable.placeholder).diskCacheStrategy(RESULT).into(cardImage);
 
             likesText.setText(likestext);
 
@@ -630,7 +635,8 @@ public void fetchRecipes(){
     public void refreshUI(){
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        mLinearLayoutManager = new LinearLayoutManager(SelfProfileActivity.this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new CardAdapter(mRecipes);
         mRecyclerView.setAdapter(mAdapter);

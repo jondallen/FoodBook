@@ -534,7 +534,10 @@ public class MainFragment extends Fragment {
 
         public void bindCard(String username, String recipename, String url, String cardtime, String feedstext, String tagText1, String tagText2, String tagText3, String likes, String likestext, String favorites, String rating, String count) {
             cardUsername.setText("Added by " + username);
+            if(recipename.length() <= 20)
             cardTitle.setText(recipename);
+            else
+            cardTitle.setText(recipename.substring(0,19) + "...");
             cardTime.setText(cardtime);
             feedsText.setText(feedstext);
             int length1 = tagText1.length();
@@ -556,7 +559,7 @@ public class MainFragment extends Fragment {
                 tag3.setBackgroundResource(R.drawable.rounded_edittext_green);
             }
 
-            Glide.with(MainFragment.this).load(url).centerCrop().diskCacheStrategy(RESULT).into(cardImage);
+            Glide.with(MainFragment.this).load(url).centerCrop().placeholder(R.drawable.placeholder).diskCacheStrategy(RESULT).into(cardImage);
 
             likesText.setText(likestext);
 
@@ -586,6 +589,9 @@ public class MainFragment extends Fragment {
 
             countText.setText("(" + count + ")");
 
+
+
+            Log.d("Rating of recipe ",  getAdapterPosition() + ": " + mRecipes.get(getAdapterPosition()).getRating());
 
 
         }
@@ -662,8 +668,9 @@ public class MainFragment extends Fragment {
 
     public void refreshUI(){
             mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-            mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-            mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+            mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+            mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            mRecyclerView.setLayoutManager(mLinearLayoutManager);
             mRecyclerView.setHasFixedSize(true);
             mAdapter = new CardAdapter(mRecipes);
             mRecyclerView.setAdapter(mAdapter);
