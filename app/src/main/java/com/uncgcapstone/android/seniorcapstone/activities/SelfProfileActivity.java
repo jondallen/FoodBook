@@ -248,13 +248,6 @@ public void fetchRecipes(){
     });
 }
 
-
-
-
-
-
-
-
     private class CardViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
         private TextView cardTitle, cardUsername, cardTime, feedsText, tag1, tag2, tag3, likesText, countText;
@@ -298,9 +291,6 @@ public void fetchRecipes(){
                     String username = mRecipes.get(getAdapterPosition()).getUsername();
                     String postuserid = mRecipes.get(getAdapterPosition()).getUid();
                     launchTest(postid, url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, likestotal, username, postuserid);
-
-
-
                 }
             });
 
@@ -523,9 +513,6 @@ public void fetchRecipes(){
 
 
             countText.setText("(" + count + ")");
-
-
-
         }
     }
 
@@ -749,7 +736,6 @@ public void fetchRecipes(){
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         SuperActivityToast.onSaveState(outState);
 
     }

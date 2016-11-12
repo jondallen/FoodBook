@@ -50,29 +50,17 @@ import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
  * A simple {@link Fragment} subclass.
  */
 public class DetailCommentsFragment extends Fragment {
-
-
-
-    JSONArray ingredients = null;
-    JSONArray steps = null;
-    Gson gson = new Gson();
-    private String url_create_review = "http://63d42096.ngrok.io/android_connect/create_review.php";
-    private String url_get_all_reviews = "http://63d42096.ngrok.io/android_connect_retro/get_all_reviews.php";
-
-
     List<Review> mReviews;
     RecyclerView commentsRecyclerViewDetail;
     RecyclerView.Adapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
     TextView emptyText, commentsTitle, avgRatingText;
     android.app.AlertDialog mAlertDialog;
-    JSONArray comments = null;
     FloatingActionButton commentsFAB;
     SimpleRatingBar avgRatingBar;
     TextView numRatingText;
     String mAvg, mCount = "";
     LinearLayout commentsRelLayout;
-    RelativeLayout relLayoutCommentsProfile;
 
 
     public DetailCommentsFragment() {

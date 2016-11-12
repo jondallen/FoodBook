@@ -3,31 +3,22 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-import com.google.gson.Gson;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
 import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.adapters.PagerAdapter;
-
-import org.json.JSONArray;
-
 import java.util.HashMap;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,32 +26,22 @@ import retrofit2.Retrofit;
 
 import static android.view.View.GONE;
 
+/**
+ * This class is responsible for displaying the detailed view of a recipe
+ * It is responsible for hosting two fragments: DetailRecipeFragment and DetailCommentsFragment
+ */
 public class DetailedRecipeActivity extends AppCompatActivity{
 
-    private String url_get_ingredients_and_steps = "http://63d42096.ngrok.io/android_connect/get_ingredients_and_steps.php";
-    private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
-    private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
-    private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
-    private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
-    JSONArray ingredients = null;
-    JSONArray steps = null;
-    Gson gson = new Gson();
     public String url, recipename, servings, preptime, cooktime, likes, favorites, userid, adapterpos, username, loggedinuser, postuserid = "";
     int likestotal;
-    TextView detailRecipeNameText, detailUsername;
     String postid;
-    NestedScrollView testScrollView;
-    ImageView backarrow; // detailStar, detailThumb;
     LikeButton detailStar, detailThumb;
     Toolbar toolbar1;
-    //TextView detailBackButton;
     HashMap likePost;
     HashMap favoritePost;
     HashMap likesTotalPost;
     HashMap followsUser;
     LikeButton followButtonDetail;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +60,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
 
         followsUser = new HashMap();
 
+        //Retrieve information about the recipe and instantiate variables
         if(bundle != null){
             url = bundle.getString("url");
             recipename = bundle.getString("recipename");
@@ -102,29 +84,20 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             }
 
         }
-
-
-
-
-        //detailBackButton = (TextView) findViewById(R.id.detailBackButton);
-        /*detailBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });*/
-
         detailStar = (LikeButton) findViewById(R.id.starDetail);
         detailThumb = (LikeButton) findViewById(R.id.thumbDetail);
 
         followButtonDetail = (LikeButton) findViewById(R.id.followButtonDetail);
+        //If the logged in user == author of the recipe, hide/disable certain buttons
         if(userid.equals(postuserid)){
             followButtonDetail.setVisibility(GONE);
             detailStar.setEnabled(false);
             detailThumb.setEnabled(false);
         }
 
+        //Update the state of the buttons based on the user's input
         updateButtons();
+        //Check if the logged in user is following the author of the recipe
         isFollowing();
 
         followButtonDetail.setOnLikeListener(new OnLikeListener() {
@@ -197,21 +170,6 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                 }
             }
         });
-
-        /*if(likes.equals("1")){
-            detailThumb.setLiked(true);
-        }
-        else{
-            detailThumb.setLiked(false);
-        }
-
-        if(favorites.equals("1")){
-            detailStar.setLiked(true);
-        }
-        else{
-            detailStar.setLiked(false);
-        }*/
-
         detailStar.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -369,11 +327,6 @@ public class DetailedRecipeActivity extends AppCompatActivity{
 
             }
         });
-
-        /**
-         * Nutrition info stuff
-         */
-
     }
 
 
@@ -554,11 +507,6 @@ public String getServings(){
 
     public void showUserProfile(Bundle b){
         Bundle bundle = b;
-
-        //bundle.putString("username", username);
-        //bundle.putString("postuserid", postuserid);
-        //bundle.putString("userid", userid);
-
         bundle.putSerializable("followsUser", followsUser);
         bundle.putSerializable("likePost", likePost);
         bundle.putSerializable("favoritePost", favoritePost);
@@ -617,7 +565,6 @@ public String getServings(){
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         SuperActivityToast.onSaveState(outState);
 
     }

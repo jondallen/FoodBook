@@ -3,7 +3,6 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,23 +15,12 @@ import android.widget.Toast;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.data.Url;
-import com.uncgcapstone.android.seniorcapstone.data.User;
 import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
 import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 
@@ -48,17 +36,9 @@ import retrofit2.Retrofit;
 public class LogInActivity extends CoreActivity {
 
     private static final String TAG = "LogInActivity";
-
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText emailText, passwordText; //Username and password fields
     private Button createButton, logInButton;
-    private SignInButton googleButton;
-    FirebaseUser user;
     SharedPreferences mSharedPreferences;
-    GoogleApiClient mGoogleApiClient;
-    final int GOOGLE_SIGN_IN = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

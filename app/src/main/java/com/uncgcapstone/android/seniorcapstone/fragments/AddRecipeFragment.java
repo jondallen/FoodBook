@@ -62,7 +62,6 @@ public class AddRecipeFragment extends Fragment {
     RecyclerView mRecyclerView, mRecyclerView1;
     MyAdapter mAdapter;
     MyAdapter1 mAdapter1;
-    RecyclerView.LayoutManager mLinearLayoutManager, mLinearLayoutManager1;
 
     List<String> mIngredients = new ArrayList<>();
     List<String> mIngredients2 = new ArrayList<>();
@@ -73,11 +72,6 @@ public class AddRecipeFragment extends Fragment {
     final String[] measurements = new String[] { //Used to populate the autocomplete for units
             "Tbsp", "Cup", "Oz", "Pt", "Gal", "Gals",  "Tsp", "Quart", "Quarts", "Cups", "Pinch", "Lb.", "Whole"
     };
-    // url to create new product
-    private String url_create_product = "http://63d42096.ngrok.io/android_connect/create_recipe.php";
-    //JSON Success String
-    private final String TAG_SUCCESS = "success";
-
 
     public AddRecipeFragment() {
         // Required empty public constructor

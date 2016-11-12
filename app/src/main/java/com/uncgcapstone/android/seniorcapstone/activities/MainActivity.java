@@ -3,7 +3,6 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -26,7 +25,6 @@ import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -53,11 +51,7 @@ import com.uncgcapstone.android.seniorcapstone.io.ApiClient;
 import com.uncgcapstone.android.seniorcapstone.io.ApiInterface;
 import com.uncgcapstone.android.seniorcapstone.R;
 import com.uncgcapstone.android.seniorcapstone.fragments.MainFragment;
-
-
 import org.json.JSONArray;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,9 +67,6 @@ import retrofit2.Retrofit;
 public class MainActivity extends CoreActivity {
 
     private final String TAG = "MainActivity";
-
-    public FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     public FirebaseUser user;
     Toolbar toolbar;
     PrimaryDrawerItem homeItem;
@@ -559,93 +550,53 @@ super.onDestroy();
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!(spinner.getTag(R.id.pos).toString().equals(String.valueOf(position)))) {
+                    mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                     if (position == 0) {
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "0");
                         editor.commit();
                         spinner.setTag(R.id.pos, 0);
 
-
-
-                        Fragment fragment1 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment1, "MainFragment")
-                                .addToBackStack(null).commit();
-
                     } else if (position == 1) {
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "1");
                         editor.commit();
                         spinner.setTag(R.id.pos, 1);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
                     else if(position == 2){
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "2");
                         editor.commit();
                         spinner.setTag(R.id.pos, 2);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
                     else if(position == 3){
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "3");
                         editor.commit();
                         spinner.setTag(R.id.pos, 3);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
                     else if(position == 4){
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "4");
                         editor.commit();
                         spinner.setTag(R.id.pos, 4);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
                     else if(position == 5){
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "5");
                         editor.commit();
                         spinner.setTag(R.id.pos, 5);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
                     else if(position == 6){
-                        mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putString("query", "6");
                         editor.commit();
                         spinner.setTag(R.id.pos, 6);
-
-                        Fragment fragment2 = MainFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, fragment2, "MainFragment")
-                                .addToBackStack(null).commit();
                     }
-
+                    Fragment fragment2 = MainFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, fragment2, "MainFragment")
+                            .addToBackStack(null).commit();
                 }
             }
 
@@ -659,13 +610,8 @@ super.onDestroy();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
-
     return super.onOptionsItemSelected(item);
-
     }
 
 
@@ -710,15 +656,20 @@ super.onDestroy();
     @Override
     public void onBackPressed(){
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
-        if(!(mSharedPreferences.contains("search"))) {
-            editor.putString("search", "");
-            editor.commit();
+        int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+        if (backStackEntryCount == 0) {
+        } else {
+            if(!(mSharedPreferences.contains("search"))) {
+                editor.putString("search", "");
+                editor.commit();
+            }
+            else{
+                editor.putString("search", "");
+                editor.commit();
+            }
+            super.onBackPressed();
         }
-        else{
-            editor.putString("search", "");
-            editor.commit();
-        }
-        super.onBackPressed();
+
     }
 
     public void toast(String toast){

@@ -60,19 +60,8 @@ import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 public class DetailRecipeFragment extends Fragment {
 
     String  servings, preptime, cooktime, postid, userid, recipename, url, username, postuserid = "";
-
     RecyclerView ingredsRecyclerViewDetail, stepsRecyclerViewDetail;
     TextView servesTextDetail, prepTextDetail, cookTextDetail;
-    private String url_get_ingredients_and_steps = "http://63d42096.ngrok.io/android_connect/get_ingredients_and_steps.php";
-    private String url_get_ingredients = "http://63d42096.ngrok.io/android_connect_retro/get_ingredients.php";
-    private String url_get_steps = "http://63d42096.ngrok.io/android_connect_retro/get_steps.php";
-    private String url_likes = "http://63d42096.ngrok.io/android_connect/likes.php";
-    private String url_unlikes = "http://63d42096.ngrok.io/android_connect/unlikes.php";
-    private String url_favorites = "http://63d42096.ngrok.io/android_connect/favorites.php";
-    private String url_unfavorites = "http://63d42096.ngrok.io/android_connect/unfavorites.php";
-    JSONArray ingredients = null;
-    JSONArray steps = null;
-    Gson gson = new Gson();
     List<Ingredient> mIngredients;
     List<Step> mSteps;
     AlertDialog mAlertDialog;
@@ -84,9 +73,6 @@ public class DetailRecipeFragment extends Fragment {
     String imageUrl = "";
     List<User> mUser;
     RelativeLayout relLayoutProfile;
-
-
-
 
     public DetailRecipeFragment() {
         // Required empty public constructor
@@ -185,7 +171,6 @@ public class DetailRecipeFragment extends Fragment {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d("We in ", "there");
                 Log.d("Response:", String.valueOf(response.body()));
             }
 

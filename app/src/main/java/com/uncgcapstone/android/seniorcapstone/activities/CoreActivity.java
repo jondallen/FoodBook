@@ -12,7 +12,7 @@ import dmax.dialog.SpotsDialog;
  * Created by jon on 8/31/2016.
  *
  * This class is responsible for managing the progress dialog animation and is the base class
- * of the LogInActivity
+ * of the LogInActivity and the MainActivity
  */
 public class CoreActivity extends AppCompatActivity {
     private AlertDialog mAlertDialog;
