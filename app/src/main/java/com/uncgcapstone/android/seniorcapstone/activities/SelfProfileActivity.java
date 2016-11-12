@@ -99,7 +99,7 @@ public class SelfProfileActivity extends AppCompatActivity {
         profileFollowButton = (LikeButton) findViewById(R.id.profileFollowButton);
 
         if(userid.equals(postuserid)){
-            profileFollowButton.setVisibility(GONE);
+            profileFollowButton.setEnabled(false);
         }
 
         selfEmptyText = (TextView) findViewById(R.id.selfEmptyText);
@@ -211,7 +211,7 @@ public class SelfProfileActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         if(userid.equals(postuserid)){
-            profileFollowButton.setVisibility(GONE);
+            profileFollowButton.setEnabled(false);
         }
     }
 

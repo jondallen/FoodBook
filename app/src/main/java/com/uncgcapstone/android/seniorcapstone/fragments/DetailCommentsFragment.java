@@ -98,42 +98,45 @@ public class DetailCommentsFragment extends Fragment {
         commentsFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Click", "Recognized");
-                LayoutInflater inflates = getActivity().getLayoutInflater();
-                final View dialogview = inflates.inflate(R.layout.review_dialog, null);
-               new AlertDialog.Builder(getActivity())
-                        .setTitle("Review " + ((DetailedRecipeActivity)getActivity()).getRecipename())
-                        .setView(dialogview)
-                        .setPositiveButton("Submit",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        EditText text = (EditText) dialogview.findViewById(R.id.dialogText);
-                                        SimpleRatingBar bar = (SimpleRatingBar) dialogview.findViewById(R.id.dialogRating);
+                if(((DetailedRecipeActivity)getActivity()).getUserid().equals(((DetailedRecipeActivity)getActivity()).getPostuserid())){
+                    toast("You can't review your own recipe!");
+                }
+                else {
+                    LayoutInflater inflates = getActivity().getLayoutInflater();
+                    final View dialogview = inflates.inflate(R.layout.review_dialog, null);
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Review " + ((DetailedRecipeActivity) getActivity()).getRecipename())
+                            .setView(dialogview)
+                            .setPositiveButton("Submit",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            EditText text = (EditText) dialogview.findViewById(R.id.dialogText);
+                                            SimpleRatingBar bar = (SimpleRatingBar) dialogview.findViewById(R.id.dialogRating);
 
-                                        String review = text.getText().toString();
-                                        String rating = String.valueOf(bar.getRating());
+                                            String review = text.getText().toString();
+                                            String rating = String.valueOf(bar.getRating());
 
-                                        if (review.equals("")) {
-                                        toast("You must leave an actual review!");
+                                            if (review.equals("")) {
+                                                toast("You must leave an actual review!");
+                                            } else {
+                                                showProgressDialog();
+                                                createReview(review, rating);
+                                                dialog.dismiss();
+                                            }
+
+
                                         }
-                                        else{
-                                            showProgressDialog();
-                                           createReview(review, rating);
+                                    }
+                            )
+                            .setNegativeButton(android.R.string.cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int whichButton) {
                                             dialog.dismiss();
                                         }
-
-
                                     }
-                                }
-                        )
-                        .setNegativeButton(android.R.string.cancel,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        dialog.dismiss();
-                                    }
-                                }
-                        )
-                        .create().show();
+                            )
+                            .create().show();
+                }
             }
         });
         //showProgressDialog();

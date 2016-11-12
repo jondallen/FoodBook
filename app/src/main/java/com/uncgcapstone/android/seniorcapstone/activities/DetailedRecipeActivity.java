@@ -90,7 +90,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         followButtonDetail = (LikeButton) findViewById(R.id.followButtonDetail);
         //If the logged in user == author of the recipe, hide/disable certain buttons
         if(userid.equals(postuserid)){
-            followButtonDetail.setVisibility(GONE);
+            followButtonDetail.setEnabled(false);
             detailStar.setEnabled(false);
             detailThumb.setEnabled(false);
         }
@@ -358,7 +358,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     public void onResume(){
         super.onResume();
         if(userid.equals(postuserid)){
-            followButtonDetail.setVisibility(GONE);
+            followButtonDetail.setEnabled(false);
             detailStar.setEnabled(false);
             detailThumb.setEnabled(false);
         }
