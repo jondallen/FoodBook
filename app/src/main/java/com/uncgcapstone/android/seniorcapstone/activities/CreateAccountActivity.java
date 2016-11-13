@@ -3,7 +3,6 @@ package com.uncgcapstone.android.seniorcapstone.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.johnpersano.supertoasts.library.Style;
@@ -35,13 +33,13 @@ public class CreateAccountActivity extends CoreActivity {
     Button createButton1, cancelButton;
     SharedPreferences mSharedPreferences;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
         mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
-
 
          /*
         Used for graphical improvements (notification bar)
