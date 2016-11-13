@@ -57,14 +57,8 @@ public class LogInActivity extends CoreActivity {
         createButton = (Button) findViewById(R.id.createButton);
         createButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-                if(emailText.getText().toString().length() > 6 && passwordText.getText().toString().length() > 2){
-                    showProgressDialog();
-                    createUser(emailText.getText().toString(), passwordText.getText().toString());
-
-                }
-                else{
-                    toast("To create an account, please enter a valid username and password.");
-                }
+                Intent i = new Intent(LogInActivity.this, CreateAccountActivity.class);
+                startActivity(i);
             }
                                   });
 
@@ -92,51 +86,6 @@ public class LogInActivity extends CoreActivity {
         super.onStop();
 
     }
-
-    public void createUser(final String email, String password){
-        Retrofit retrofit = ApiClient.getClient();
-        ApiInterface apiService = retrofit.create(ApiInterface.class);
-
-        Call<Url> call = apiService.createUser(email, password);
-        call.enqueue(new Callback<Url>() {
-            @Override
-            public void onResponse(Call<Url> call, Response<Url> response) {
-                Log.d("TEST", response.body().getUid().toString());
-                if (response.body() != null) {
-                    if(response.body().getUid().equals("0")){
-                        toast("Username is taken!");
-                        hideProgressDialog();
-                        Log.d("TEST", response.body().getUid().toString());
-                    }
-                    else if(response.body().getUid().equals("1")){
-                        toast("Check your username and password input again!");
-                        hideProgressDialog();
-                        Log.d("TEST", response.body().getUid().toString());
-                    }
-                    else{
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putString("uid", response.body().getUid().toString()); //used to display username within the app
-                        editor.commit();
-                        Toast.makeText(LogInActivity.this, "Account created!", Toast.LENGTH_SHORT).show();
-                        mainPage(email);
-                    }
-                }
-                else{
-                    toast("Error!");
-                    hideProgressDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Url> call, Throwable t) {
-                Log.d("Error", t.toString());
-                toast("Error!");
-                hideProgressDialog();
-
-            }
-        });
-    }
-
 
     public void signIn(final String email, String password){
         Retrofit retrofit = ApiClient.getClient();
@@ -235,6 +184,10 @@ public class LogInActivity extends CoreActivity {
         super.onSaveInstanceState(outState);
         SuperActivityToast.onSaveState(outState);
 
+    }
+
+    @Override
+    public void onBackPressed(){
     }
 }
 

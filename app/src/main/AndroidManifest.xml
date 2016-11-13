@@ -21,11 +21,9 @@
         <activity
             android:name=".activities.LogInActivity"
             android:configChanges="orientation"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            >
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
         <activity
             android:name=".activities.MainActivity"
@@ -60,6 +58,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.CreateAccountActivity">
         </activity>
     </application>
 

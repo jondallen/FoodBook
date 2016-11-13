@@ -14,7 +14,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/logo"
-        android:id="@+id/logo"
+        android:id="@+id/logo1"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         />
@@ -24,9 +24,9 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/emailText"
+        android:id="@+id/emailText1"
         android:hint="Email Address"
-        android:layout_below="@id/logo"
+        android:layout_below="@id/logo1"
         android:layout_centerHorizontal="true"
         android:padding="5dip"
         android:layout_margin="3dp"
@@ -39,9 +39,23 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/passwordText"
+        android:id="@+id/passwordText1"
         android:hint="Password"
-        android:layout_below="@id/emailText"
+        android:layout_below="@id/emailText1"
+        android:layout_centerHorizontal="true"
+        android:padding="5dip"
+        android:layout_margin="3dp"
+        android:background="@drawable/rounded_edittext"
+        android:fontFamily="sans-serif"
+        />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordText2"
+        android:hint="Confirm Password"
+        android:layout_below="@id/passwordText1"
         android:layout_centerHorizontal="true"
         android:padding="5dip"
         android:layout_marginTop="3dp"
@@ -53,10 +67,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log in"
-        android:id="@+id/logInButton"
+        android:text="Create Account"
+        android:id="@+id/createButton1"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/passwordText"
+        android:layout_below="@id/passwordText2"
         android:background="@drawable/rounded_edittext"
         android:backgroundTint="#fc724c"
         android:layout_margin="3dp"
@@ -69,10 +83,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register"
-        android:id="@+id/createButton"
+        android:text="Cancel"
+        android:id="@+id/cancelButton"
         android:background="@drawable/rounded_edittext"
-        android:layout_below="@id/logInButton"
+        android:layout_below="@id/createButton1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="9dp"
@@ -81,15 +95,4 @@
         android:textAlignment="center"
         android:fontFamily="sans-serif"
         />
-<!--
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Guest log in"
-        android:id="@+id/anonButton"
-        android:layout_toRightOf="@id/logInButton"
-        android:layout_below="@id/emailText"
-        />
-!-->
-
 </RelativeLayout>
