@@ -123,8 +123,8 @@ public class MainActivity extends CoreActivity {
         homeItem = new PrimaryDrawerItem().withIdentifier(0).withName("Home").withSelectable(false).withIcon(R.drawable.home);
         //item1 = new SecondaryDrawerItem().withIdentifier(1).withName("My Favorites").withSelectable(false).withIcon(R.drawable.fave_star);
         //item2 = new SecondaryDrawerItem().withIdentifier(2).withName("Pantry").withSelectable(false).withIcon(R.drawable.pantry);
-        item3 = new SecondaryDrawerItem().withIdentifier(1).withName("Meal Schedule").withSelectable(false).withIcon(R.drawable.calendar1);
-        logOutItem = new SecondaryDrawerItem().withIdentifier(2).withName("Log Out").withSelectable(false).withIcon(R.drawable.logout);
+        //item3 = new SecondaryDrawerItem().withIdentifier(1).withName("Meal Schedule").withSelectable(false).withIcon(R.drawable.calendar1);
+        logOutItem = new SecondaryDrawerItem().withIdentifier(1).withName("Log Out").withSelectable(false).withIcon(R.drawable.logout);
         //settingsItem = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withSelectable(false).withIcon(R.drawable.settings);
 
 
@@ -172,8 +172,6 @@ public class MainActivity extends CoreActivity {
                 .addDrawerItems(
                         homeItem,
                         new DividerDrawerItem(),
-                        item3,
-                        new DividerDrawerItem(),
                         logOutItem
                 ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -197,11 +195,6 @@ public class MainActivity extends CoreActivity {
                             return false;
                         }
                         else if(drawerItem.getIdentifier() == 1){
-                            Intent i = new Intent(MainActivity.this, BasicActivity.class);
-                            startActivity(i);
-                            return false;
-                        }
-                        else if(drawerItem.getIdentifier() == 2){
                             mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
                             SharedPreferences.Editor editor = mSharedPreferences.edit();
                             editor.putString("uid","");
