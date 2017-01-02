@@ -11,6 +11,4 @@ filter based on your needs.
 <img src=http://i.imgur.com/QNK8fhK.png width=540 height=960 />
 <img src=http://i.imgur.com/FU2ubhE.png width=540 height=960 />
 
-TO DO: Finish construction of API
-
-       Add more appropriate test cases
+TO DO: Finish construction of API, Add more appropriate test cases
