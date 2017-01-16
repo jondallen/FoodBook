@@ -1,5 +1,7 @@
 # FoodBook
 
+Latest APK is available [here](https://www.dropbox.com/s/yp8krdymyublm15/FoodBook_com.uncgcapstone.android.seniorcapstone.apk?dl=0)
+
 A social media inspired recipe sharing application. 
 
 Create an account, upload your favorite recipes and browse recipes that other users have submitted. 
