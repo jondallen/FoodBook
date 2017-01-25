@@ -52,7 +52,9 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
-        <activity android:name=".activities.StartActivity">
+        <activity android:name=".activities.StartActivity"
+                  android:noHistory="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

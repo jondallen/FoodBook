@@ -642,6 +642,7 @@ super.onDestroy();
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
         int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
         if (backStackEntryCount == 0) {
+            super.onBackPressed();
         } else {
             if(!(mSharedPreferences.contains("search"))) {
                 editor.putString("search", "");

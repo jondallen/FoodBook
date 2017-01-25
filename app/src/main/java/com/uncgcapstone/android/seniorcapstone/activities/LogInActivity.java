@@ -168,6 +168,7 @@ public class LogInActivity extends CoreActivity {
         editor.commit();
         hideProgressDialog();
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); /////////////////////rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
         startActivity(intent);
     }
 
@@ -186,8 +187,6 @@ public class LogInActivity extends CoreActivity {
 
     }
 
-    @Override
-    public void onBackPressed(){
-    }
+
 }
 

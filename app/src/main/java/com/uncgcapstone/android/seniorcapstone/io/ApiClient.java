@@ -12,7 +12,7 @@ public class ApiClient {
     /*
     New Database
      */
-    private static final String url_all_recipes = "http://54.201.252.62/test/";
+    private static final String url_all_recipes = "http://54.242.79.227/php/";
     private static Retrofit retrofit = null;
 
 

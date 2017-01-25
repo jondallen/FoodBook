@@ -201,6 +201,7 @@ public class CreateAccountActivity extends CoreActivity {
         editor.commit();
         hideProgressDialog();
         Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
         startActivity(intent);
     }
 
