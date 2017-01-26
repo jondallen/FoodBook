@@ -19,5 +19,3 @@ Libraries used include Firebase, Retrofit 2, Glide, LikeButton, SuperToasts.
 <img src=http://i.imgur.com/VIXr48d.png width=540 height=960 />
 <img src=http://i.imgur.com/QNK8fhK.png width=540 height=960 />
 <img src=http://i.imgur.com/FU2ubhE.png width=540 height=960 />
-
-TO DO: Finish construction of API, Add more appropriate test cases
