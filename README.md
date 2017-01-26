@@ -12,10 +12,10 @@ filter based on your needs.
 Libraries used include Firebase, Retrofit 2, Glide, LikeButton, SuperToasts. 
 
 
-<img src=http://i.imgur.com/DB6xxbG.png width=540 height=960 />
-<img src=http://i.imgur.com/yilrfOu.png width=540 height=960 />
-<img src=http://i.imgur.com/YsDBQQ9.png width=540 height=960 />
-<img src=http://i.imgur.com/Q0xlmH3.png width=540 height=960 />
-<img src=http://i.imgur.com/VIXr48d.png width=540 height=960 />
-<img src=http://i.imgur.com/QNK8fhK.png width=540 height=960 />
-<img src=http://i.imgur.com/FU2ubhE.png width=540 height=960 />
+<img src=http://i.imgur.com/DB6xxbG.png width=270 height=480 />
+<img src=http://i.imgur.com/yilrfOu.png width=270 height=480 />
+<img src=http://i.imgur.com/YsDBQQ9.png width=270 height=480 />
+<img src=http://i.imgur.com/Q0xlmH3.png width=270 height=480 />
+<img src=http://i.imgur.com/VIXr48d.png width=270 height=480 />
+<img src=http://i.imgur.com/QNK8fhK.png width=270 height=480 />
+<img src=http://i.imgur.com/FU2ubhE.png width=280 height=480 />
