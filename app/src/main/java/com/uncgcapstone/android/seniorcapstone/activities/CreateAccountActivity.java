@@ -27,6 +27,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+/**
+ * This class is responsible for handling account creation
+ */
 public class CreateAccountActivity extends CoreActivity {
 
     EditText emailText1, passwordText1, passwordText2;
@@ -53,7 +56,6 @@ public class CreateAccountActivity extends CoreActivity {
 
         passwordText1 = (EditText) findViewById(R.id.passwordText1);
         passwordText1.addTextChangedListener(new TextWatcher() {
-
             public void afterTextChanged(Editable s) {
             if(s.length() == 0){
                 //passwordStatus.setImageDrawable(null);
