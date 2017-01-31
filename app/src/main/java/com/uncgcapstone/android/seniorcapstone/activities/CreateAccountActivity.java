@@ -55,18 +55,20 @@ public class CreateAccountActivity extends CoreActivity {
         emailText1 = (EditText) findViewById(R.id.emailText1);
 
         passwordText1 = (EditText) findViewById(R.id.passwordText1);
+
+        /**
+         * This listener is responsible for displaying if
+         * the first password is equal to the second
+         */
         passwordText1.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
             if(s.length() == 0){
-                //passwordStatus.setImageDrawable(null);
                 passwordText1.setCompoundDrawables(null, null, null, null);
             }
                 else if(s.length() > 0 && s.length() < 7){
-                //passwordStatus.setImageResource(R.drawable.close1);
                 passwordText1.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.close1), null);
             }
                 else{
-                //passwordStatus.setImageResource(R.drawable.check1);
                 passwordText1.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.check1), null);
             }
             }
@@ -79,16 +81,20 @@ public class CreateAccountActivity extends CoreActivity {
                                       int before, int count) {
             }
         });
+
         passwordText2 = (EditText) findViewById(R.id.passwordText2);
+
+        /**
+         * This listener is responsible for displaying if
+         * the second password is equal to the first
+         */
         passwordText2.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
                 if(s.length() == 0){
-                    //passwordStatus.setImageDrawable(null);
                     passwordText2.setCompoundDrawables(null, null, null, null);
                 }
                 else if(s.length() > 0 && s.length() < 7){
-                    //passwordStatus.setImageResource(R.drawable.close1);
                     passwordText2.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.close1), null);
                 }
                 else{
@@ -144,6 +150,11 @@ public class CreateAccountActivity extends CoreActivity {
         }
     }
 
+    /**
+     * This method is used to create a user account in the database
+     * @param email The user's e-mail
+     * @param password The user's password
+     */
     public void createUser(final String email, String password){
         Retrofit retrofit = ApiClient.getClient();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -188,6 +199,11 @@ public class CreateAccountActivity extends CoreActivity {
         });
     }
 
+    /**
+     * This method is responsible for directing the user
+     * to the main page upon account creation
+     * @param email The e-mail address that they log in with
+     */
     public void mainPage(final String email){
         mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -203,7 +219,7 @@ public class CreateAccountActivity extends CoreActivity {
         editor.commit();
         hideProgressDialog();
         Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 

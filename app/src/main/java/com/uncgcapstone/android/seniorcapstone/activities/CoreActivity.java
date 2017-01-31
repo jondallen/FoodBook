@@ -16,6 +16,9 @@ import dmax.dialog.SpotsDialog;
 public class CoreActivity extends AppCompatActivity {
     private AlertDialog mAlertDialog;
 
+    /**
+     * This method pulls up the loading dialog
+     */
     public void showProgressDialog() {
         if (mAlertDialog == null) {
             mAlertDialog = new SpotsDialog(this);
@@ -25,6 +28,9 @@ public class CoreActivity extends AppCompatActivity {
         mAlertDialog.show();
     }
 
+    /**
+     * This method dismisses the loading dialog
+     */
     public void hideProgressDialog() {
         if (mAlertDialog != null && mAlertDialog.isShowing()) {
             mAlertDialog.dismiss();

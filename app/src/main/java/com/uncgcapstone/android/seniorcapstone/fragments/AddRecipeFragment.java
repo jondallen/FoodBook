@@ -469,15 +469,12 @@ public class AddRecipeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_PIC) {
             if (resultCode == getActivity().RESULT_OK) {
-                Log.d("We here now", "lol");
                 photoUri = data.getData();
                 Glide.with(AddRecipeFragment.this).load(photoUri).centerCrop().diskCacheStrategy(RESULT).into(addPicture);
             } else {
-                Log.d("We failed ", "lol");
             }
         }
         else{
-            Log.d("Bucket", "lol");
         }
     }
 
