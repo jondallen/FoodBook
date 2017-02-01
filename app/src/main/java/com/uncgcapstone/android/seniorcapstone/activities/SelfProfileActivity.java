@@ -46,6 +46,9 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.engine.DiskCacheStrategy.RESULT;
 
+/**
+ * This class is
+ */
 public class SelfProfileActivity extends AppCompatActivity {
 
     CircleImageView profileImage;

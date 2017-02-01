@@ -88,6 +88,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         detailThumb = (LikeButton) findViewById(R.id.thumbDetail);
 
         followButtonDetail = (LikeButton) findViewById(R.id.followButtonDetail);
+
         //If the logged in user == author of the recipe, hide/disable certain buttons
         if(userid.equals(postuserid)){
             followButtonDetail.setEnabled(false);
@@ -100,6 +101,10 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         //Check if the logged in user is following the author of the recipe
         isFollowing();
 
+
+        /**
+         * //networking code for following or unfollowing a user
+         */
         followButtonDetail.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -170,6 +175,10 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                 }
             }
         });
+
+        /**
+         * //networking code for favoriting and unfavoriting a recipe
+         */
         detailStar.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -230,6 +239,9 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             }
         });
 
+        /**
+         * //networking code for liking and unliking a recipe
+         */
         detailThumb.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -301,6 +313,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
             }
         });
 
+        //set up the view pager components
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Recipe"));
         tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
@@ -357,6 +370,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     @Override
     public void onResume(){
         super.onResume();
+        //make sure a user can't take actions on their own recipes
         if(userid.equals(postuserid)){
             followButtonDetail.setEnabled(false);
             detailStar.setEnabled(false);
@@ -370,6 +384,7 @@ public class DetailedRecipeActivity extends AppCompatActivity{
         Intent data = new Intent();
         Bundle bundle = new Bundle();
 
+        //Add required values to bundle for returning to the main feed
         bundle.putString("adapterpos", adapterpos);
         bundle.putString("favorites", favorites);
         bundle.putString("likes", likes);
@@ -385,13 +400,19 @@ public class DetailedRecipeActivity extends AppCompatActivity{
     }
 
 
+    /**
+     * Method handles navigation to a user profile
+     */
     public void showUserProfile(){
     Intent i = new Intent(DetailedRecipeActivity.this, SelfProfileActivity.class);
         startActivity(i);
     }
 
 
-
+    /**
+     * Default toast method for the class
+     * @param toast The message to be toasted
+     */
     public void toast(String toast){
         SuperActivityToast.create(DetailedRecipeActivity.this, new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
@@ -401,6 +422,11 @@ public class DetailedRecipeActivity extends AppCompatActivity{
                 .setAnimations(Style.ANIMATIONS_FLY).show();
     }
 
+    /*
+    ##########
+    Getters and setters
+    ##########
+     */
 public String getServings(){
     return servings;
 }
@@ -448,6 +474,9 @@ public String getServings(){
         this.likesTotalPost = likesTotalPost;
     }
 
+    /**
+     * Used to update the status of buttons upon initially loading the class
+     */
     public void updateButtons(){
         if(likePost.containsKey(postid)){
             if(likePost.get(postid).equals("0")){
@@ -474,6 +503,10 @@ public String getServings(){
         }
     }
 
+    /**
+     * Used to check if the logged in user is following
+     * the uploader of the recipe they are viewing
+     */
     private void isFollowing(){
         Retrofit retrofit = ApiClient.getClient();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -505,6 +538,10 @@ public String getServings(){
         });
     }
 
+    /**
+     * Launches user profile when user clicks on it
+     * @param b The items to be passed in with the intent
+     */
     public void showUserProfile(Bundle b){
         Bundle bundle = b;
         bundle.putSerializable("followsUser", followsUser);
@@ -516,6 +553,12 @@ public String getServings(){
         startActivityForResult(i, 3);
     }
 
+    /**
+     * Handles returns to this class from other classes
+     * @param requestCode The class we're returning from
+     * @param resultCode The result of the return
+     * @param data Any data that may be passed in as a bundle
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to

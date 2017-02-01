@@ -87,6 +87,11 @@ public class LogInActivity extends CoreActivity {
 
     }
 
+    /**
+     * This method handles the sign in process
+     * @param email Username
+     * @param password Password
+     */
     public void signIn(final String email, String password){
         Retrofit retrofit = ApiClient.getClient();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -153,6 +158,10 @@ public class LogInActivity extends CoreActivity {
         }
     }
 
+    /**
+     * This method handles the transfer to the main feed after a user successfully logs in
+     * @param email The user's email address
+     */
     public void mainPage(final String email){
         mSharedPreferences = getSharedPreferences(getString(R.string.preference_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();

@@ -64,6 +64,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+/**
+ * This activity is responsible for holding the MainFragment and
+ * the AddRecipeFragment.
+ * It contains much of the networking code for submitting a recipe
+ */
+
 public class MainActivity extends CoreActivity {
 
     private final String TAG = "MainActivity";
@@ -89,7 +95,6 @@ public class MainActivity extends CoreActivity {
     Gson gson = new Gson();
     JSONArray jsonuser = null;
     String tempUrl = "";
-    // JSON Node names
     private final String TAG_SUCCESS = "success";
     IProfile profile;
 
@@ -120,6 +125,9 @@ public class MainActivity extends CoreActivity {
         setSupportActionBar(toolbar);
 
 
+        /*
+        Create the navigation drawer
+         */
         homeItem = new PrimaryDrawerItem().withIdentifier(0).withName("Home").withSelectable(false).withIcon(R.drawable.home);
         //item1 = new SecondaryDrawerItem().withIdentifier(1).withName("My Favorites").withSelectable(false).withIcon(R.drawable.fave_star);
         //item2 = new SecondaryDrawerItem().withIdentifier(2).withName("Pantry").withSelectable(false).withIcon(R.drawable.pantry);
@@ -250,8 +258,23 @@ super.onDestroy();
     }
 
 
-
-
+    /**
+     * This method is responsible for the submission of a recipe to the database
+     * @param servestext How many people the recipe serves
+     * @param preptext The time it takes to prep the recipe
+     * @param cooktext The time it takes to cook the recipe
+     * @param datetime The date and time the recipe is submitted
+     * @param photoUri The picture of the recipe
+     * @param uid The user ID of the user submitting the recipe
+     * @param username The username of the user submitting the recipe
+     * @param recipeName The name of the recipe
+     * @param tagsfinal The 3 tags associated with the recipe
+     * @param ingredients The quantity array of ingredients
+     * @param ingredients2 The unit array of ingredients
+     * @param ingredients3 The ingredient array of ingredients
+     * @param steps The steps required to make the recipe
+     * @param ingredtags The tags constructed from the ingredients of the recipe
+     */
     public void post(final String[] servestext, final String[] preptext, final String[] cooktext, final String[] datetime, final String[] photoUri, final String[] uid, final String[] username, final String[] recipeName, final String[] tagsfinal, final String[] ingredients, final String[] ingredients2, final String[] ingredients3, final String[] steps, final String[] ingredtags){
         final Uri picUri = Uri.parse(photoUri[0]);
         Bitmap bitmap = null;
@@ -261,14 +284,16 @@ super.onDestroy();
         catch (IOException e){
 
         }
-
+        //Image compression for lower data usage
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 25, out);
 
         final byte[] byteArray = out.toByteArray();
 
         bitmap.recycle();
-
+        //The heart of the recipe submission process
+        //First, image storage
+        //Next, uploading of the recipe data to the server
         new Thread(new Runnable() {
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -378,6 +403,12 @@ super.onDestroy();
         }).start();
     }
 
+    /**
+     * This method handles the uploading of a user profile picture
+     * @param requestCode The activity being returned from
+     * @param resultCode The result of the data transfer
+     * @param data The data being returned
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -392,7 +423,7 @@ super.onDestroy();
                 catch (IOException e){
 
                 }
-
+                    //Resizing the image for lower data usage
                     Bitmap smaller = getResizedBitmap(bitmap, 240, 240);
 
 
@@ -406,6 +437,10 @@ super.onDestroy();
                 //ByteArrayOutputStream out = new ByteArrayOutputStream();
                 //file.compress(Bitmap.CompressFormat.PNG, 0, out);
                 //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
+
+                /**
+                 * This thread handles the uploading of the profile picture
+                 */
                 new Thread(new Runnable() {
                     public void run() {
                         runOnUiThread(new Runnable() {
@@ -480,6 +515,9 @@ super.onDestroy();
         }
     }
 
+    /**
+     * This method fetches the profile image of a user when they log in
+     */
     public void getProfileImage(){
         Retrofit retrofit = ApiClient.getClient();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
@@ -513,7 +551,12 @@ super.onDestroy();
         });
     }
 
-
+    /**
+     * This method is responsible for population of the spinner
+     * which holds various sorting options
+     * @param menu The toolbar
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -607,6 +650,10 @@ super.onDestroy();
         toolbar.setTitle(name);
     }
 
+    /**
+     * This method prevents the spinner from displaying unnecessary text
+     * @param showMenu whether or not the group should show
+     */
     public void showOverflowMenu(boolean showMenu){
         if(menu == null)
             return;
@@ -619,6 +666,13 @@ super.onDestroy();
         return uid;
     }
 
+    /**
+     * This method is responsible for image resizing
+     * @param bm The image itself
+     * @param newWidth The desired width
+     * @param newHeight The desired height
+     * @return The resized bitmap
+     */
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
@@ -636,7 +690,10 @@ super.onDestroy();
         return resizedBitmap;
     }
 
-
+    /**
+     * This method is responsible for the overridden behavior of onBackPressed
+     * The search value will be cleared on a back press
+     */
     @Override
     public void onBackPressed(){
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -657,6 +714,10 @@ super.onDestroy();
 
     }
 
+    /**
+     * The default toast implementation
+     * @param toast The string to be toasted
+     */
     public void toast(String toast){
         SuperActivityToast.create(this, new Style(), Style.TYPE_STANDARD)
                 .setText(toast)
